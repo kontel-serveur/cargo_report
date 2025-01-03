@@ -1,0 +1,121 @@
+<nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <a href="/" class="navbar-logo">MySite</a>
+      </div>
+      <button class="navbar-toggle" aria-label="Toggle navigation">
+        <span class="toggle-bar"></span>
+        <span class="toggle-bar"></span>
+        <span class="toggle-bar"></span>
+      </button>
+      <ul class="navbar-menu">
+        <li><a href="/" class="navbar-link">Home</a></li>
+        <li><a href="/enregistrement" class="navbar-link">Enregistrer</a></li>
+        <li><a href="/contact" class="navbar-link">Contact</a></li>
+        <li><a href="/" class="navbar-link">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <style>
+
+    /* General reset */
+body, ul, li, a, button {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+/* Navbar container */
+.navbar {
+  background-color: #60c7c1;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  padding: 10px 20px;
+  border-bottom: 2px solid #3aa5a1;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Brand/logo */
+.navbar-brand .navbar-logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Navbar menu */
+.navbar-menu {
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-menu li {
+  list-style: none;
+}
+
+.navbar-link {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-link:hover {
+  color: #e3f9f8;
+}
+
+/* Responsive Toggle Button */
+.navbar-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navbar-toggle .toggle-bar {
+  background-color: white;
+  height: 3px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .navbar-menu {
+    display: none;
+    flex-direction: column;
+    background-color: #60c7c1;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 200px;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 10;
+  }
+
+  .navbar-menu.active {
+    display: flex;
+  }
+
+  .navbar-toggle {
+    display: flex;
+  }
+}
+
+  </style>
+
+  <script src="/scripts/navbar.js"></script>

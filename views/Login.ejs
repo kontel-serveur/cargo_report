@@ -1,0 +1,107 @@
+<html>
+  <head>
+    <title>Connexion</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+ <link rel="shortcut icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+    <style>
+      body{
+        background-color:#f5f5f5;
+        font-family:Ebrima;
+      }
+      .overall{
+        width: 350px;
+        margin: 0 auto;
+        padding: 30px 0;
+      }
+      .form{
+        color: #434343;
+        border-radius: 1px;
+        margin-bottom: 15px;
+        background: #fff;
+        border: 1px solid #f3f3f3;
+        box-shadow: 0px 2px 2px rgb(0 0 0 / 30%);
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;     
+        justify-content: center;
+        text-align: center;
+        width: 100%;   
+      }
+      .circle{
+        color: #fff;
+        margin: 0 auto;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background:#60c7c1;
+        padding: 10px;
+        box-shadow: 0px 2px 2px rgb(0 0 0 / 10%);
+      }
+      .title{
+        text-align: center;
+        font-size: 20px;
+      }
+      .form-input input {
+        min-height: 40px;
+        border-radius: 2px;
+        width: 100%;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        margin-bottom: 20px;
+      }
+      button{
+        background: #60c7c1 !important;
+        border: none;
+        min-height: 40px;
+        border-radius: 2px;
+        padding: .5rem 1rem;
+        font-size: 1.2rem;
+        text-align: center;
+        color:#fff;
+        width: 100%;
+        box-shadow: 0px 2px 2px rgb(0 0 0 / 10%);
+        cursor: pointer;
+      }
+      .signup{
+        font-size: 18px;
+        color:#000;
+        text-align: center!important;
+      }
+      .signup a{
+        text-decoration: none;
+        color: #60c7c1;
+      }  
+      input:focus{ 
+        outline: none !important;
+        box-shadow: 0 0 0.5px 0.5px #0174b6;
+      }
+      button:focus{ 
+        outline: none !important;
+        box-shadow: 0 0 0.5px 0.5px #60c7c1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overall">
+      <div class="form">
+        <img src="../assets/logo.png" style="width: 65%; height: auto;"/>
+        <h4 class="title">Entrez dans votre compte</h4>
+        <form id="loginForm">
+          <div class="form-input">
+            <input type="text" id="email" placeholder="Email" name="email" required>
+          </div>
+          <div class="form-input">
+            <input type="password" id="password" placeholder="Mot de passe" name="password" required>
+          </div>
+          <div class="form-input">
+            <button>Se Connecter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="/scripts/login.js"></script>
+  </body>
+<html>
