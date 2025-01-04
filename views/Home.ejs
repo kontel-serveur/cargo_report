@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+    <link rel="shortcut icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+   
+    <title>Accueil</title>
+    <script src="/scripts/auth.js" defer></script>
+</head>
+<body>
+    <%- include('navbar') %>
+
+    <!-- Table to display cargo data -->
+    <table id="cargoTable" border="1">
+        <thead>
+            <tr>
+                <th>Numero de Transit</th>
+                <th>Numero de Balise</th>
+                <th>Code HS</th>
+                <th>Corridor</th>
+                <th>Type de Vehicule</th>
+                <th>Immatriculation</th>
+                <th>Transitaire</th>
+                <th>Chauffeur</th>
+                <th>Telephone</th>
+                <th>Creation Date</th>
+            </tr>
+        </thead>
+        <tbody id="cargoDataBody">
+            <!-- Data will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <button id="prevPage" disabled>Previous</button>
+        <button id="nextPage">Next</button>
+    </div>
+
+
+    <script src="/scripts/accueil.js">
+        // Function to fetch and display cargo data
+        
+    </script>
+
+    <style>
+        
+        /* Basic table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        /* Pagination Styling */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .pagination button:disabled {
+            background-color: #ddd;
+        }
+        .pagination button:hover {
+            background-color: #0056b3;
+        }
+    
+    </style>
+</body>
+</html>

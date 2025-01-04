@@ -24,7 +24,7 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
         console.log('Login successful:', data.token);
         localStorage.setItem('token', data.token)
         // You can redirect or store the token here if needed
-        window.location.href = '/index';
+        window.location.href = '/accueil';
       } else {
         const errorData = await response.json();
         console.error('Login failed:', errorData.message);

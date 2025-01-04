@@ -18,6 +18,7 @@ const UserAuthentication = require('./middleware/User')
 
 const UserRouter = require('./routes/User')
 const TokenVerificationRouter = require('./routes/tokenVerification')
+const CargoRouter = require('./routes/Cargo')
 
 
 
@@ -36,6 +37,7 @@ app.set('views', './views')
 
 app.use('/user', UserRouter)
 app.use('/token-verification', UserAuthentication, TokenVerificationRouter)
+app.use('/cargo', UserAuthentication, CargoRouter)
 
 app.get('/',(req, res)=>{
   res.render('Login', {
@@ -44,9 +46,24 @@ app.get('/',(req, res)=>{
   
   })
 
-  app.get('/index', (req, res)=>{
-    res.render('Index', {
+  app.get('/accueil', (req, res)=>{
+    res.render('Home', {
       pageTitle: 'Bienvenue '
+    })
+    
+    })
+
+    app.get('/donnee/:id', (req, res)=>{
+      res.render('Data', {
+        id: req.params.id,
+        pageTitle: 'Donnee'
+      })
+      
+      })
+
+  app.get('/enregistrement', (req, res)=>{
+    res.render('Index', {
+      pageTitle: 'Enregistrement '
     })
     
     })

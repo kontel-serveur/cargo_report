@@ -144,6 +144,11 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
 
+        addedBy: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        }
+
     });
 
     return Cargo;
