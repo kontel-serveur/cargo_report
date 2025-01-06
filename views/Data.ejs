@@ -7,67 +7,223 @@
     <link rel="shortcut icon" type="image/png" sizes="32x32" href="../assets/logo.png">
 
     <title>Donnee</title>
-    <script src="/scripts/displayCargo.js" defer></script>
+    <script src="/scripts/auth.js" defer></script>
+
+    
+    
 </head>
 <body>
-    <h1>Donnee Cargo</h1>
+    
+    <%- include('navbar') %>
+    <div class="content">
+        <a href="/accueil" id="backBtn" class="back-button">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            <span>Retour en arriere</span>
+        </a>
+    
+        <form id="cargoForm">
+            <h1>Donnee Cargo</h1>
+            <label for="numero_de_transit">Numero de Transit</label>
+            <input type="text" id="numero_de_transit" name="numero_de_transit" disabled>
+    
+            <label for="numero_de_la_balise">Numero de Balise</label>
+            <input type="text" id="numero_de_la_balise" name="numero_de_la_balise" disabled>
+    
+            <label for="code_hs">Code HS</label>
+            <input type="text" id="code_hs" name="code_hs" disabled>
+    
+            <label for="corridor">Corridor</label>
+            <input type="text" id="corridor" name="corridor" disabled>
+    
+            <label for="type_de_vehicule">Type de Vehicule</label>
+            <input type="text" id="type_de_vehicule" name="type_de_vehicule" disabled>
+    
+            <label for="immatriculation">Immatriculation</label>
+            <input type="text" id="immatriculation" name="immatriculation" disabled>
+    
+            <label for="transitaire">Transitaire</label>
+            <input type="text" id="transitaire" name="transitaire" disabled>
+    
+            <label for="chauffeur">Chauffeur</label>
+            <input type="text" id="chauffeur" name="chauffeur" disabled>
+    
+            <label for="telephone">Telephone</label>
+            <input type="text" id="telephone" name="telephone" disabled>
+    
+            <label for="creation_date">Creation Date</label>
+            <input type="date" id="creation_date" name="creation_date" disabled>
+    
+            <label for="creation_heure_debut">Creation Heure Debut</label>
+            <input type="time" id="creation_heure_debut" name="creation_heure_debut" disabled>
+    
+            <label for="creation_heure_fin">Creation Heure Fin</label>
+            <input type="time" id="creation_heure_fin" name="creation_heure_fin" disabled>
+    
+            <h3>Alarme</h3>
+            <div id="alarme-container">
+                <!-- Alarm Data will be inserted here -->
+            </div>
+    
+            <label for="cloture_date">Cloture Date</label>
+            <input type="date" id="cloture_date" name="cloture_date" disabled>
+    
+            <label for="cloture_heure">Cloture Heure</label>
+            <input type="time" id="cloture_heure" name="cloture_heure" disabled>
+    
+            <label for="cloture_lieu">Cloture Lieu</label>
+            <input type="text" id="cloture_lieu" name="cloture_lieu" disabled>
+    
+            <label for="cloture_mode">Cloture Mode</label>
+            <input type="text" id="cloture_mode" name="cloture_mode" disabled>
+    
+            <label for="duree">Duree</label>
+            <input type="text" id="duree" name="duree" disabled>
+        </form>
+    </div>
 
-    <form id="cargoForm">
-        <label for="numero_de_transit">Numero de Transit</label>
-        <input type="text" id="numero_de_transit" name="numero_de_transit" disabled>
+    <script src="/scripts/displayCargo.js"></script>
 
-        <label for="numero_de_la_balise">Numero de Balise</label>
-        <input type="text" id="numero_de_la_balise" name="numero_de_la_balise" disabled>
+    <style>
+        /* General Styling */
+        body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
 
-        <label for="code_hs">Code HS</label>
-        <input type="text" id="code_hs" name="code_hs" disabled>
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
 
-        <label for="corridor">Corridor</label>
-        <input type="text" id="corridor" name="corridor" disabled>
+        #cargoForm {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-        <label for="type_de_vehicule">Type de Vehicule</label>
-        <input type="text" id="type_de_vehicule" name="type_de_vehicule" disabled>
+        label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #444;
+        }
 
-        <label for="immatriculation">Immatriculation</label>
-        <input type="text" id="immatriculation" name="immatriculation" disabled>
+        input[type="text"],
+        input[type="date"],
+        input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            color: #333;
+            background-color: #f9f9f9;
+        }
 
-        <label for="transitaire">Transitaire</label>
-        <input type="text" id="transitaire" name="transitaire" disabled>
+        input[type="text"]:disabled,
+        input[type="date"]:disabled,
+        input[type="time"]:disabled {
+            background-color: #e0e0e0;
+        }
 
-        <label for="chauffeur">Chauffeur</label>
-        <input type="text" id="chauffeur" name="chauffeur" disabled>
+        .formbold-input-flex {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
 
-        <label for="telephone">Telephone</label>
-        <input type="text" id="telephone" name="telephone" disabled>
+        .formbold-input-flex div {
+            flex: 1;
+        }
 
-        <label for="creation_date">Creation Date</label>
-        <input type="date" id="creation_date" name="creation_date" disabled>
+        .formbold-form-label {
+            font-size: 1rem;
+            color: #444;
+            margin-bottom: 5px;
+            display: block;
+        }
 
-        <label for="creation_heure_debut">Creation Heure Debut</label>
-        <input type="time" id="creation_heure_debut" name="creation_heure_debut" disabled>
+        .formbold-form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            font-size: 1rem;
+        }
 
-        <label for="creation_heure_fin">Creation Heure Fin</label>
-        <input type="time" id="creation_heure_fin" name="creation_heure_fin" disabled>
+        .formbold-form-input:disabled {
+            background-color: #e0e0e0;
+        }
 
-        <div id="alarme-container">
-            <!-- Alarm Data will be inserted here -->
-        </div>
+        #alarme-container {
+            margin-bottom: 20px;
+        }
 
-        <label for="cloture_date">Cloture Date</label>
-        <input type="date" id="cloture_date" name="cloture_date" disabled>
+        .alarme-item {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
 
-        <label for="cloture_heure">Cloture Heure</label>
-        <input type="time" id="cloture_heure" name="cloture_heure" disabled>
+        .alarme-item label {
+            font-weight: bold;
+        }
 
-        <label for="cloture_lieu">Cloture Lieu</label>
-        <input type="text" id="cloture_lieu" name="cloture_lieu" disabled>
+        .alarme-item input,
+        .alarme-item textarea {
+           
+            width: 98%;
+        }
 
-        <label for="cloture_mode">Cloture Mode</label>
-        <input type="text" id="cloture_mode" name="cloture_mode" disabled>
+        .back-button{
+            align-items: center;
+            display: flex;
+            margin-top: 16px;
+        }
 
-        <label for="duree">Duree</label>
-        <input type="text" id="duree" name="duree" disabled>
-    </form>
+        /* Responsive Styling */
+        @media (max-width: 768px) {
+            .formbold-input-flex {
+                flex-direction: column;
+            }
+
+            .formbold-input-flex div {
+                margin-bottom: 15px;
+            }
+
+            #cargoForm {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .content {
+               
+                margin-left: 200px; /* Move content to the right */
+            }
+        }
+    </style>
 
 </body>
 </html>

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo.png">
     <link rel="shortcut icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+    <script src="/scripts/xslx.min.js"></script>
+
    
     <title>Accueil</title>
     <script src="/scripts/auth.js" defer></script>
@@ -13,25 +15,26 @@
     <%- include('navbar') %>
 
     <!-- Table to display cargo data -->
-    <table id="cargoTable" border="1">
-        <thead>
-            <tr>
-                <th>Numero de Transit</th>
-                <th>Numero de Balise</th>
-                <th>Code HS</th>
-                <th>Corridor</th>
-                <th>Type de Vehicule</th>
-                <th>Immatriculation</th>
-                <th>Transitaire</th>
-                <th>Chauffeur</th>
-                <th>Telephone</th>
-                <th>Creation Date</th>
-            </tr>
-        </thead>
-        <tbody id="cargoDataBody">
-            <!-- Data will be inserted here by JavaScript -->
-        </tbody>
-    </table>
+    <div class="content" style="padding: 10px;">
+        <button id="exportExcel" class="export">Exporter</button>
+        <table id="cargoTable" border="1">
+            <thead>
+                <tr>
+                    <th>Numero de Transit</th>
+                    <th>Numero de Balise</th>
+                    <th>Code HS</th>
+                    <th>Corridor</th>
+                    <th>Type de Vehicule</th>
+                    <th>Immatriculation</th>
+                    <th>Transitaire</th>
+                   
+                </tr>
+            </thead>
+            <tbody id="cargoDataBody">
+                <!-- Data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
 
     <div class="pagination">
         <button id="prevPage" disabled>Previous</button>
@@ -47,6 +50,10 @@
     <style>
         
         /* Basic table styling */
+         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+         body {
+      font-family: "Inter", sans-serif;
+    }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -87,6 +94,25 @@
         }
         .pagination button:hover {
             background-color: #0056b3;
+        }
+
+        @media (min-width: 769px) {
+            .content {
+               
+                margin-left: 190px; /* Move content to the right */
+            }
+        }
+
+        .export{
+            background-color: green;
+            color: white;
+            width: 160px;
+            height: 40px;
+            font-size: large;
+            font-weight: bold;
+            border-radius: 7px;
+            border-color: transparent;
+            cursor: pointer;
         }
     
     </style>

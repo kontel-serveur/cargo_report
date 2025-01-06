@@ -34,7 +34,7 @@ const cargoRegistration = async(req, res)=> {
             immatriculation: req.body.immatriculation,
             transitaire: req.body.transitaire,
             chauffeur: req.body.chauffeur,
-            telephone: req.body.transitaire,
+            telephone: req.body.telephone,
             creationDate: req.body.creationDate,
             creationHeureDebut: req.body.creationHeureDebut,
             creationHeureFin: req.body.creationHeureFin,

@@ -1,25 +1,48 @@
 <nav class="navbar">
-    <div class="navbar-container">
-      <div class="navbar-brand">
-        <img src="../assets/logo.png" style="width: 40%; height: auto;"/>
-      </div>
-      <button class="navbar-toggle" aria-label="Toggle navigation">
-        <span class="toggle-bar"></span>
-        <span class="toggle-bar"></span>
-        <span class="toggle-bar"></span>
-      </button>
-      <ul class="navbar-menu">
-        <li><a href="/accueil" class="navbar-link">Accueil</a></li>
-        <li><a href="/enregistrement" class="navbar-link">Enregistrer</a></li>
-        <li><a href="/contact" class="navbar-link">Contact</a></li>
-        <li><a href="/" class="navbar-link">Se deconnecter</a></li>
-      </ul>
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <img src="../assets/logo.png" style="width: 40%; height: auto;" />
     </div>
-  </nav>
+    <button class="navbar-toggle" aria-label="Toggle navigation">
+      <span class="toggle-bar"></span>
+      <span class="toggle-bar"></span>
+      <span class="toggle-bar"></span>
+    </button>
+    <ul class="navbar-menu">
+      <li><a href="/accueil" class="navbar-link">Accueil</a></li>
+      <li><a href="/enregistrement" class="navbar-link">Enregistrer</a></li>
+      <li><a href="/compte" class="navbar-link">Contact</a></li>
+      <li><a href="/" class="navbar-link">Se deconnecter</a></li>
+    </ul>
+  </div>
+</nav>
 
-  <style>
+<nav class="sidebar">
+  <div class="sidebar-container">
+    <div class="sidebar-brand">
+      <img src="../assets/logo.png" style="width: 100%; height: auto; margin-bottom: 40px;" />
+    </div>
 
-    /* General reset */
+    <button class="sidebar-toggle" aria-label="Toggle sidebar">
+      <span class="toggle-bar"></span>
+      <span class="toggle-bar"></span>
+      <span class="toggle-bar"></span>
+    </button>
+    <ul class="sidebar-menu">
+      <li><a href="/accueil" class="sidebar-link">Accueil</a></li>
+      <li><a href="/enregistrement" class="sidebar-link">Enregistrer</a></li>
+      <li><a href="/compte" class="sidebar-link">Profile</a></li>
+      <li><a href="/" class="sidebar-link">Deconnexion</a></li>
+  </ul>
+  
+
+
+  </div>
+</nav>
+
+<script src="/scripts/navbar.js"></script>
+
+<style>
 body, ul, li, a, button {
   margin: 0;
   padding: 0;
@@ -73,27 +96,75 @@ body, ul, li, a, button {
   color: #e3f9f8;
 }
 
-/* Responsive Toggle Button */
-.navbar-toggle {
+
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sidebar-link {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.sidebar-link:hover {
+  color: #e3f9f8;
+}
+
+.sidebar-toggle {
   display: none;
+}
+
+
+
+.navbar {
+  background-color: #60c7c1;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  padding: 10px 20px;
+  border-bottom: 2px solid #3aa5a1;
+  display: none; /* Hide the navbar by default on larger screens */
+}
+
+/* Sidebar container */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0; /* Sidebar visible on larger screens */
+  height: 100%;
+  width: 150px;
+  background-color: #60c7c1;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  border-right: 2px solid #3aa5a1;
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 25px;
-  height: 20px;
-  background: none;
-  border: none;
-  cursor: pointer;
+  z-index: 5;
 }
 
-.navbar-toggle .toggle-bar {
-  background-color: white;
-  height: 3px;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-
-/* Responsive Styles */
+/* Responsive Styles for Navbar */
 @media (max-width: 768px) {
+  .navbar {
+    display: block; /* Show navbar on small screens */
+  }
+
+  .sidebar {
+    left: -250px; /* Initially hide sidebar on small screens */
+    display: none;
+  }
+
   .navbar-menu {
     display: none;
     flex-direction: column;
@@ -114,8 +185,76 @@ body, ul, li, a, button {
   .navbar-toggle {
     display: flex;
   }
+
+  .sidebar.active {
+    left: 0; /* Show sidebar on toggle */
+  }
 }
 
-  </style>
+/* Responsive Styles for Sidebar */
+@media (min-width: 769px) {
+  .sidebar {
+    left: 0; /* Sidebar is always shown on larger screens */
+  }
 
-  <script src="/scripts/navbar.js"></script>
+  .sidebar-toggle {
+    display: none; /* Hide sidebar toggle on larger screens */
+  }
+
+  .navbar-menu {
+    display: flex;
+  }
+}
+
+/* Sidebar items styling */
+.sidebar-menu li {
+            padding: 15px 20px;
+        }
+
+        /* Sidebar link styling */
+        .sidebar-link {
+            display: block;
+            color: white;
+            font-size: 17px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar-link:hover {
+            background-color: #2980b9; /* Hover effect */
+            color: #ecf0f1;
+            padding-left: 10px; /* Slight padding effect on hover */
+        }
+
+        .sidebar-link.active {
+            background-color: #34495e;
+            color: #ecf0f1;
+        }
+
+        /* Active link state styling */
+        .sidebar-menu li.active {
+            background-color: #34495e;
+        }
+
+        /* Optional: Icon addition for better readability */
+        .sidebar-link::before {
+            content: '\2022'; /* Unicode bullet symbol */
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        /* Responsive sidebar for mobile screens */
+        @media (max-width: 768px) {
+            .sidebar-menu {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar-menu li {
+                padding: 10px 15px;
+            }
+        }
+
+</style>

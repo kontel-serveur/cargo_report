@@ -46,6 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Loop through the data and insert rows into the table
         paginatedData.forEach(cargo => {
             const row = document.createElement('tr');
+            if (cargo.id) {
+                row.addEventListener('click', () => {
+                    window.location.href = `/donnee/${cargo.id}`;
+                });
+            }
             row.innerHTML = `
                 <td>${cargo.numeroDeTransit}</td>
                 <td>${cargo.numeroDeBalise}</td>
@@ -54,10 +59,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td>${cargo.typeDeVehicule}</td>
                 <td>${cargo.immatriculation}</td>
                 <td>${cargo.transitaire}</td>
-                <td>${cargo.chauffeur}</td>
-                <td>${cargo.telephone}</td>
-                <td>${cargo.creationDate}</td>
+                
             `;
+
+
+            row.style.cursor = 'pointer';
             tableBody.appendChild(row);
         });
 
@@ -65,6 +71,53 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('prevPage').disabled = page === 1;
         document.getElementById('nextPage').disabled = page * rowsPerPage >= cargoData.length;
     }
+
+    document.getElementById('exportExcel').addEventListener('click', function () {
+        if (cargoData.length === 0) {
+            alert('No data to export.');
+            return;
+        }
+
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            if (isNaN(date)) return ''; // Return empty if date is invalid
+            return date.toISOString().split('T')[0]; // Return in "yyyy-MM-dd" format
+        };
+    
+        // Format data for Excel
+        const worksheetData = cargoData.map(cargo => ({
+            'Numero de transit': cargo.numeroDeTransit,
+            'Numero de la balise': cargo.numeroDeBalise,
+            'Code Hs': cargo.codeHS,
+            'Corridor': cargo.corridor,
+            'Type de vehicule': cargo.typeDeVehicule,
+            'Immatriculation': cargo.immatriculation,
+            'Transitaire': cargo.transitaire,
+            'Chauffeur': cargo.chauffeur,
+            'Telephone': cargo.telephone,
+            'Creation Date': cargo.creationDate,
+            'Creation Heure Debut': cargo.creationHeureDebut,
+            'Creation Heure Fin': cargo.creationHeureFin,
+            'Alarme': cargo.alarme.map(alarme => 
+                `Niveau: ${alarme.niveau || 'N/A'}, Date: ${formatDate(alarme.date) || 'N/A'}, Heure: ${alarme.heure || 'N/A'}, Lieu: ${alarme.lieu || 'N/A'}, Observation: ${alarme.observation || 'N/A'}`
+            ).join(' | '), // Join multiple alarmes with a delimiter
+            'Cloture Date': cargo.clotureDate,
+            'Cloture Heure': cargo.clotureHeure,
+            'Cloture Lieu': cargo.clotureLieu,
+            'Cloture Mode': cargo.clotureMode,
+            'Duree': cargo.duree,
+        }));
+    
+        // Create a worksheet and workbook
+        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Cargo Data');
+    
+        // Export to Excel
+        XLSX.writeFile(workbook, 'CargoData.xlsx');
+    });
+    
+
 
     // Event listeners for pagination buttons
     document.getElementById('prevPage').addEventListener('click', function () {
