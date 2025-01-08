@@ -77,6 +77,18 @@ app.get('/',(req, res)=>{
     
     })
 
+    app.get('/admin', (req, res)=>{
+      res.render('admin/Index')
+    })
+
+    app.get('/ui', (req, res)=>{
+      res.render('admin/ui')
+    })
+
+    app.get('/blank', (req, res)=>{
+      res.render('admin/blank')
+    })
+
   app.use('/assets', express.static(path.join(__dirname, 'assets')));
   app.use(express.static(path.join(__dirname, 'public')));
 const port = process.env.PORT || 3000;
