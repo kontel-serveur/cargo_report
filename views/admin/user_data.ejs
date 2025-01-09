@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utilisateur</title>
+    <script src="/scripts/admin_auth.js" defer></script>
+    <link href="../../assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="../../assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="../../assets/css/custom.css" rel="stylesheet" />
+
+    <script src="../../assets/js/jquery-1.10.2.js"></script>
+   
+    <link href="/scripts/datatables.min.css" rel="stylesheet">
+ 
+    <script src="/scripts/datatables.min.js"></script>
+
+    
+  
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="/scripts/xslx.min.js"></script>
+</head>
+<body>
+    <div id="wrapper">
+        <%- include('navbar') %>
+        <div id="page-wrapper">
+            <div id="page-inner">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2>ADMINISTRATEUR</h2>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-lg-12 ">
+                        <div class="alert alert-info">
+                            <strong>Welcome Jhon Doe !</strong> You Have No pending Task For Today.
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/utilisateurs" id="backBtn" class="back-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Retour en arriere</span>
+                </a>
+
+                <h1>Profile</h1>
+        <form id="profileForm" style="margin-bottom: 35px;">
+
+            <div class="form-group">
+                <label for="serviceName">Nom & Prenom</label>
+                <input type="text" name="fullName" value="" required>
+            </div>
+
+            <div class="form-group">
+                <label for="serviceName">Email</label>
+                <input type="email" name="email" value="" required>
+            </div>
+
+            <div class="form-group">
+                <label for="allowed">Autorisé</label>
+                <select id="allowed" name="allowed">
+                    <option value="">Sélectionnez</option>
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="admin">Privilège Administrateur</label>
+                <select id="admin" name="admin">
+                    <option value="">Sélectionnez</option>
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
+                </select>
+            </div>
+            
+
+
+            <button type="submit">Enregistrez</button>
+        </form>
+
+
+        <hr />
+
+        <form id="passwordForm" style="margin-top: 35px;">
+
+            <div class="form-group">
+                <label for="serviceName">Nouveau mot de passe</label>
+                <input type="password" name="password" value="" required>
+            </div>
+
+            <div class="form-group">
+                <label for="serviceName">Confirmer nouveau mot de passe</label>
+                <input type="password" name="confirm_password" value="" required>
+            </div>
+
+
+            
+
+            <button type="submit">Change password</button>
+        </form>
+        <script src="/scripts/admin_user_data.js"></script>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea, select {
+            width: 40%;
+            padding: 8px;
+            box-sizing: border-box;
+            border-radius: 5px
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .back-button {
+        align-items: center;
+        display: flex;
+        margin-top: 16px;
+    }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .content{
+            background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+        }
+
+        @media (min-width: 769px) {
+            .content {
+               
+                margin-left: 200px; /* Move content to the right */
+            }
+        }
+    </style>
+</body>
+</html>

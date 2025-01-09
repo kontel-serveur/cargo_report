@@ -15,11 +15,14 @@ const db = require('./models');
 
 
 const UserAuthentication = require('./middleware/User')
+const AdminAuthentication = require('./middleware/Admin')
 
 const UserRouter = require('./routes/User')
 const TokenVerificationRouter = require('./routes/tokenVerification')
 const CargoRouter = require('./routes/Cargo')
 const ProfileRouter = require('./routes/Profile')
+
+const AdminRouter = require('./routes/Admin')
 
 
 
@@ -40,6 +43,7 @@ app.use('/user', UserRouter)
 app.use('/token-verification', UserAuthentication, TokenVerificationRouter)
 app.use('/cargo', UserAuthentication, CargoRouter)
 app.use('/profile', UserAuthentication, ProfileRouter)
+app.use('/admin', AdminAuthentication, AdminRouter)
 
 app.get('/',(req, res)=>{
   res.render('Login', {
@@ -77,15 +81,29 @@ app.get('/',(req, res)=>{
     
     })
 
-    app.get('/admin', (req, res)=>{
+    app.get('/forbidden', (req, res)=>{
+      res.render('Forbidden',{
+        pageTitle: 'Forbidden'
+      })
+    })
+
+    app.get('/administrateur', (req, res)=>{
       res.render('admin/Index')
     })
 
-    app.get('/ui', (req, res)=>{
+    app.get('/administrateur/cargo/:id', (req, res)=>{
+      res.render('admin/Cargo')
+    })
+
+    app.get('/utilisateurs', (req, res)=>{
       res.render('admin/ui')
     })
 
-    app.get('/blank', (req, res)=>{
+    app.get('/administrateur/utilisateur/:id', (req, res)=>{
+      res.render('admin/user_data')
+    })
+
+    app.get('/mon-profile', (req, res)=>{
       res.render('admin/blank')
     })
 

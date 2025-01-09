@@ -16,7 +16,7 @@ const userAuth =  async(req, res, next)=>{
 
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
-        const user = User.findOne({where:{id: payload.id}})
+        const user = await User.findOne({where:{id: payload.id}})
         req.user = user
 
         req.user = {
@@ -28,7 +28,7 @@ const userAuth =  async(req, res, next)=>{
         }
 
         if(!req.user.allowed){
-            res.status(StatusCodes.UNAUTHORIZED).redirect('/login');
+            res.status(StatusCodes.UNAUTHORIZED).redirect('/');
 
         }else{
             next()

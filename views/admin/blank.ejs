@@ -3,7 +3,8 @@
 <head>
       <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simple Responsive Admin</title>
+    <title>Administrateur profile</title>
+    <script src="/scripts/admin_auth.js" defer></script>
 	<!-- BOOTSTRAP STYLES-->
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
      <!-- FONTAWESOME STYLES-->
@@ -24,13 +25,61 @@
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                     <h2>BLANK PAGE </h2>   
+                     <h2>PROFILE </h2>   
                     </div>
                 </div>              
                  <!-- /. ROW  -->
                   <hr />
               
-                 <!-- /. ROW  -->           
+                 <!-- /. ROW  -->     
+                 
+                 
+                 <h1>Profile</h1>
+        <form id="profileForm" style="margin-bottom: 35px;">
+
+            <div class="form-group">
+                <label for="serviceName">Nom & Prenom</label>
+                <input type="text" name="fullName" value="" required>
+            </div>
+
+            <div class="form-group">
+                <label for="serviceName">Email</label>
+                <input type="email" name="email" value="" required>
+            </div>
+            
+
+
+            <button type="submit">Enregistrez</button>
+        </form>
+
+
+        <hr />
+
+        <form id="passwordForm" style="margin-top: 35px;">
+
+            <div class="form-group">
+                <label for="serviceName">Mot de passe</label>
+                <input type="password" name="current_password" value="" required>
+            </div>
+
+            <div class="form-group">
+                <label for="serviceName">Nouveau mot de passe</label>
+                <input type="password" name="password" value="" required>
+            </div>
+
+            <div class="form-group">
+                <label for="serviceName">Confirmer nouveau mot de passe</label>
+                <input type="password" name="confirm_password" value="" required>
+            </div>
+
+
+            
+
+            <button type="submit">Change password</button>
+        </form>
+
+        <script src="/scripts/admin_profile.js"></script>
+                 
     </div>
              <!-- /. PAGE INNER  -->
             </div>
@@ -56,6 +105,57 @@
       <!-- CUSTOM SCRIPTS -->
     <script src="assets/js/custom.js"></script>
     
-   
+    <style>
+
+        
+        .form-group {
+                    margin-bottom: 15px;
+                }
+        
+                label {
+                    display: block;
+                    margin-bottom: 5px;
+                }
+        
+                input, textarea {
+                    width: 50%;
+                    padding: 8px;
+                    box-sizing: border-box;
+                    border-radius: 5px
+                }
+        
+                button {
+                    padding: 10px 20px;
+                    background-color: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+        
+                button:hover {
+                    background-color: #0056b3;
+                }
+        
+                .content{
+                    background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+                }
+        
+                @media (min-width: 769px) {
+                    .content {
+                       
+                        margin-left: 200px; /* Move content to the right */
+                    }
+                }
+            </style>
 </body>
 </html>

@@ -28,7 +28,8 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
       } else {
         const errorData = await response.json();
         console.error('Login failed:', errorData.message);
-        alert('Login failed: ' + errorData.message);
+       // alert('Login failed: ' + errorData.message);
+       alert('Invalid credentials')
       }
     } catch (error) {
       console.error('Error:', error);

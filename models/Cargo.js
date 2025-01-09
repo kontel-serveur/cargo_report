@@ -1,155 +1,141 @@
 module.exports = (sequelize, DataTypes) => {
     const Cargo = sequelize.define("Cargo", {
-        numeroDeTransit:{
+        numeroDeTransit: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
-            }
+            validate: {
+                notEmpty: true,
+            },
         },
-
         numeroDeBalise: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         codeHS: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         corridor: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         typeDeVehicule: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         immatriculation: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         transitaire: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         chauffeur: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         telephone: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         creationDate: {
             type: DataTypes.DATEONLY,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         creationHeureDebut: {
             type: DataTypes.TIME,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         creationHeureFin: {
             type: DataTypes.TIME,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         alarme: {
             type: DataTypes.JSON, // Use JSON data type for an array of objects
             allowNull: false,
             defaultValue: [],
         },
-
         clotureDate: {
             type: DataTypes.DATEONLY,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         clotureHeure: {
             type: DataTypes.TIME,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         clotureLieu: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         clotureMode: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         duree: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            validate:{
-                notEmpty: true
+            validate: {
+                notEmpty: true,
             },
         },
-
         addedBy: {
             type: DataTypes.INTEGER,
-            allowNull: false
-        }
-
+            allowNull: false,
+        },
     });
 
+    // Define associations
+    Cargo.associate = (models) => {
+        Cargo.belongsTo(models.User, { foreignKey: 'addedBy', as: 'user' });
+    };
+
     return Cargo;
-}
+};

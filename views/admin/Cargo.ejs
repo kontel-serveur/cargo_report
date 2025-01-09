@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargo</title>
+    <script src="/scripts/admin_auth.js" defer></script>
+    <link href="../../assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="../../assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="../../assets/css/custom.css" rel="stylesheet" />
+
+    <script src="../../assets/js/jquery-1.10.2.js"></script>
+   
+    <link href="/scripts/datatables.min.css" rel="stylesheet">
+ 
+    <script src="/scripts/datatables.min.js"></script>
+
+    
+  
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="/scripts/xslx.min.js"></script>
+</head>
+<body>
+    <div id="wrapper">
+        <%- include('navbar') %>
+        <div id="page-wrapper">
+            <div id="page-inner">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2>ADMINISTRATEUR</h2>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-lg-12 ">
+                        <div class="alert alert-info">
+                            <strong>Welcome Jhon Doe !</strong> You Have No pending Task For Today.
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/administrateur" id="backBtn" class="back-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Retour en arriere</span>
+                </a>
+            
+               <form id="cargoForm">
+   
+    <div class="form-row">
+        <div class="form-group">
+            <label for="numero_de_transit">Numero de Transit</label>
+            <input type="text" id="numero_de_transit" name="numero_de_transit">
+        </div>
+        <div class="form-group">
+            <label for="numero_de_la_balise">Numero de Balise</label>
+            <input type="text" id="numero_de_la_balise" name="numero_de_la_balise">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="code_hs">Code HS</label>
+            <input type="text" id="code_hs" name="code_hs" >
+        </div>
+        <div class="form-group">
+            <label for="corridor">Corridor</label>
+            <input type="text" id="corridor" name="corridor" >
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="type_de_vehicule">Type de Vehicule</label>
+            <input type="text" id="type_de_vehicule" name="type_de_vehicule" disabled>
+        </div>
+        <div class="form-group">
+            <label for="immatriculation">Immatriculation</label>
+            <input type="text" id="immatriculation" name="immatriculation" >
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="transitaire">Transitaire</label>
+            <input type="text" id="transitaire" name="transitaire" >
+        </div>
+        <div class="form-group">
+            <label for="chauffeur">Chauffeur</label>
+            <input type="text" id="chauffeur" name="chauffeur" >
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="telephone">Telephone</label>
+            <input type="text" id="telephone" name="telephone" >
+        </div>
+        <div class="form-group">
+            <label for="creation_date">Creation Date</label>
+            <input type="date" id="creation_date" name="creation_date" >
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="creation_heure_debut">Creation Heure Debut</label>
+            <input type="time" id="creation_heure_debut" name="creation_heure_debut" >
+        </div>
+        <div class="form-group">
+            <label for="creation_heure_fin">Creation Heure Fin</label>
+            <input type="time" id="creation_heure_fin" name="creation_heure_fin" >
+        </div>
+    </div>
+    <h3>Alarme</h3>
+    <div id="alarme-container">
+        <!-- Alarm Data will be inserted here -->
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="cloture_date">Cloture Date</label>
+            <input type="date" id="cloture_date" name="cloture_date" >
+        </div>
+        <div class="form-group">
+            <label for="cloture_heure">Cloture Heure</label>
+            <input type="time" id="cloture_heure" name="cloture_heure" >
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="cloture_lieu">Cloture Lieu</label>
+            <input type="text" id="cloture_lieu" name="cloture_lieu" >
+        </div>
+        <div class="form-group">
+            <label for="cloture_mode">Cloture Mode</label>
+            <input type="text" id="cloture_mode" name="cloture_mode" disabled>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="duree">Duree</label>
+            <input type="text" id="duree" name="duree" >
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="duree">Enregistre par</label>
+            <input type="text" id="user" name="user" disabled>
+        </div>
+    </div>
+
+    <button type="submit">Enregistrez</button>
+</form>
+<script src="/scripts/admin_cargo_data.js"></script>
+<style>
+    /* General Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    #cargoForm {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        box-sizing: border-box;
+        margin-top: 10px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+    .form-group {
+        flex: 1;
+        min-width: 45%;
+        padding: 10px;
+    }
+
+    label {
+        display: block;
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+        color: #444;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="time"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1.5rem;
+        color: #333;
+        background-color: #f9f9f9;
+    }
+
+    input[type="text"]:disabled,
+    input[type="date"]:disabled,
+    input[type="time"]:disabled {
+        background-color: #e0e0e0;
+    }
+
+    #alarme-container {
+        margin-bottom: 20px;
+    }
+
+    .alarme-item {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    .back-button {
+        align-items: center;
+        display: flex;
+        margin-top: 16px;
+    }
+
+    button {
+            padding: 10px 20px;
+            background-color: darkgreen;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: red;
+        }
+
+    /* Responsive Styling */
+    @media (max-width: 768px) {
+        .form-group {
+            min-width: 100%;
+            margin-bottom: 15px;
+        }
+
+        #cargoForm {
+            width: 90%;
+            padding: 20px;
+        }
+    }
+
+    @media (min-width: 769px) {
+        .content {
+            margin-left: 200px; /* Move content to the right */
+        }
+    }
+</style>
+
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

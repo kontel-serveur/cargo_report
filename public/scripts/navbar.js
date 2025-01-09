@@ -1,31 +1,19 @@
+// sidebar.js
 document.addEventListener("DOMContentLoaded", function () {
-  const navbarToggle = document.querySelector(".navbar-toggle");
-  const navbarMenu = document.querySelector(".navbar-menu");
-  const sidebar = document.querySelector(".sidebar");
-  const sidebarToggle = document.querySelector(".sidebar-toggle");
+  const hamburger = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
 
-  // Toggle navbar menu on mobile
-  navbarToggle.addEventListener("click", function () {
-    navbarMenu.classList.toggle("active");
+  // Add the event listener for the hamburger menu
+  hamburger.addEventListener('click', function() {
+    sidebar.classList.toggle('open');
   });
 
-  // Toggle sidebar on mobile
-  sidebarToggle.addEventListener("click", function () {
-    sidebar.classList.toggle("active");
-    navbarMenu.classList.remove("active");
-  });
+  document.getElementById('logout').addEventListener('click', function (event) {
+    event.preventDefault();
 
-  // Logout functionality
-  const logoutButtons = document.querySelectorAll("#navbar-logout, #sidebar-logout");
-  logoutButtons.forEach(button => {
-    button.addEventListener("click", function (event) {
-      event.preventDefault();
-
-      // Remove the token
-      localStorage.removeItem("token");
-
-      // Redirect to the homepage
-      window.location.href = "/";
-    });
-  });
+    if (confirm('Are you sure you want to log out?')) {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+    }
+});
 });
