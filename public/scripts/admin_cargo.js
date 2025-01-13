@@ -32,7 +32,7 @@ $(document).ready(function () {
     });
 
     // Export to Excel
-    $('#exportExcel').click(function () {
+  /*  $('#exportExcel').click(function () {
         const data = table.ajax.json().cargoData;
         if (!data || data.length === 0) {
             alert('No data to export.');
@@ -74,5 +74,11 @@ $(document).ready(function () {
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Cargo Data');
         XLSX.writeFile(workbook, 'CargoData.xlsx');
-    });
+    }); */
+
+    $('#exportExcel').click(function () {
+        window.location.href = '/exportExcel';
+      
+});
+
 });
