@@ -40,4 +40,24 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+const Cargo = require("../models/Cargo")(sequelize, Sequelize);
+const DepassementDelai = require("../models/DepassementDelai")(sequelize, Sequelize);
+
+Cargo.hasMany(DepassementDelai,{
+  foreignKey:{
+    name: 'cargo',
+    allowNull: false
+  },
+  onDelete: 'CASCADE',
+})
+
+DepassementDelai.belongsTo(Cargo,{
+  foreignKey: {
+    name: 'cargo',
+    allowNull: false
+  },
+  onDelete: 'CASCADE',
+
+})
+
 module.exports = db;

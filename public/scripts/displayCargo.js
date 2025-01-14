@@ -92,9 +92,80 @@ document.addEventListener('DOMContentLoaded', async () => {
         setInputValue('cloture_lieu', cargoData[0].clotureLieu);
         setInputValue('cloture_mode', cargoData[0].clotureMode);
         setInputValue('duree', cargoData[0].duree);
+        
 
     } catch (error) {
         console.error('Error fetching cargo data:', error);
         alert('An error occurred while fetching the cargo data.');
     }
+
+
+});
+
+$(document).ready(function () {
+    $('#addUserButton').click(function () {
+        $('#addUserModal').modal('show');
+    });
+
+
+    const $addAlarmeBtn = $('#add-alarme-btn');
+    const $alarmeContainer = $('#observation-container');
+
+    // Add a new alarme section
+    $addAlarmeBtn.on('click', () => {
+        const $alarmeItem = $('.observation-item').first().clone();
+
+        // Clear input values
+        $alarmeItem.find('input, textarea').val('');
+
+        // Append the new section
+        $alarmeContainer.append($alarmeItem);
+
+        // Reattach remove event
+        attachRemoveEvent();
+    });
+
+    // Remove a section
+    const attachRemoveEvent = () => {
+        $('.remove-alarme-btn').off('click').on('click', function (event) {
+            if ($('.observation-item').length > 1) {
+                $(this).closest('.observation-item').remove();
+            } else {
+                alert('At least one observation is required.');
+            }
+        });
+    };
+
+    attachRemoveEvent();
+
+    $('#addUserForm').submit(function (e) {
+        e.preventDefault();
+
+        const formData = {
+            email: $('#email').val(),
+            fullName: $('#fullName').val(),
+            password: $('#password').val(),
+            confirm_password: $('#confirm_password').val(),
+            allowed: $('#allowed').val(),
+            admin: $('#admin').val(),
+        };
+
+        $.ajax({
+            url: '/admin/users/registration',
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(formData),
+            success: function (response) {
+                alert('User registered successfully');
+                $('#addUserModal').modal('hide');
+                table.ajax.reload();
+            },
+            error: function (error) {
+                alert('Error registering user: ' + error.responseText);
+            },
+        });
+    });
 });

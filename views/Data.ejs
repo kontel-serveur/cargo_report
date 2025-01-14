@@ -5,11 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo.png">
     <link rel="shortcut icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+    <link href="../assets/css/bootstrap.css" rel="stylesheet" />
 
     <title>Donnee</title>
     <script src="/scripts/auth.js" defer></script>
+    <script src="../assets/js/jquery-1.10.2.js"></script> 
 
     
+    <style>
+        .export {
+            background-color: green;
+            color: white;
+            
+            height: 40px;
+            font-size: large;
+            font-weight: bold;
+            border-radius: 7px;
+            border-color: transparent;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
     
 </head>
 <body>
@@ -22,6 +38,68 @@
             </svg>
             <span>Retour en arriere</span>
         </a>
+
+        <button id="addUserButton" class="export">Ajouter Depassement du delai</button>
+
+        <div id="addUserModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addUserModalLabel">Enregistrer un utilisateur</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="addUserForm">
+                    <div class="form-group">
+                      <label for="email">Email</label>
+                      <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <div id="observation-container">
+                        <!-- Template for a single alarme -->
+                        <div class="observation-item">
+                          <div class="formbold-input-flex">
+                            <div>
+                              <label for="observation" class="formbold-form-label">Niveau</label>
+                              <select name="observation[niveau]"
+                              placeholder=""
+                              class="formbold-form-input">
+                                    <option>Selectionnez le niveau</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                              </select>
+                              
+                            </div>
+                            
+                          </div>
+                      
+                          
+                      
+                          <div>
+                            <label for="observation_observation" class="formbold-form-label">Observation</label>
+                            <textarea
+                              rows="6"
+                              name="observation[observation]"
+                              placeholder="Entrez votre observation"
+                              class="formbold-form-input"
+                            ></textarea>
+                          </div>
+                      
+                          <button type="button" class="remove-alarme-btn styled-btn danger-btn">Enlever</button>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <button type="button" id="add-alarme-btn" class="styled-btn primary-btn">Ajouter Observation</button>
+                      </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enregistrer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
     
         <form id="cargoForm">
             <h1>Donnee Cargo</h1>
@@ -223,7 +301,54 @@
                 margin-left: 270px; /* Move content to the right */
             }
         }
-    </style>
 
+
+        .styled-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+}
+
+        .primary-btn {
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+.primary-btn:hover {
+  background-color: #45a049;
+}
+
+/* Danger button for "Remove" */
+.danger-btn {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+
+.danger-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Add some spacing */
+#add-alarme-btn {
+  margin-top: 20px;
+}
+
+.observation-item {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+    </style>
+    <script src="../assets/js/bootstrap.min.js"></script>
+    <!-- CUSTOM SCRIPTS -->
+    <script src="../assets/js/custom.js"></script>
 </body>
 </html>

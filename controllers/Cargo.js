@@ -1,4 +1,4 @@
-const {Cargo} = require('../models')
+const {Cargo, DepassementDelai} = require('../models')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
@@ -76,4 +76,19 @@ const getMySingleCargoData = async(req, res)=>{
   }
 }
 
-module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData}
+const depassementDelaiRegistration = async(req, res)=>{
+  try {
+    const id = req.params.id
+    const depassement_delai = await DepassementDelai.create({
+      cargo: id,
+      observation: req.body.observation
+    })
+
+    return res.status(StatusCodes.OK).json({depassement_delai})
+  } catch (error) {
+    console.log(error)
+    return res.status(StatusCodes.BAD_REQUEST).json('Erreur de creation du delai de depassement')
+  }
+}
+
+module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration}
