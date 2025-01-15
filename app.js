@@ -13,7 +13,7 @@ const bodyParser = require('body-parser');
 const ExcelJS = require('exceljs')
 
 const db = require('./models');
-const {Cargo} = require('./models')
+const {Cargo, DepassementDelai, CableDeverouille} = require('./models')
 
 
 const UserAuthentication = require('./middleware/User')
@@ -49,7 +49,49 @@ app.use('/profile', UserAuthentication, ProfileRouter)
 app.use('/admin', AdminAuthentication, AdminRouter)
 
 app.get('/exportExcel', async (req, res) => {
-  const data = await Cargo.findAll(); 
+  //const data = await Cargo.findAll(); 
+  async function fetchCargoWithDepassementDelai() {
+    try {
+        // Fetch Cargo and DepassementDelai data
+        const [cargoData, depassementData] = await Promise.all([
+            Cargo.findAll({ raw: true }),
+            DepassementDelai.findAll({ raw: true }),
+        ]);
+
+        // Group DepassementDelai records by cargo foreign key
+        const depassementGroupedByCargo = depassementData.reduce((acc, item) => {
+            if (!acc[item.cargo]) {
+                acc[item.cargo] = [];
+            }
+            acc[item.cargo].push(item);
+            return acc;
+        }, {});
+
+        const cargoWithCableData = await Promise.all(cargoData.map(async (cargo) => {
+          // Find one CableDeverouille record for the current cargo
+          const cableDeverouille = await CableDeverouille.findOne({
+              where: { cargo: cargo.id },
+              raw: true, // Assuming you want raw data
+          });
+
+          return {
+              ...cargo,
+              depassementDelais: depassementGroupedByCargo[cargo.id] || [],
+              cableDeverouille: cableDeverouille || null, // Attach found CableDeverouille or null
+          };
+      }));
+
+        
+        return cargoWithCableData;
+    } catch (error) {
+        console.error('Error fetching Cargo with DepassementDelai:', error);
+        throw error;
+    }
+}
+
+const data = await fetchCargoWithDepassementDelai()
+
+console.log(data)
 
   if (!data || data.length === 0) {
     return res.status(404).send('No data to export.');
@@ -104,7 +146,11 @@ app.get('/exportExcel', async (req, res) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet(`${getLastMonthNameAndYearInFrench()}`);
 
-  const dailyWorksheet = workbook.addWorksheet('Création Journalière');
+  const dailyWorksheet = workbook.addWorksheet('CREATION JOURNALIERE');
+
+  const depassementDelaiWorksheet = workbook.addWorksheet('DEPASSEMENT DU DELAI')
+
+  const cableDeverouileWorksheet = workbook.addWorksheet('CABLE DEVEROUILLE')
 
   const dailyHeaderStyle = {
     font: { bold: true, name: 'Arial', size: 12 },
@@ -120,6 +166,24 @@ app.get('/exportExcel', async (req, res) => {
 
   // Create daily creation count worksheet header
   dailyWorksheet.addRow(['DATE', 'NOMBRE DE TRANSIT CREES']);
+  depassementDelaiWorksheet.addRow(['N° du Trst', 
+                                  'Type Vehicule', 
+                                  'Immatriculation', 
+                                  'Chauffeur', 
+                                  'Date Creation', 
+                                  'Date Cloture', 
+                                  'Niveau', 
+                                  'Observation'
+                                              ])
+
+  cableDeverouileWorksheet.addRow(['N° du Trst', 
+                                                'Type Vehicule', 
+                                                'Immatriculation', 
+                                                'Chauffeur', 
+                                                'Date Coupure', 
+                                                'Heure', 
+                                                
+                                                            ])
 
   dailyWorksheet.eachRow((row, rowIndex) => {
     if (rowIndex === 1) {
@@ -133,11 +197,65 @@ app.get('/exportExcel', async (req, res) => {
   });
 
 
+  depassementDelaiWorksheet.eachRow((row, rowIndex) => {
+    row.height = 30;
+    if (rowIndex === 1) {
+      row.eachCell((cell) => {
+        cell.font = dailyHeaderStyle.font;
+        cell.alignment = dailyHeaderStyle.alignment;
+        cell.fill =  { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } };
+        cell.border = dailyHeaderStyle.border;
+      });
+    }
+  });
+
+
   let rowIndex = 2;
   Object.keys(dailyDataCount).forEach((dateKey) => {
     dailyWorksheet.addRow([dateKey, dailyDataCount[dateKey]]);
     rowIndex++;
   });
+
+  data.forEach(cargo => {
+  if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
+    cargo.depassementDelais.forEach(delai => {
+      depassementDelaiWorksheet.addRow([
+        cargo.numeroDeTransit,    // 'Type Vehicule'
+        cargo.typeDeVehicule, // 'Immatriculation'
+        cargo.immatriculation,       // 'Chauffeur'
+        cargo.chauffeur,
+        formatDate(cargo.creationDate),
+        formatDate(cargo.clotureDate),
+        delai.observation?.map(observation => observation.niveau).join('\n\n') || '',          // 'Niveau'
+        delai.observation?.map(observation => observation.observation).join('\n\n') || '',      // 'Observation'
+      ]);
+    });
+  }
+});
+
+depassementDelaiWorksheet.columns.forEach((column) => {
+  column.width = 20; 
+});
+
+data.forEach(cargo => {
+  if (cargo.cableDeverouille && cargo.cableDeverouille !==null) {
+    
+      cableDeverouileWorksheet.addRow([
+        cargo.numeroDeTransit,    // 'Type Vehicule'
+        cargo.typeDeVehicule, // 'Immatriculation'
+        cargo.immatriculation,       // 'Chauffeur'
+        cargo.chauffeur,
+        formatDate(cargo.cableDeverouille.dateCoupure),
+        cargo.cableDeverouille.heureCoupure
+      ]);
+   
+  }
+});
+
+cableDeverouileWorksheet.columns.forEach((column) => {
+  column.width = 20; 
+});
+
 
 
 
@@ -266,7 +384,11 @@ app.get('/exportExcel', async (req, res) => {
       }
     });
 
-    groupedData[creationDate].forEach((cargo) => {
+   
+  
+
+    groupedData[creationDate].forEach(async(cargo) => {
+     
       const row = worksheet.addRow([
         cargo.numeroDeTransit || '',
         cargo.numeroDeBalise || '',
@@ -292,9 +414,11 @@ app.get('/exportExcel', async (req, res) => {
         cargo.clotureLieu || '',
         cargo.duree || ''
       ]);
+
       
       const alarmCount = cargo.alarme?.length || 1; // Default to 1 if no alarms
   row.height = Math.max(25, alarmCount * 25); // Adjust row height based on alarm count
+  
   
   row.eachCell((cell) => {
     cell.alignment = { horizontal: 'left', vertical: 'top', wrapText: true }; // Text wrapping and alignment

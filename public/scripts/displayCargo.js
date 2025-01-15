@@ -16,7 +16,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const data = await response.json();
         const cargoData = data.cargoData;
+        const depassementDelai = data.depassementDelai;
+        const cableDeverouille = data.cableDeverouille;
         console.log('Cargo Data:', cargoData); // Log the entire cargo data to inspect the structure
+        console.log(cableDeverouille)
 
         const formatDate = (dateString) => {
             const date = new Date(dateString);
@@ -66,6 +69,44 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.warn('Alarme data is not available or not an array', cargoData[0].alarme);
         }
 
+
+
+        if (Array.isArray(depassementDelai)) {
+            const observationContainer = document.getElementById('observation-container-item');
+        
+            depassementDelai.forEach((item, index) => {
+                // Check if 'observation' is an array
+                
+                if (Array.isArray(item.observation) && item.observation.length > 0) {
+                    item.observation.forEach((obs, obsIndex) => {
+                      
+                        const observationItem = document.createElement('div');
+                        observationItem.classList.add('observation-item-data');
+        
+                        observationItem.innerHTML = `
+                            <div class="formbold-input-flex">
+                                <div>
+                                    <label for="observation_niveau_${index}_${obsIndex}" class="formbold-form-label">Niveau</label>
+                                    <input type="number" id="observation_niveau_${index}_${obsIndex}" name="observation[niveau]" value="${obs.niveau || ''}" class="formbold-form-input" disabled />
+                                </div>
+                            </div>
+        
+                            <div>
+                                <label for="observation_observation_${index}_${obsIndex}" class="formbold-form-label">Observation</label>
+                                <textarea rows="6" id="observation_observation_${index}_${obsIndex}" name="observation[observation]" class="formbold-form-input" disabled>${obs.observation || ''}</textarea>
+                            </div>
+                        `;
+        
+                        observationContainer.appendChild(observationItem);
+                    });
+                } else {
+                    console.warn(`Item ${index} does not contain a valid observation array`, item);
+                }
+            });
+        } else {
+            console.warn('Alarme data is not available or not an array', depassementDelai);
+        }
+        
         // Helper function to safely assign values
         const setInputValue = (id, value) => {
             const input = document.getElementById(id);
@@ -103,6 +144,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 $(document).ready(function () {
+    const token = localStorage.getItem('token');
+    const cargoId = window.location.pathname.split('/').pop();
     $('#addUserButton').click(function () {
         $('#addUserModal').modal('show');
     });
@@ -138,20 +181,28 @@ $(document).ready(function () {
 
     attachRemoveEvent();
 
+    const getObservationData = () => {
+        const observationData = [];
+        $('.observation-item').each(function () {
+            const $item = $(this);
+            const niveau = $item.find('select[name="observation[niveau]"]').val();
+            const observation = $item.find('textarea[name="observation[observation]"]').val();
+
+            // Add each alarm object to the array
+            observationData.push({ niveau, observation });
+        });
+        return observationData;
+    };
+
     $('#addUserForm').submit(function (e) {
         e.preventDefault();
 
         const formData = {
-            email: $('#email').val(),
-            fullName: $('#fullName').val(),
-            password: $('#password').val(),
-            confirm_password: $('#confirm_password').val(),
-            allowed: $('#allowed').val(),
-            admin: $('#admin').val(),
+            observation: getObservationData(),
         };
 
         $.ajax({
-            url: '/admin/users/registration',
+            url: `/cargo/depassement-delai/${cargoId}`,
             type: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -159,12 +210,48 @@ $(document).ready(function () {
             },
             data: JSON.stringify(formData),
             success: function (response) {
-                alert('User registered successfully');
+                alert('Depassement de delai enregistre avec success');
+                console.log(response)
                 $('#addUserModal').modal('hide');
-                table.ajax.reload();
+                //table.ajax.reload();
             },
             error: function (error) {
-                alert('Error registering user: ' + error.responseText);
+                alert("Erreur d'enregistrement du depassement de delai: " + error.responseText);
+            },
+        });
+    });
+
+
+    $('#addCableButton').click(function () {
+        $('#addCableModal').modal('show');
+    });
+
+    // Handle form submission
+    $('#addCableForm').submit(function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        const formData = {
+            dateCoupure: $('#cable_date').val(),
+            heureCoupure: $('#cable_time').val(),
+           
+        };
+
+        $.ajax({
+            url: `/cargo/cable-deverouille/${cargoId}`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(formData),
+            success: function (response) {
+                alert('Cable deverouile enregistre avec success');
+                $('#addCableModal').modal('hide'); // Hide the modal
+                console.log(response)
+                table.ajax.reload(); // Reload the table data
+            },
+            error: function (error) {
+                alert("Erreur d'enregistrement du cable deverouille: " + error.responseText);
             },
         });
     });

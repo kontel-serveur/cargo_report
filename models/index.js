@@ -42,6 +42,7 @@ db.Sequelize = Sequelize;
 
 const Cargo = require("../models/Cargo")(sequelize, Sequelize);
 const DepassementDelai = require("../models/DepassementDelai")(sequelize, Sequelize);
+const CableDeverouille = require("../models/CableDeverouille")(sequelize, Sequelize);
 
 Cargo.hasMany(DepassementDelai,{
   foreignKey:{
@@ -52,6 +53,23 @@ Cargo.hasMany(DepassementDelai,{
 })
 
 DepassementDelai.belongsTo(Cargo,{
+  foreignKey: {
+    name: 'cargo',
+    allowNull: false
+  },
+  onDelete: 'CASCADE',
+
+})
+
+Cargo.hasOne(CableDeverouille,{
+  foreignKey:{
+    name: 'cargo',
+    allowNull: false
+  },
+  onDelete: 'CASCADE',
+})
+
+CableDeverouille.belongsTo(Cargo,{
   foreignKey: {
     name: 'cargo',
     allowNull: false

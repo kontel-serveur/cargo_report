@@ -1,4 +1,4 @@
-const {Cargo, DepassementDelai} = require('../models')
+const {Cargo, DepassementDelai, CableDeverouille} = require('../models')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
@@ -69,8 +69,10 @@ const getMySingleCargoData = async(req, res)=>{
   try {
       const id  = req.params.id
       const cargoData = await Cargo.findAll({where: {addedBy: req.user.id, id: id}})
+      const depassementDelai = await DepassementDelai.findAll({where: {cargo: id}})
+      const cableDeverouille = await CableDeverouille.findAll({where: {cargo: id}})
 
-        return res.status(StatusCodes.OK).json({cargoData})
+        return res.status(StatusCodes.OK).json({cargoData, depassementDelai, cableDeverouille})
   } catch (error) {
     console.log(error)
   }
@@ -91,4 +93,27 @@ const depassementDelaiRegistration = async(req, res)=>{
   }
 }
 
-module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration}
+const cableDeverouilleRegistration = async(req, res)=>{
+  try {
+    const id = req.params.id
+    const cable = await CableDeverouille.findOne({where: {cargo: id}})
+
+    if (cable){
+      return res.status(StatusCodes.BAD_REQUEST).json('Donnee deja enregistree')
+    }else{
+      const cableDeverouille = await CableDeverouille.create({
+        cargo: id,
+        dateCoupure: req.body.dateCoupure,
+        heureCoupure: req.body.heureCoupure
+      })
+  
+      return res.status(StatusCodes.OK).json({cableDeverouille})
+    }
+    
+  } catch (error) {
+    console.log(error)
+    return res.status(StatusCodes.BAD_REQUEST).json('Erreur de creation du cable deverouille')
+  }
+}
+
+module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration}

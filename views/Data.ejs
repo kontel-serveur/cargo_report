@@ -39,24 +39,23 @@
             <span>Retour en arriere</span>
         </a>
 
-        <button id="addUserButton" class="export">Ajouter Depassement du delai</button>
+        <div>
+          <button id="addUserButton" class="export">Ajouter Depassement du delai</button>
+          <button id="addCableButton" class="export">Ajouter Cable deverouille</button>
+        </div>
 
         <div id="addUserModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="addUserModalLabel">Enregistrer un utilisateur</h5>
+                  <h5 class="modal-title" id="addUserModalLabel">Enregistrer un depassement de delai</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
                   <form id="addUserForm">
-                    <div class="form-group">
-                      <label for="email">Email</label>
-                      <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    
+                                       
                     <div id="observation-container">
                         <!-- Template for a single alarme -->
                         <div class="observation-item">
@@ -93,6 +92,7 @@
                       
                       <div>
                         <button type="button" id="add-alarme-btn" class="styled-btn primary-btn">Ajouter Observation</button>
+                        
                       </div>
                     <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enregistrer</button>
                   </form>
@@ -100,6 +100,35 @@
               </div>
             </div>
           </div>
+
+
+          <div id="addCableModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addCableModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addCableModalLabel">Enregistrer cable deverouille</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="addCableForm">
+                    <div class="form-group">
+                      <label for="email">Date de deverouillage</label>
+                      <input type="date" class="form-control" id="cable_date" name="cable_date" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="fullName">Heure</label>
+                      <input type="time" class="form-control" id="cable_time" name="cable_time" required>
+                    </div>            
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enregistrer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
     
         <form id="cargoForm">
             <h1>Donnee Cargo</h1>
@@ -159,6 +188,17 @@
             <label for="duree">Duree</label>
             <input type="text" id="duree" name="duree" disabled>
         </form>
+
+
+
+        <form id="cargoForm">
+          <h1>Depassement Delai</h1>
+          <div id="observation-container-item">
+              <!-- Alarm Data will be inserted here -->
+          </div>
+  
+          
+      </form>
     </div>
 
     <script src="/scripts/displayCargo.js"></script>
