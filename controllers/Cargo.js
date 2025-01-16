@@ -1,4 +1,4 @@
-const {Cargo, DepassementDelai, CableDeverouille} = require('../models')
+const {Cargo, DepassementDelai, CableDeverouille, CasSuspect} = require('../models')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
@@ -25,29 +25,60 @@ const handleSequelizeError = (error) => {
 const cargoRegistration = async(req, res)=> {
 
     try {
-       const cargo =  await Cargo.create({
-            numeroDeTransit: req.body.numeroDeTransit,
-            numeroDeBalise: req.body.numeroDeBalise,
-            codeHS: req.body.codeHS,
-            corridor: req.body.corridor,
-            typeDeVehicule: req.body.typeDeVehicule,
-            immatriculation: req.body.immatriculation,
-            transitaire: req.body.transitaire,
-            chauffeur: req.body.chauffeur,
-            telephone: req.body.telephone,
-            creationDate: req.body.creationDate,
-            creationHeureDebut: req.body.creationHeureDebut,
-            creationHeureFin: req.body.creationHeureFin,
-            alarme: req.body.alarme,
-            clotureDate: req.body.clotureDate,
-            clotureHeure: req.body.clotureHeure,
-            clotureLieu: req.body.clotureLieu,
-            clotureMode: req.body.clotureMode,
-            duree: req.body.duree,
-            addedBy: req.user.id
-        })
 
-        return res.status(StatusCodes.OK).json({cargo})
+      const existingCargo = await Cargo.findOne({where: {numeroDeBalise: req.body.numeroDeBalise}})
+
+      if (existingCargo){
+        const cargo =  await Cargo.create({
+          numeroDeTransit: req.body.numeroDeTransit,
+          numeroDeBalise: req.body.numeroDeBalise,
+          codeHS: req.body.codeHS,
+          corridor: req.body.corridor,
+          typeDeVehicule: req.body.typeDeVehicule,
+          immatriculation: req.body.immatriculation,
+          transitaire: req.body.transitaire,
+          chauffeur: req.body.chauffeur,
+          telephone: req.body.telephone,
+          creationDate: req.body.creationDate,
+          creationHeureDebut: req.body.creationHeureDebut,
+          creationHeureFin: req.body.creationHeureFin,
+          alarme: req.body.alarme,
+          clotureDate: req.body.clotureDate,
+          clotureHeure: req.body.clotureHeure,
+          clotureLieu: req.body.clotureLieu,
+          clotureMode: req.body.clotureMode,
+          duree: req.body.duree,
+          addedBy: req.user.id
+      })
+
+      return res.status(StatusCodes.OK).json('Le numero de balise a ete utilise sur un autre camion, Veuillez ajouter un commentaire')
+      }else{
+        const cargo =  await Cargo.create({
+          numeroDeTransit: req.body.numeroDeTransit,
+          numeroDeBalise: req.body.numeroDeBalise,
+          codeHS: req.body.codeHS,
+          corridor: req.body.corridor,
+          typeDeVehicule: req.body.typeDeVehicule,
+          immatriculation: req.body.immatriculation,
+          transitaire: req.body.transitaire,
+          chauffeur: req.body.chauffeur,
+          telephone: req.body.telephone,
+          creationDate: req.body.creationDate,
+          creationHeureDebut: req.body.creationHeureDebut,
+          creationHeureFin: req.body.creationHeureFin,
+          alarme: req.body.alarme,
+          clotureDate: req.body.clotureDate,
+          clotureHeure: req.body.clotureHeure,
+          clotureLieu: req.body.clotureLieu,
+          clotureMode: req.body.clotureMode,
+          duree: req.body.duree,
+          addedBy: req.user.id
+      })
+
+      return res.status(StatusCodes.OK).json('Transit enregistre avec success')
+      }
+
+       
     } catch (error) {
         console.log(error)
         const errorMessage = handleSequelizeError(error);
@@ -116,4 +147,25 @@ const cableDeverouilleRegistration = async(req, res)=>{
   }
 }
 
-module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration}
+const casSupectRegistration = async(req, res)=>{
+  try {
+    const id = req.params.id
+    const cas = await CasSuspect.findOne({where: {cargo: id}})
+    if(cas){
+      return res.status(StatusCodes.BAD_REQUEST).json('Donnee deja enregistree')
+    }else{
+      const casSupect = await CasSuspect.create({
+        cargo: id,
+        commentaire: req.body.commentaire
+      })
+  
+      return res.status(StatusCodes.OK).json({casSupect})
+    }
+    
+  } catch (error) {
+    console.log(error)
+    return res.status(StatusCodes.BAD_REQUEST).json(error)
+  }
+}
+
+module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration}

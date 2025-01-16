@@ -34,7 +34,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 columns: [
                     { data: 'numeroDeTransit', title: 'Numero de transit' },
                     { data: 'numeroDeBalise', title: 'Numero de la balise' },
-                    { data: 'codeHS', title: 'Code Hs' },
+                    //{ data: 'codeHS', title: 'Code Hs' },
+                    {
+                        data: 'codeHS',
+                        title: 'Code Hs',
+                        render: function (data) {
+                            // Check if data is an array and map to extract 'code_hs' values
+                            return Array.isArray(data)
+                                ? data.map(item => item.code_hs).join(', ') // Join the extracted 'code_hs' values
+                                : '';
+                        },
+                    },
                     { data: 'corridor', title: 'Corridor' },
                     { data: 'typeDeVehicule', title: 'Type de vehicule' },
                     { data: 'immatriculation', title: 'Immatriculation' },

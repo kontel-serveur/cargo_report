@@ -27,6 +27,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             return date.toISOString().split('T')[0]; // Return in "yyyy-MM-dd" format
         };
 
+        if(Array.isArray(cargoData[0].codeHS)){
+            const codeHSContainer = document.getElementById('code_hs_container');
+            cargoData[0].codeHS.forEach((code, index) => {
+                const codeHSItem = document.createElement('div');
+                codeHSItem.innerHTML = `
+                    <input type="text" id="code_hs" name="code_hs" value="${code.code_hs}" disabled>
+                `
+
+                codeHSContainer.appendChild(codeHSItem);
+            })
+        }
+
         // Check if alarme is defined and is an array
         if (Array.isArray(cargoData[0].alarme)) {
             const alarmeContainer = document.getElementById('alarme-container');
@@ -118,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Fill other form fields
         setInputValue('numero_de_transit', cargoData[0].numeroDeTransit);
         setInputValue('numero_de_la_balise', cargoData[0].numeroDeBalise);
-        setInputValue('code_hs', cargoData[0].codeHS);
+     //   setInputValue('code_hs', cargoData[0].codeHS);
         setInputValue('corridor', cargoData[0].corridor);
         setInputValue('type_de_vehicule', cargoData[0].typeDeVehicule);
         setInputValue('immatriculation', cargoData[0].immatriculation);
@@ -252,6 +264,40 @@ $(document).ready(function () {
             },
             error: function (error) {
                 alert("Erreur d'enregistrement du cable deverouille: " + error.responseText);
+            },
+        });
+    });
+
+
+    $('#addCommentButton').click(function () {
+        $('#addCommentModal').modal('show');
+    });
+
+    // Handle form submission
+    $('#addCommentForm').submit(function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        const formData = {
+            commentaire: $('#commentaire').val(),
+           
+        };
+
+        $.ajax({
+            url: `/cargo/cas-suspect/${cargoId}`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(formData),
+            success: function (response) {
+                alert('Cas suspect enregistre avec success');
+                $('#addCommentModal').modal('hide'); // Hide the modal
+                console.log(response)
+                table.ajax.reload(); // Reload the table data
+            },
+            error: function (error) {
+                alert("Erreur d'enregistrement du cas suspect: " + error.responseText);
             },
         });
     });

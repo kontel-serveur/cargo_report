@@ -10,15 +10,16 @@ module.exports = (sequelize, DataTypes) => {
         numeroDeBalise: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
+           // unique: true,
             validate: {
                 notEmpty: true,
             },
         },
         codeHS: {
-            type: DataTypes.STRING,
+            type: DataTypes.JSON, // Use JSON data type for an array of objects
             allowNull: false,
-            unique: true,
+            defaultValue: [],
+           // unique: true,
             validate: {
                 notEmpty: true,
             },

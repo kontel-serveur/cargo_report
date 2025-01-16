@@ -43,6 +43,42 @@ const attachRemoveEvent = () => {
 
 attachRemoveEvent();
 
+
+
+const codeContainer = document.getElementById('code-container');
+const addCodeBtn = document.getElementById('add-code-btn');
+
+// Add a new alarme section
+addCodeBtn.addEventListener('click', () => {
+  const codeItem = document.querySelector('.code-item').cloneNode(true);
+
+  // Clear input values
+  codeItem.querySelectorAll('input').forEach(input => {
+    input.value = '';
+  });
+
+  // Append the new section
+  codeContainer.appendChild(codeItem);
+
+  // Reattach remove event
+  attachRemoveCodeEvent();
+});
+
+// Remove a section
+const attachRemoveCodeEvent = () => {
+  document.querySelectorAll('.remove-code-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+      if (document.querySelectorAll('.code-item').length > 1) {
+        event.target.closest('.code-item').remove();
+      } else {
+        alert('At least one code is required.');
+      }
+    });
+  });
+};
+
+attachRemoveCodeEvent();
+
 // Forward Navigation
 formSubmitBtn.addEventListener("click", function(event) {
   event.preventDefault();
@@ -76,7 +112,24 @@ formSubmitBtn.addEventListener("click", function(event) {
     
         const numeroDeTransit = document.getElementById('numero_de_transit').value;
         const numeroDeBalise = document.getElementById('numero_de_la_balise').value;
-        const codeHS = document.getElementById('code_hs').value;
+        //const codeHS = document.getElementById('code_hs').value;
+
+        const codeContainer = document.getElementById('code-container');
+        const codeItems = codeContainer.querySelectorAll('.code-item');
+    
+        const codeHS = [];
+        
+        codeItems.forEach((codeItem) => {
+            const code_hs = codeItem.querySelector('input[name="code[code_hs]"]').value;
+            
+    
+            // Add each alarm object to the alarmData array
+            codeHS.push({
+                code_hs
+                
+            });
+        });
+
         const corridor = document.getElementById('corridor').value;
         const typeDeVehicule = document.getElementById('type_de_vehicule').value;
         const immatriculation = document.getElementById('immatriculation').value;
@@ -93,7 +146,7 @@ formSubmitBtn.addEventListener("click", function(event) {
     const alarme = [];
     
     alarmItems.forEach((alarmeItem) => {
-        const niveau = alarmeItem.querySelector('input[name="alarme[niveau]"]').value;
+        const niveau = alarmeItem.querySelector('select[name="alarme[niveau]"]').value;
         const date = alarmeItem.querySelector('input[name="alarme[date]"]').value;
         const heure = alarmeItem.querySelector('input[name="alarme[heure]"]').value;
         const lieu = alarmeItem.querySelector('input[name="alarme[lieu]"]').value;
@@ -154,6 +207,7 @@ formSubmitBtn.addEventListener("click", function(event) {
             console.log('Request successful:', data);
             //localStorage.setItem('token', data.token)
             // You can redirect or store the token here if needed
+            alert(data);
             window.location.href = '/accueil';
           } else {
             const errorData = await response.json();

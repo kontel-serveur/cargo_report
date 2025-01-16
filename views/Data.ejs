@@ -42,6 +42,7 @@
         <div>
           <button id="addUserButton" class="export">Ajouter Depassement du delai</button>
           <button id="addCableButton" class="export">Ajouter Cable deverouille</button>
+          <button id="addCommentButton" class="export">Ajouter cas suspect</button>
         </div>
 
         <div id="addUserModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
@@ -129,6 +130,40 @@
             </div>
           </div>
 
+
+
+          <div id="addCommentModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addCommentModalLabel">Enregistrer cas suspect</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="addCommentForm">
+                    <div class="form-group">
+                      <label for="email">Commentaire</label>
+                      <textarea
+                              rows="6"
+                              name="commentaire"
+                              id="commentaire"
+                              placeholder="Entrez votre commentaire"
+                              class="formbold-form-input"
+                              required
+                            ></textarea>
+                      
+                    </div>
+                                
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enregistrer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
     
         <form id="cargoForm">
             <h1>Donnee Cargo</h1>
@@ -139,7 +174,9 @@
             <input type="text" id="numero_de_la_balise" name="numero_de_la_balise" disabled>
     
             <label for="code_hs">Code HS</label>
-            <input type="text" id="code_hs" name="code_hs" disabled>
+            <div id="code_hs_container">
+              
+            </div>
     
             <label for="corridor">Corridor</label>
             <input type="text" id="corridor" name="corridor" disabled>

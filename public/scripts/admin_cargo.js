@@ -14,7 +14,17 @@ $(document).ready(function () {
         columns: [
             { data: 'numeroDeTransit' },
             { data: 'numeroDeBalise' },
-            { data: 'codeHS' },
+            //{ data: 'codeHS' },
+            {
+                data: 'codeHS',
+                title: 'Code Hs',
+                render: function (data) {
+                    // Check if data is an array and map to extract 'code_hs' values
+                    return Array.isArray(data)
+                        ? data.map(item => item.code_hs).join(', ') // Join the extracted 'code_hs' values
+                        : '';
+                },
+            },
             { data: 'corridor' },
             { data: 'typeDeVehicule' },
             { data: 'immatriculation' },

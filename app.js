@@ -13,7 +13,7 @@ const bodyParser = require('body-parser');
 const ExcelJS = require('exceljs')
 
 const db = require('./models');
-const {Cargo, DepassementDelai, CableDeverouille} = require('./models')
+const {Cargo, DepassementDelai, CableDeverouille, CasSuspect} = require('./models')
 
 
 const UserAuthentication = require('./middleware/User')
@@ -74,10 +74,16 @@ app.get('/exportExcel', async (req, res) => {
               raw: true, // Assuming you want raw data
           });
 
+          const casSuspect = await CasSuspect.findOne({
+            where: {cargo: cargo.id},
+            raw: true
+          })
+
           return {
               ...cargo,
               depassementDelais: depassementGroupedByCargo[cargo.id] || [],
               cableDeverouille: cableDeverouille || null, // Attach found CableDeverouille or null
+              casSuspect: casSuspect || null
           };
       }));
 
@@ -150,7 +156,9 @@ console.log(data)
 
   const depassementDelaiWorksheet = workbook.addWorksheet('DEPASSEMENT DU DELAI')
 
-  const cableDeverouileWorksheet = workbook.addWorksheet('CABLE DEVEROUILLE')
+  const cableDeverouileWorksheet = workbook.addWorksheet('CABLE DE SECURITE DEVEROUILLE')
+
+  const casSuspectWorksheet = workbook.addWorksheet('CAS SUSPECT')
 
   const dailyHeaderStyle = {
     font: { bold: true, name: 'Arial', size: 12 },
@@ -185,6 +193,19 @@ console.log(data)
                                                 
                                                             ])
 
+
+  casSuspectWorksheet.addRow(['N° du Trst',
+                              'N° Balise', 
+                                                'Type Vehicule', 
+                                                'Immatriculation',
+                                                'Transitaire', 
+                                                'Chauffeur', 
+                                                'Date Creation', 
+                                                'Date Cloture',
+                                                'Commentaire' 
+                                                
+                                                            ])
+
   dailyWorksheet.eachRow((row, rowIndex) => {
     if (rowIndex === 1) {
       row.eachCell((cell) => {
@@ -198,6 +219,18 @@ console.log(data)
 
 
   depassementDelaiWorksheet.eachRow((row, rowIndex) => {
+    row.height = 30;
+    if (rowIndex === 1) {
+      row.eachCell((cell) => {
+        cell.font = dailyHeaderStyle.font;
+        cell.alignment = dailyHeaderStyle.alignment;
+        cell.fill =  { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } };
+        cell.border = dailyHeaderStyle.border;
+      });
+    }
+  });
+
+  casSuspectWorksheet.eachRow((row, rowIndex) => {
     row.height = 30;
     if (rowIndex === 1) {
       row.eachCell((cell) => {
@@ -252,6 +285,25 @@ data.forEach(cargo => {
   }
 });
 
+
+data.forEach(cargo => {
+  if (cargo.casSuspect && cargo.casSuspect !==null) {
+    
+      casSuspectWorksheet.addRow([
+        cargo.numeroDeTransit,   
+        cargo.numeroDeBalise, // 'Type Vehicule'
+        cargo.typeDeVehicule, // 'Immatriculation'
+        cargo.immatriculation, 
+        cargo.transitaire,      // 'Chauffeur'
+        cargo.chauffeur,
+        formatDate(cargo.creationDate),
+        formatDate(cargo.clotureDate),
+        cargo.casSuspect.commentaire
+      ]);
+   
+  }
+});
+
 cableDeverouileWorksheet.columns.forEach((column) => {
   column.width = 20; 
 });
@@ -267,6 +319,10 @@ cableDeverouileWorksheet.columns.forEach((column) => {
 
   dailyWorksheet.columns.forEach((column) => {
     column.width = 20; 
+  });
+
+  casSuspectWorksheet.columns.forEach((column) => {
+    column.width = 17; 
   });
 
   const headerStyle = {
@@ -392,7 +448,11 @@ cableDeverouileWorksheet.columns.forEach((column) => {
       const row = worksheet.addRow([
         cargo.numeroDeTransit || '',
         cargo.numeroDeBalise || '',
-        cargo.codeHS || '',
+        //cargo.codeHS || '',
+        //cargo.codeHS?.map(code_hs => code_hs.code_hs).join(`\n\n`) || '',
+        Array.isArray(cargo.codeHS) 
+        ? cargo.codeHS.map(item => item.code_hs).join('\n') 
+        : '',
         cargo.corridor || '',
         cargo.typeDeVehicule || '',
         cargo.immatriculation || '',
@@ -415,9 +475,21 @@ cableDeverouileWorksheet.columns.forEach((column) => {
         cargo.duree || ''
       ]);
 
-      
-      const alarmCount = cargo.alarme?.length || 1; // Default to 1 if no alarms
-  row.height = Math.max(25, alarmCount * 25); // Adjust row height based on alarm count
+    //  const codeCount = cargo.codeHS?.length || 1; // Default to 1 if no alarms
+    //  row.height = Math.max(25, codeCount * 25);
+    //  const alarmCount = cargo.alarme?.length || 1; // Default to 1 if no alarms
+  //row.height = Math.max(25, alarmCount * 25); // Adjust row height based on alarm count
+
+  const codeCount = cargo.codeHS?.length || 1; // Default to 1 if no codeHS
+const alarmCount = cargo.alarme?.length || 1; // Default to 1 if no alarms
+
+// Determine the greater count
+const maxCount = Math.max(codeCount, alarmCount);
+
+// Set row height based on the larger count
+row.height = Math.max(25, maxCount * 25);
+
+ 
   
   
   row.eachCell((cell) => {

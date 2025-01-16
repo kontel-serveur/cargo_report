@@ -24,6 +24,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             return date.toISOString().split('T')[0]; // Return in "yyyy-MM-dd" format
         };
 
+        if(Array.isArray(cargoData.codeHS)){
+            const codeHSContainer = document.getElementById('code_hs_container');
+            cargoData.codeHS.forEach((code, index) => {
+                const codeHSItem = document.createElement('div');
+                codeHSItem.classList.add('code_hs_item')
+                codeHSItem.innerHTML = `
+                    <input type="text" id="code_hs" name="code_hs" value="${code.code_hs}" disabled>
+                `
+
+                codeHSContainer.appendChild(codeHSItem);
+            })
+        }
+
         // Check if alarme is defined and is an array
         if (Array.isArray(cargoData.alarme)) {
             const alarmeContainer = document.getElementById('alarme-container');
@@ -77,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Fill other form fields
         setInputValue('numero_de_transit', cargoData.numeroDeTransit);
         setInputValue('numero_de_la_balise', cargoData.numeroDeBalise);
-        setInputValue('code_hs', cargoData.codeHS);
+       // setInputValue('code_hs', cargoData.codeHS);
         setInputValue('corridor', cargoData.corridor);
         setInputValue('type_de_vehicule', cargoData.typeDeVehicule);
         setInputValue('immatriculation', cargoData.immatriculation);
@@ -106,7 +119,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         const numeroDeTransit = document.getElementById('numero_de_transit').value;
         const numeroDeBalise = document.getElementById('numero_de_la_balise').value;
-        const codeHS = document.getElementById('code_hs').value;
+        //const codeHS = document.getElementById('code_hs').value;
+       // const codeContainer = document.getElementById('code-container');
+        const codeItems = codeContainer.querySelectorAll('.code_hs_item');
+    
+        const codeHS = [];
+        
+        codeItems.forEach((codeItem) => {
+            const code_hs = codeItem.querySelector('input[name="code[code_hs]"]').value;
+            
+    
+            // Add each alarm object to the alarmData array
+            codeHS.push({
+                code_hs
+                
+            });
+        });
         const corridor = document.getElementById('corridor').value;
         const typeDeVehicule = document.getElementById('type_de_vehicule').value;
         const immatriculation = document.getElementById('immatriculation').value;
