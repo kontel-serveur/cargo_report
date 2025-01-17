@@ -211,7 +211,7 @@ console.log(data)
       row.eachCell((cell) => {
         cell.font = dailyHeaderStyle.font;
         cell.alignment = dailyHeaderStyle.alignment;
-        cell.fill = dailyHeaderStyle.fill;
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } };
         cell.border = dailyHeaderStyle.border;
       });
     }
@@ -267,6 +267,9 @@ console.log(data)
 });
 
 depassementDelaiWorksheet.columns.forEach((column) => {
+  column.width = 20; 
+});
+dailyWorksheet.columns.forEach((column) => {
   column.width = 20; 
 });
 
@@ -360,7 +363,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     cell.border = headerStyle.border; 
   });
 
-  worksheet.mergeCells(`A1:U1`); 
+  worksheet.mergeCells(`A1:V1`); 
 
   const headerRow2 = worksheet.addRow([
     'N° du Trst',
@@ -368,12 +371,13 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     'Code HS',
     'Corridor',
     'Info Véhicule',
-    '',
+    
     '',
     'Personne de contact',
     '',
     '',
     'Création',
+    '',
     '',
     'Alarme',
     '',
@@ -383,7 +387,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     'Cloture',
     '',
     '',
-    
+    '',
     'Durée Trst'
   ]);
   headerRow2.eachCell((cell) => {
@@ -416,6 +420,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     'Date',
     'Heure',
     'Lieu',
+    'Mode',
     ''
   ]);
   headerRow3.eachCell((cell) => {
@@ -427,7 +432,89 @@ cableDeverouileWorksheet.columns.forEach((column) => {
 
   worksheet.views = [{ state: 'frozen', ySplit: 3 }]; 
 
-  Object.keys(groupedData).forEach((creationDate) => {
+ // const currentMonth = new Date().getMonth(); // Current month (0-11)
+const currentYear = new Date().getFullYear(); // Current year
+const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Get the number of days in the current month
+
+// Loop through all the days of the current month
+for (let day = 1; day <= daysInMonth; day++) {
+    const creationDate = `${day < 10 ? '0' : ''}${day}/${currentMonth + 1 < 10 ? '0' : ''}${currentMonth + 1}/${currentYear}`;
+
+    const dateRow = worksheet.addRow([`Le ${creationDate}`]);
+    dateRow.height = 35;
+    dateRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        cell.font = dateRowStyle.font;
+        cell.alignment = dateRowStyle.alignment;
+        cell.fill = dateRowStyle.fill;
+
+        if (colNumber === 1) {
+            worksheet.mergeCells(`A${dateRow.number}:V${dateRow.number}`);
+        }
+    });
+
+    // Check if there is data for the current creationDate
+    if (groupedData[creationDate] && groupedData[creationDate].length > 0) {
+        // If there is data for this date, loop through it
+        groupedData[creationDate].forEach(async (cargo) => {
+            const row = worksheet.addRow([
+                cargo.numeroDeTransit || '',
+                cargo.numeroDeBalise || '',
+                Array.isArray(cargo.codeHS) ? cargo.codeHS.map(item => item.code_hs).join('\n') : '',
+                cargo.corridor || '',
+                cargo.typeDeVehicule || '',
+                cargo.immatriculation || '',
+                cargo.transitaire || '',
+                cargo.chauffeur || '',
+                cargo.telephone || '',
+                creationDate,
+                cargo.creationHeureDebut || '',
+                cargo.creationHeureFin || '',
+                cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
+                cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+                cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
+                cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
+                cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
+                formatDate(cargo.clotureDate) || '',
+                cargo.clotureHeure || '',
+                cargo.clotureLieu || '',
+                cargo.clotureMode || '',
+                cargo.duree || ''
+            ]);
+
+            const codeCount = cargo.codeHS?.length || 1;
+            const alarmCount = cargo.alarme?.length || 1;
+            const maxCount = Math.max(codeCount, alarmCount);
+
+            row.height = Math.max(25, maxCount * 25);
+
+            row.eachCell((cell) => {
+                cell.alignment = { horizontal: 'left', vertical: 'top', wrapText: true }; // Text wrapping and alignment
+            });
+        });
+    } else {
+        // If no data for the date, add a row with "Pas de création"
+        const noCreationRow = worksheet.addRow(['PAS DE CREATION']);
+        noCreationRow.height = 25;
+        noCreationRow.eachCell({ includeEmpty: true }, (cell) => {
+            cell.font = { name: 'Arial', size: 12 ,color: { argb: '' } }; // Style the "Pas de création" row
+            cell.alignment = { horizontal: 'left', indent: 90, vertical: 'center', wrapText: true };
+        });
+
+        worksheet.mergeCells(`A${noCreationRow.number}:U${noCreationRow.number}`);
+    }
+    
+}
+
+const finRow = worksheet.addRow(['FIN']);
+    finRow.height = 20; // Adjust height if necessary
+    finRow.eachCell({ includeEmpty: true }, (cell) => {
+        cell.font = { bold: true, name: 'Arial', size: 27 }; // Make "FIN" bold
+        cell.alignment = { horizontal: 'left', indent: 90, vertical: 'middle' }; // Center align the "FIN"
+    });
+
+    worksheet.mergeCells(`A${finRow.number}:U${finRow.number}`);
+
+  /*Object.keys(groupedData).forEach((creationDate) => {
     const dateRow = worksheet.addRow([`Le ${creationDate}`]);
     dateRow.height = 35; 
     dateRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
@@ -496,7 +583,7 @@ row.height = Math.max(25, maxCount * 25);
     cell.alignment = { horizontal: 'left', vertical: 'top', wrapText: true }; // Text wrapping and alignment
   });
     });
-  });
+  });*/
   
 
  /* worksheet.columns.forEach((column) => {
@@ -699,7 +786,7 @@ app.get('/exportExcelDateRange', async (req, res) => {
       row.eachCell((cell) => {
         cell.font = dailyHeaderStyle.font;
         cell.alignment = dailyHeaderStyle.alignment;
-        cell.fill = dailyHeaderStyle.fill;
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } };
         cell.border = dailyHeaderStyle.border;
       });
     }
@@ -755,6 +842,10 @@ app.get('/exportExcelDateRange', async (req, res) => {
 });
 
 depassementDelaiWorksheet.columns.forEach((column) => {
+  column.width = 20; 
+});
+
+dailyWorksheet.columns.forEach((column) => {
   column.width = 20; 
 });
 
@@ -848,7 +939,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     cell.border = headerStyle.border; 
   });
 
-  worksheet.mergeCells(`A1:U1`); 
+  worksheet.mergeCells(`A1:V1`); 
 
   const headerRow2 = worksheet.addRow([
     'N° du Trst',
@@ -869,6 +960,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     '',
     '',
     'Cloture',
+    '',
     '',
     '',
     
@@ -904,6 +996,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     'Date',
     'Heure',
     'Lieu',
+    'Mode',
     ''
   ]);
   headerRow3.eachCell((cell) => {
@@ -924,7 +1017,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
       cell.fill = dateRowStyle.fill;
 
       if (colNumber === 1) {
-        worksheet.mergeCells(`A${dateRow.number}:U${dateRow.number}`); 
+        worksheet.mergeCells(`A${dateRow.number}:V${dateRow.number}`); 
       }
     });
 
@@ -960,6 +1053,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
         formatDate(cargo.clotureDate) || '',
         cargo.clotureHeure || '',
         cargo.clotureLieu || '',
+        cargo.clotureMode || '',
         cargo.duree || ''
       ]);
 

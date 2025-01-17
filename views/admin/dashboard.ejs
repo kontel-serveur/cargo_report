@@ -76,13 +76,38 @@
                 </div>
 
                 <div style="display: flex; justify-content: space-between; padding-left: 10px; padding-right: 10px; flex-wrap: wrap;">
-                    <input type="text" id="daterange-input" name="daterange" />
-                    <button id="exportExcel" class="export">Exporter</button>
+                  <input type="text" id="daterange-input" name="daterange" />  
+                  <button id="addExportButton" class="export">Exporter</button>
                 </div>
+
+                <div id="addExportModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="addUserModalLabel">Enregistrer un utilisateur</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <form id="addExportForm">
+                         
+                  
+                            <div class="form-group">
+                               <input type="text" id="daterange-input" class="form-control" name="daterange" />
+                            </div>
+                           
+                          
+                           <!-- <button type="submit" class="btn btn-primary">Enregistrer</button>-->
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                 <div id="my-chart">
                     <table class="charts-css column show-heading show-data-axes show-labels data-spacing-10 show-4-secondary-axes">
-                        <caption>Cargo enregistre mensuellement</caption>
+                        <caption>Donnee par periode</caption>
                         <thead>
                             <tr>
                                 <th scope="col">Date</th>

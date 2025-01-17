@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             // Fetch and process data within the selected date range
             fetchAndProcessData(start, end);
-            window.location.href = `/exportExcelDateRange?startDate=${start.format('YYYY-MM-DD')}&endDate=${end.format('YYYY-MM-DD')}`;
+          //  window.location.href = `/exportExcelDateRange?startDate=${start.format('YYYY-MM-DD')}&endDate=${end.format('YYYY-MM-DD')}`;
         });
 
         const fetchAndProcessData = async (startDate, endDate) => {
@@ -197,3 +197,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 })
+
+
+$(document).ready(function () {
+    
+    $('#addExportButton').click(function () {
+        $('#addExportModal').modal('show');
+    });
+
+    $('input[name="daterange"]').daterangepicker({
+        opens: 'left'
+      }, function(start, end, label) {
+        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        window.location.href = `/exportExcelDateRange?startDate=${start.format('YYYY-MM-DD')}&endDate=${end.format('YYYY-MM-DD')}`;
+      });
+
+
+    
+});
