@@ -522,6 +522,494 @@ row.height = Math.max(25, maxCount * 25);
 });
 
 
+app.get('/exportExcelDateRange', async (req, res) => {
+  const { startDate, endDate } = req.query; // Get startDate and endDate from the request query
+
+  // Convert startDate and endDate to Date objects for comparison
+  const start = startDate ? new Date(startDate) : null;
+  const end = endDate ? new Date(endDate) : null;
+
+  async function fetchCargoWithDepassementDelai() {
+    try {
+      // Fetch Cargo and DepassementDelai data
+      const [cargoData, depassementData] = await Promise.all([
+        Cargo.findAll({ raw: true }),
+        DepassementDelai.findAll({ raw: true }),
+      ]);
+
+      // Group DepassementDelai records by cargo foreign key
+      const depassementGroupedByCargo = depassementData.reduce((acc, item) => {
+        if (!acc[item.cargo]) {
+          acc[item.cargo] = [];
+        }
+        acc[item.cargo].push(item);
+        return acc;
+      }, {});
+
+      const cargoWithCableData = await Promise.all(cargoData.map(async (cargo) => {
+        // Apply date filtering for cargos based on creationDate and clotureDate
+        const creationDate = new Date(cargo.creationDate);
+        const clotureDate = new Date(cargo.clotureDate);
+
+        // Skip cargos that don't match the date range filter
+        if (
+          (start && creationDate < start) ||
+          (end && creationDate > end) ||
+          (start && clotureDate < start) ||
+          (end && clotureDate > end)
+        ) {
+          return null; // Skip this cargo if it doesn't match the date range
+        }
+
+        // Find one CableDeverouille record for the current cargo
+        const cableDeverouille = await CableDeverouille.findOne({
+          where: { cargo: cargo.id },
+          raw: true, // Assuming you want raw data
+        });
+
+        const casSuspect = await CasSuspect.findOne({
+          where: { cargo: cargo.id },
+          raw: true
+        });
+
+        return {
+          ...cargo,
+          depassementDelais: depassementGroupedByCargo[cargo.id] || [],
+          cableDeverouille: cableDeverouille || null, // Attach found CableDeverouille or null
+          casSuspect: casSuspect || null
+        };
+      }));
+
+      // Remove null values (cargos that were skipped due to date filtering)
+      return cargoWithCableData.filter(cargo => cargo !== null);
+    } catch (error) {
+      console.error('Error fetching Cargo with DepassementDelai:', error);
+      throw error;
+    }
+  }
+
+  const data = await fetchCargoWithDepassementDelai();
+
+  console.log(data);
+
+  if (!data || data.length === 0) {
+    return res.status(404).send('No data to export.');
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    if (isNaN(date)) return '';
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const getLastMonthNameAndYearInFrench = () => {
+    const now = new Date();
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+    const options = { month: 'long', year: 'numeric' };
+    return lastMonth.toLocaleDateString('fr-FR', options).toUpperCase();
+  };
+
+  const getCurrentMonth = () => {
+    const now = new Date();
+    return now.getMonth();
+  };
+
+  const groupedData = data.reduce((acc, cargo) => {
+    const creationDate = formatDate(cargo.creationDate);
+    if (!acc[creationDate]) acc[creationDate] = [];
+    acc[creationDate].push(cargo);
+    return acc;
+  }, {});
+
+  const currentMonth = getCurrentMonth();
+  const dailyDataCount = {};
+
+  // Ensure to count only data within the current month and the given date range
+  for (let i = 1; i <= 31; i++) {
+    const dateKey = `${String(i).padStart(2, '0')}/${String(currentMonth + 1).padStart(2, '0')}/${new Date().getFullYear()}`;
+    dailyDataCount[dateKey] = 0;
+  }
+
+  // Count the data entries for each day within the filtered date range
+  Object.keys(groupedData).forEach((creationDate) => {
+    const day = creationDate.split('/')[0]; // Get the day part of the date
+    dailyDataCount[creationDate] = groupedData[creationDate].length;
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(`${getLastMonthNameAndYearInFrench()}`);
+  const dailyWorksheet = workbook.addWorksheet('CREATION JOURNALIERE');
+  const depassementDelaiWorksheet = workbook.addWorksheet('DEPASSEMENT DU DELAI');
+  const cableDeverouileWorksheet = workbook.addWorksheet('CABLE DE SECURITE DEVEROUILLE');
+  const casSuspectWorksheet = workbook.addWorksheet('CAS SUSPECT');
+
+  const dailyHeaderStyle = {
+    font: { bold: true, name: 'Arial', size: 12 },
+    alignment: { horizontal: 'center', vertical: 'middle' },
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffff00' } },
+    border: {
+      top: { style: 'thin', color: { argb: '000000' } },
+      left: { style: 'thin', color: { argb: '000000' } },
+      right: { style: 'thin', color: { argb: '000000' } },
+      bottom: { style: 'thin', color: { argb: '000000' } }
+    }
+  };
+
+  // Create daily creation count worksheet header
+  dailyWorksheet.addRow(['DATE', 'NOMBRE DE TRANSIT CREES']);
+  depassementDelaiWorksheet.addRow(['N° du Trst', 
+                                  'Type Vehicule', 
+                                  'Immatriculation', 
+                                  'Chauffeur', 
+                                  'Date Creation', 
+                                  'Date Cloture', 
+                                  'Niveau', 
+                                  'Observation'
+                                              ]);
+
+  cableDeverouileWorksheet.addRow(['N° du Trst', 
+                                                'Type Vehicule', 
+                                                'Immatriculation', 
+                                                'Chauffeur', 
+                                                'Date Coupure', 
+                                                'Heure', 
+                                                
+                                                            ]);
+
+  casSuspectWorksheet.addRow(['N° du Trst',
+                              'N° Balise', 
+                                                'Type Vehicule', 
+                                                'Immatriculation',
+                                                'Transitaire', 
+                                                'Chauffeur', 
+                                                'Date Creation', 
+                                                'Date Cloture',
+                                                'Commentaire' 
+                                                
+                                                            ]);
+
+  // Add data rows to worksheets (following the same logic as before)
+
+
+  dailyWorksheet.eachRow((row, rowIndex) => {
+    if (rowIndex === 1) {
+      row.eachCell((cell) => {
+        cell.font = dailyHeaderStyle.font;
+        cell.alignment = dailyHeaderStyle.alignment;
+        cell.fill = dailyHeaderStyle.fill;
+        cell.border = dailyHeaderStyle.border;
+      });
+    }
+  });
+
+
+  depassementDelaiWorksheet.eachRow((row, rowIndex) => {
+    row.height = 30;
+    if (rowIndex === 1) {
+      row.eachCell((cell) => {
+        cell.font = dailyHeaderStyle.font;
+        cell.alignment = dailyHeaderStyle.alignment;
+        cell.fill =  { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } };
+        cell.border = dailyHeaderStyle.border;
+      });
+    }
+  });
+
+  casSuspectWorksheet.eachRow((row, rowIndex) => {
+    row.height = 30;
+    if (rowIndex === 1) {
+      row.eachCell((cell) => {
+        cell.font = dailyHeaderStyle.font;
+        cell.alignment = dailyHeaderStyle.alignment;
+        cell.fill =  { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } };
+        cell.border = dailyHeaderStyle.border;
+      });
+    }
+  });
+
+
+  let rowIndex = 2;
+  Object.keys(dailyDataCount).forEach((dateKey) => {
+    dailyWorksheet.addRow([dateKey, dailyDataCount[dateKey]]);
+    rowIndex++;
+  });
+
+  data.forEach(cargo => {
+  if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
+    cargo.depassementDelais.forEach(delai => {
+      depassementDelaiWorksheet.addRow([
+        cargo.numeroDeTransit,    // 'Type Vehicule'
+        cargo.typeDeVehicule, // 'Immatriculation'
+        cargo.immatriculation,       // 'Chauffeur'
+        cargo.chauffeur,
+        formatDate(cargo.creationDate),
+        formatDate(cargo.clotureDate),
+        delai.observation?.map(observation => observation.niveau).join('\n\n') || '',          // 'Niveau'
+        delai.observation?.map(observation => observation.observation).join('\n\n') || '',      // 'Observation'
+      ]);
+    });
+  }
+});
+
+depassementDelaiWorksheet.columns.forEach((column) => {
+  column.width = 20; 
+});
+
+data.forEach(cargo => {
+  if (cargo.cableDeverouille && cargo.cableDeverouille !==null) {
+    
+      cableDeverouileWorksheet.addRow([
+        cargo.numeroDeTransit,    // 'Type Vehicule'
+        cargo.typeDeVehicule, // 'Immatriculation'
+        cargo.immatriculation,       // 'Chauffeur'
+        cargo.chauffeur,
+        formatDate(cargo.cableDeverouille.dateCoupure),
+        cargo.cableDeverouille.heureCoupure
+      ]);
+   
+  }
+});
+
+
+data.forEach(cargo => {
+  if (cargo.casSuspect && cargo.casSuspect !==null) {
+    
+      casSuspectWorksheet.addRow([
+        cargo.numeroDeTransit,   
+        cargo.numeroDeBalise, // 'Type Vehicule'
+        cargo.typeDeVehicule, // 'Immatriculation'
+        cargo.immatriculation, 
+        cargo.transitaire,      // 'Chauffeur'
+        cargo.chauffeur,
+        formatDate(cargo.creationDate),
+        formatDate(cargo.clotureDate),
+        cargo.casSuspect.commentaire
+      ]);
+   
+  }
+});
+
+cableDeverouileWorksheet.columns.forEach((column) => {
+  column.width = 20; 
+});
+
+
+
+
+  const dateRowStyle = {
+    font: { bold: true, name: 'Arial', size: 15, color: { argb: '000000' } },
+    alignment: {horizontal: 'left', indent: 90, vertical: 'middle' },
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '00b050' } }, // Green background
+  };
+
+  dailyWorksheet.columns.forEach((column) => {
+    column.width = 20; 
+  });
+
+  casSuspectWorksheet.columns.forEach((column) => {
+    column.width = 17; 
+  });
+
+  const headerStyle = {
+    font: { bold: true, name: 'Arial' },
+    fontHeader: { bold: true, name: 'Arial', size: 14 },
+    alignment: {horizontal: 'center', vertical: 'middle' },
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffff00' } }, // Yellow background
+    fill2: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } },
+    border: { 
+      top: { style: 'thin', color: { argb: '000000' } },
+      left: { style: 'thin', color: { argb: '000000' } },
+      right: { style: 'thin', color: { argb: '000000' } } 
+    },
+    
+  };
+
+  const headerRow1Style={
+    alignment: {horizontal: 'left', indent: 90, vertical: 'middle' },
+  }
+
+  const dataStyle = {
+    alignment: { horizontal: 'left' },
+  };
+
+  // Adjust header row to match image
+  const headerRow1 = worksheet.addRow([
+    `RAPPORT DE ${getLastMonthNameAndYearInFrench()}`
+  ]);
+  
+  headerRow1.height = 35
+  headerRow1.eachCell((cell) => {
+    cell.font = headerStyle.fontHeader;
+    cell.alignment = headerRow1Style.alignment;
+    cell.fill = headerStyle.fill;
+    cell.border = headerStyle.border; 
+  });
+
+  worksheet.mergeCells(`A1:U1`); 
+
+  const headerRow2 = worksheet.addRow([
+    'N° du Trst',
+    'N° Balise',
+    'Code HS',
+    'Corridor',
+    'Info Véhicule',
+    '',
+    '',
+    'Personne de contact',
+    '',
+    '',
+    'Création',
+    '',
+    'Alarme',
+    '',
+    '',
+    '',
+    '',
+    'Cloture',
+    '',
+    '',
+    
+    'Durée Trst'
+  ]);
+  headerRow2.eachCell((cell) => {
+    cell.font = headerStyle.font;
+    cell.alignment = headerStyle.alignment;
+    cell.fill = headerStyle.fill2;
+    cell.border = headerStyle.border; 
+  });
+
+  const headerRow3 = worksheet.addRow([
+    '',
+    '',
+    '',
+    '',
+    'Type Véhicule',
+    'Immatriculation',
+    'Transitaire',
+    'Chauffeur',
+    'Téléphone',
+    'Date',
+    'H Début',
+    'H Fin',
+    
+    'Niveau',
+    'Date',
+    'Heure',
+    'Lieu',
+    'Observation',
+    
+    'Date',
+    'Heure',
+    'Lieu',
+    ''
+  ]);
+  headerRow3.eachCell((cell) => {
+    cell.font = headerStyle.font;
+    cell.alignment = headerStyle.alignment;
+    cell.fill = headerStyle.fill2;
+    cell.border = headerStyle.border; 
+  });
+
+  worksheet.views = [{ state: 'frozen', ySplit: 3 }]; 
+
+  Object.keys(groupedData).forEach((creationDate) => {
+    const dateRow = worksheet.addRow([`Le ${creationDate}`]);
+    dateRow.height = 35; 
+    dateRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      cell.font = dateRowStyle.font;
+      cell.alignment = dateRowStyle.alignment;
+      cell.fill = dateRowStyle.fill;
+
+      if (colNumber === 1) {
+        worksheet.mergeCells(`A${dateRow.number}:U${dateRow.number}`); 
+      }
+    });
+
+   
+  
+
+    groupedData[creationDate].forEach(async(cargo) => {
+     
+      const row = worksheet.addRow([
+        cargo.numeroDeTransit || '',
+        cargo.numeroDeBalise || '',
+        //cargo.codeHS || '',
+        //cargo.codeHS?.map(code_hs => code_hs.code_hs).join(`\n\n`) || '',
+        Array.isArray(cargo.codeHS) 
+        ? cargo.codeHS.map(item => item.code_hs).join('\n') 
+        : '',
+        cargo.corridor || '',
+        cargo.typeDeVehicule || '',
+        cargo.immatriculation || '',
+        cargo.transitaire || '',
+        cargo.chauffeur || '',
+        cargo.telephone || '',
+        creationDate, 
+        cargo.creationHeureDebut || '',
+        cargo.creationHeureFin || '',
+        
+        cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
+    cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+    cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
+    cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
+    cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
+        
+        formatDate(cargo.clotureDate) || '',
+        cargo.clotureHeure || '',
+        cargo.clotureLieu || '',
+        cargo.duree || ''
+      ]);
+
+    //  const codeCount = cargo.codeHS?.length || 1; // Default to 1 if no alarms
+    //  row.height = Math.max(25, codeCount * 25);
+    //  const alarmCount = cargo.alarme?.length || 1; // Default to 1 if no alarms
+  //row.height = Math.max(25, alarmCount * 25); // Adjust row height based on alarm count
+
+  const codeCount = cargo.codeHS?.length || 1; // Default to 1 if no codeHS
+const alarmCount = cargo.alarme?.length || 1; // Default to 1 if no alarms
+
+// Determine the greater count
+const maxCount = Math.max(codeCount, alarmCount);
+
+// Set row height based on the larger count
+row.height = Math.max(25, maxCount * 25);
+
+ 
+  
+  
+  row.eachCell((cell) => {
+    cell.alignment = { horizontal: 'left', vertical: 'top', wrapText: true }; // Text wrapping and alignment
+  });
+    });
+  });
+  
+
+ /* worksheet.columns.forEach((column) => {
+    column.width = 20; 
+  });*/
+
+  worksheet.columns.forEach((column, index) => {
+    if (index === 16) {
+      column.width = 40; 
+    } else {
+      column.width = 20;
+    }
+  });
+
+  const fileName = `${getLastMonthNameAndYearInFrench()}.xlsx`;
+
+  // Send the Excel file
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', `attachment; filename="rapport-${getLastMonthNameAndYearInFrench()}.xlsx"`);
+
+  await workbook.xlsx.write(res);
+  res.end();
+});
+
+
 app.get('/',(req, res)=>{
   res.render('Login', {
     pageTitle: 'Login'
@@ -582,6 +1070,10 @@ app.get('/',(req, res)=>{
 
     app.get('/mon-profile', (req, res)=>{
       res.render('admin/blank')
+    })
+
+    app.get('/tableau-de-bord', (req, res)=>{
+      res.render('admin/dashboard')
     })
 
   app.use('/assets', express.static(path.join(__dirname, 'assets')));

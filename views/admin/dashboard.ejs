@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval';">
+
+    <title>Tableau de bord</title>
+
+    <script src="/scripts/admin_auth.js" defer></script>
+    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/custom.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/charts.min.css">
+
+    <script src="assets/js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="assets/js/moment.min.js"></script>
+    <script type="text/javascript" src="assets/js/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/css/daterangepicker.css" />
+   
+    <link href="/scripts/datatables.min.css" rel="stylesheet">
+ 
+    <script src="/scripts/datatables.min.js"></script>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+    <link rel="shortcut icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+
+    
+  
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="/scripts/xslx.min.js"></script>
+    <script src="/assets/js/exceljs.min.js"></script>
+    <style>
+        .export {
+            background-color: green;
+            color: white;
+            width: 160px;
+            height: 40px;
+            font-size: large;
+            font-weight: bold;
+            border-radius: 7px;
+            border-color: transparent;
+            cursor: pointer;
+        }
+
+        #my-chart {
+  width: 90%;
+  
+  margin: 0 auto;
+}
+#my-chart .line {
+  
+}
+#my-chart .legend {
+  
+}
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <%- include('navbar') %>
+        <div id="page-wrapper">
+            <div id="page-inner">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2>TABLEAU DE BORD</h2>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-lg-12 ">
+                        <div class="alert alert-info">
+                            <strong>Welcome Jhon Doe !</strong> You Have No pending Task For Today.
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; padding-left: 10px; padding-right: 10px; flex-wrap: wrap;">
+                    <input type="text" id="daterange-input" name="daterange" />
+                    <button id="exportExcel" class="export">Exporter</button>
+                </div>
+
+                <div id="my-chart">
+                    <table class="charts-css column show-heading show-data-axes show-labels data-spacing-10 show-4-secondary-axes">
+                        <caption>Cargo enregistre mensuellement</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chart-data"> <!-- Add an id for targeting -->
+                            <!-- Rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div id="my-chart" style="margin-top: 40px;">
+                    <table class="charts-css bar show-heading show-data-axes show-labels data-spacing-10 show-4-secondary-axes">
+                        <caption>Donne par utilisateur</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chart-data-user"> <!-- Add an id for targeting -->
+                            <!-- Rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+
+                
+            </div>
+        </div>
+    </div>
+    <script src="/scripts/admin_dashboard.js">
+       
+    </script>
+</body>
+</html>

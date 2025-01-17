@@ -3,24 +3,38 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const {StatusCodes} = require('http-status-codes')
+const { Op } = require('sequelize');
 
 const getCargoData = async(req, res) =>{
     try {
-        const cargoData = await Cargo.findAll()
-        
-        const cargoWithUser = await Promise.all(cargoData.map(async (cargo) => {
-            const user = await User.findByPk(cargo.addedBy);  // Get user based on addedBy (user ID)
-            return {
-                ...cargo.toJSON(),  // Convert Cargo to JSON to make it plain object
-                userFullName: user ? user.fullName : null,  // Add user full name (or any other field)
-            };
-        }));
+       
+        const { start, end } = req.query;
 
-        // Return the response with user names added to cargo data
+        const dateFilter = start && end 
+            ? { createdAt: { [Op.between]: [new Date(start), new Date(end)] } }
+            : {};
+
+       
+        const cargoData = await Cargo.findAll({
+            where: dateFilter,  
+        });
+
+        
+        const cargoWithUser = await Promise.all(
+            cargoData.map(async (cargo) => {
+                const user = await User.findByPk(cargo.addedBy); 
+                return {
+                    ...cargo.toJSON(), 
+                    userFullName: user ? user.fullName : null, 
+                };
+            })
+        );
+
+        
         return res.status(StatusCodes.OK).json({ cargoData: cargoWithUser });
     } catch (error) {
-        console.log(error)
-        return res.status(StatusCodes.BAD_REQUEST).json('Error fetching data')
+        console.error(error);
+        return res.status(StatusCodes.BAD_REQUEST).json('Error fetching data');
     }
 }
 
