@@ -8,6 +8,7 @@ const path = require('path')
 const helmet = require('helmet')
 const cors = require('cors')
 const xss = require('xss-clean')
+const Swal = require('sweetalert2')
 
 const bodyParser = require('body-parser');
 const ExcelJS = require('exceljs')
@@ -395,6 +396,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     cell.alignment = headerStyle.alignment;
     cell.fill = headerStyle.fill2;
     cell.border = headerStyle.border; 
+    
   });
 
   const headerRow3 = worksheet.addRow([
@@ -681,6 +683,11 @@ app.get('/exportExcelDateRange', async (req, res) => {
 
   if (!data || data.length === 0) {
     return res.status(404).send('No data to export.');
+  // return res.status(200).json({ success: false, message: 'No data to export.' });
+   //const hasData = false;  // Example: no data available
+   // const message = "There are no records available for this query."; 
+   
+   //return res.render('admin/dashboard', { hasData: hasData, message: message });
   }
 
   const formatDate = (dateString) => {
@@ -1008,7 +1015,88 @@ cableDeverouileWorksheet.columns.forEach((column) => {
 
   worksheet.views = [{ state: 'frozen', ySplit: 3 }]; 
 
-  Object.keys(groupedData).forEach((creationDate) => {
+  for (let day = start.getDate(); day <= end.getDate(); day++) {
+    
+    const currentDate = new Date(start.getFullYear(), start.getMonth(), day);
+    console.log(start)
+    
+  
+    const formattedDate = `${currentDate.getDate() < 10 ? '0' : ''}${currentDate.getDate()}/${currentDate.getMonth() + 1 < 10 ? '0' : ''}${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+
+   
+    const dateRow = worksheet.addRow([`Le ${formattedDate}`]);
+    dateRow.height = 35;
+    dateRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        cell.font = dateRowStyle.font;
+        cell.alignment = dateRowStyle.alignment;
+        cell.fill = dateRowStyle.fill;
+
+        if (colNumber === 1) {
+            worksheet.mergeCells(`A${dateRow.number}:U${dateRow.number}`);
+        }
+    });
+
+    // Check if there is data for the current date
+    if (groupedData[formattedDate] && groupedData[formattedDate].length > 0) {
+        // If there is data for this date, loop through it
+        groupedData[formattedDate].forEach(async (cargo) => {
+            const row = worksheet.addRow([
+                cargo.numeroDeTransit || '',
+                cargo.numeroDeBalise || '',
+                Array.isArray(cargo.codeHS) ? cargo.codeHS.map(item => item.code_hs).join('\n') : '',
+                cargo.corridor || '',
+                cargo.typeDeVehicule || '',
+                cargo.immatriculation || '',
+                cargo.transitaire || '',
+                cargo.chauffeur || '',
+                cargo.telephone || '',
+                formattedDate, // Using the formatted date for this column
+                cargo.creationHeureDebut || '',
+                cargo.creationHeureFin || '',
+                cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
+                cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+                cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
+                cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
+                cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
+                formatDate(cargo.clotureDate) || '',
+                cargo.clotureHeure || '',
+                cargo.clotureLieu || '',
+                cargo.duree || ''
+            ]);
+
+            const codeCount = cargo.codeHS?.length || 1;
+            const alarmCount = cargo.alarme?.length || 1;
+            const maxCount = Math.max(codeCount, alarmCount);
+
+            row.height = Math.max(25, maxCount * 25);
+
+            row.eachCell((cell) => {
+                cell.alignment = { horizontal: 'left', vertical: 'top', wrapText: true }; // Text wrapping and alignment
+            });
+        });
+    } else {
+        // If no data for the date, add a row with "Pas de création"
+        const noCreationRow = worksheet.addRow(['Pas de création']);
+        noCreationRow.height = 25;
+        noCreationRow.eachCell({ includeEmpty: true }, (cell) => {
+          cell.font = { name: 'Arial', size: 12 ,color: { argb: '' } };
+          cell.alignment = { horizontal: 'left', indent: 90, vertical: 'center', wrapText: true };
+        });
+
+        worksheet.mergeCells(`A${noCreationRow.number}:U${noCreationRow.number}`);
+    }
+}
+
+const finRow = worksheet.addRow(['FIN']);
+    finRow.height = 20; // Adjust height if necessary
+    finRow.eachCell({ includeEmpty: true }, (cell) => {
+        cell.font = { bold: true, name: 'Arial', size: 27 }; // Make "FIN" bold
+        cell.alignment = { horizontal: 'left', indent: 90, vertical: 'middle' }; // Center align the "FIN"
+    });
+
+    worksheet.mergeCells(`A${finRow.number}:U${finRow.number}`);
+
+  /*Object.keys(groupedData).forEach((creationDate) => {
     const dateRow = worksheet.addRow([`Le ${creationDate}`]);
     dateRow.height = 35; 
     dateRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
@@ -1078,7 +1166,7 @@ row.height = Math.max(25, maxCount * 25);
     cell.alignment = { horizontal: 'left', vertical: 'top', wrapText: true }; // Text wrapping and alignment
   });
     });
-  });
+  });*/
   
 
  /* worksheet.columns.forEach((column) => {

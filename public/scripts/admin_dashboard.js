@@ -201,6 +201,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 $(document).ready(function () {
     
+    const hasData = "<%= hasData %>"; // Boolean value passed from the server (true/false)
+    const message = "<%= message %>"; // Dynamic message passed from the server
+
+    console.log(message)
+
+    // Check if there's no data and trigger SweetAlert if necessary
+    if (hasData === 'false') {  // Ensure 'false' is treated as a string because it's passed from the server
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Data Available',
+            text: message,
+            confirmButtonText: 'OK',
+        });
+    }
+
+
     $('#addExportButton').click(function () {
         $('#addExportModal').modal('show');
     });
