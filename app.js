@@ -115,7 +115,7 @@ console.log(data)
 
   const getLastMonthNameAndYearInFrench = () => {
     const now = new Date();
-    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+    const lastMonth = new Date(now.getFullYear(), now.getMonth());
     const options = { month: 'long', year: 'numeric' };
     return lastMonth.toLocaleDateString('fr-FR', options).toUpperCase();
   };
@@ -391,11 +391,122 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     '',
     'Durée Trst'
   ]);
-  headerRow2.eachCell((cell) => {
+
+  const mergeRange = 'E2:F2';
+const mergedCells = worksheet.getCell('E2');
+
+if (!mergedCells.isMerged) {
+  worksheet.mergeCells(mergeRange); // Merge the 'Info Véhicule' column with the adjacent empty column
+}
+
+// Apply styles to the merged cell
+const mergedCell = worksheet.getCell('E2');
+mergedCell.font = headerStyle.font;
+mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+mergedCell.fill = headerStyle.fill2;
+mergedCell.border = {
+  top: { style: 'thin', color: { argb: '000000' } },
+  left: { style: 'thin', color: { argb: '000000' } },
+  bottom: { style: 'thin', color: { argb: '000000' } },
+  right: { style: 'thin', color: { argb: '000000' } }
+};
+
+
+const mergeRange2= 'G2:I2';
+const mergedCells2 = worksheet.getCell('G2');
+
+if (!mergedCells2.isMerged) {
+  worksheet.mergeCells(mergeRange2); // Merge the 'Info Véhicule' column with the adjacent empty column
+}
+
+// Apply styles to the merged cell
+const mergedCell2 = worksheet.getCell('G2');
+mergedCell2.font = headerStyle.font;
+mergedCell2.alignment = { horizontal: 'center', vertical: 'middle' };
+mergedCell2.fill = headerStyle.fill2;
+mergedCell2.border = {
+  top: { style: 'thin', color: { argb: '000000' } },
+  left: { style: 'thin', color: { argb: '000000' } },
+  bottom: { style: 'thin', color: { argb: '000000' } },
+  right: { style: 'thin', color: { argb: '000000' } }
+};
+
+
+
+const mergeRange3= 'J2:L2';
+const mergedCells3 = worksheet.getCell('J2');
+
+if (!mergedCells3.isMerged) {
+  worksheet.mergeCells(mergeRange3); // Merge the 'Info Véhicule' column with the adjacent empty column
+}
+
+// Apply styles to the merged cell
+const mergedCell3 = worksheet.getCell('J2');
+mergedCell3.font = headerStyle.font;
+mergedCell3.alignment = { horizontal: 'center', vertical: 'middle' };
+mergedCell3.fill = headerStyle.fill2;
+mergedCell3.border = {
+  top: { style: 'thin', color: { argb: '000000' } },
+  left: { style: 'thin', color: { argb: '000000' } },
+  bottom: { style: 'thin', color: { argb: '000000' } },
+  right: { style: 'thin', color: { argb: '000000' } }
+};
+
+
+const mergeRange4= 'M2:Q2';
+const mergedCells4 = worksheet.getCell('M2');
+
+if (!mergedCells4.isMerged) {
+  worksheet.mergeCells(mergeRange4); // Merge the 'Info Véhicule' column with the adjacent empty column
+}
+
+// Apply styles to the merged cell
+const mergedCell4 = worksheet.getCell('M2');
+mergedCell4.font = headerStyle.font;
+mergedCell4.alignment = { horizontal: 'center', vertical: 'middle' };
+mergedCell4.fill = headerStyle.fill2;
+mergedCell4.border = {
+  top: { style: 'thin', color: { argb: '000000' } },
+  left: { style: 'thin', color: { argb: '000000' } },
+  bottom: { style: 'thin', color: { argb: '000000' } },
+  right: { style: 'thin', color: { argb: '000000' } }
+};
+
+
+
+const mergeRange5= 'R2:U2';
+const mergedCells5 = worksheet.getCell('R2');
+
+if (!mergedCells5.isMerged) {
+  worksheet.mergeCells(mergeRange5); // Merge the 'Info Véhicule' column with the adjacent empty column
+}
+
+// Apply styles to the merged cell
+const mergedCell5 = worksheet.getCell('R2');
+mergedCell5.font = headerStyle.font;
+mergedCell5.alignment = { horizontal: 'center', vertical: 'middle' };
+mergedCell5.fill = headerStyle.fill2;
+mergedCell5.border = {
+  top: { style: 'thin', color: { argb: '000000' } },
+  left: { style: 'thin', color: { argb: '000000' } },
+  bottom: { style: 'thin', color: { argb: '000000' } },
+  right: { style: 'thin', color: { argb: '000000' } }
+};
+
+
+  headerRow2.eachCell((cell, i) => {
     cell.font = headerStyle.font;
     cell.alignment = headerStyle.alignment;
     cell.fill = headerStyle.fill2;
-    cell.border = headerStyle.border; 
+      cell.border = {
+        top: { style: 'thin', color: { argb: '000000' } },
+        left: { style: 'thin', color: { argb: '000000' } },
+        bottom: { style: 'thin', color: { argb: '000000' } },
+        right: { style: 'thin', color: { argb: '000000' } },
+      };
+
+    
+    
     
   });
 
@@ -935,7 +1046,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
 
   // Adjust header row to match image
   const headerRow1 = worksheet.addRow([
-    `RAPPORT DE ${getLastMonthNameAndYearInFrench()}`
+    `RAPPORT DU ${formatDate(start)} AU ${formatDate(end)}`
   ]);
   
   headerRow1.height = 35
@@ -973,12 +1084,123 @@ cableDeverouileWorksheet.columns.forEach((column) => {
     
     'Durée Trst'
   ]);
-  headerRow2.eachCell((cell) => {
-    cell.font = headerStyle.font;
-    cell.alignment = headerStyle.alignment;
-    cell.fill = headerStyle.fill2;
-    cell.border = headerStyle.border; 
-  });
+  const mergeRange = 'E2:F2';
+  const mergedCells = worksheet.getCell('E2');
+  
+  if (!mergedCells.isMerged) {
+    worksheet.mergeCells(mergeRange); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell = worksheet.getCell('E2');
+  mergedCell.font = headerStyle.font;
+  mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell.fill = headerStyle.fill2;
+  mergedCell.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+  const mergeRange2= 'G2:I2';
+  const mergedCells2 = worksheet.getCell('G2');
+  
+  if (!mergedCells2.isMerged) {
+    worksheet.mergeCells(mergeRange2); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell2 = worksheet.getCell('G2');
+  mergedCell2.font = headerStyle.font;
+  mergedCell2.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell2.fill = headerStyle.fill2;
+  mergedCell2.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+  
+  const mergeRange3= 'J2:L2';
+  const mergedCells3 = worksheet.getCell('J2');
+  
+  if (!mergedCells3.isMerged) {
+    worksheet.mergeCells(mergeRange3); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell3 = worksheet.getCell('J2');
+  mergedCell3.font = headerStyle.font;
+  mergedCell3.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell3.fill = headerStyle.fill2;
+  mergedCell3.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+  const mergeRange4= 'M2:Q2';
+  const mergedCells4 = worksheet.getCell('M2');
+  
+  if (!mergedCells4.isMerged) {
+    worksheet.mergeCells(mergeRange4); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell4 = worksheet.getCell('M2');
+  mergedCell4.font = headerStyle.font;
+  mergedCell4.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell4.fill = headerStyle.fill2;
+  mergedCell4.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+  
+  const mergeRange5= 'R2:U2';
+  const mergedCells5 = worksheet.getCell('R2');
+  
+  if (!mergedCells5.isMerged) {
+    worksheet.mergeCells(mergeRange5); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell5 = worksheet.getCell('R2');
+  mergedCell5.font = headerStyle.font;
+  mergedCell5.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell5.fill = headerStyle.fill2;
+  mergedCell5.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+    headerRow2.eachCell((cell, i) => {
+      cell.font = headerStyle.font;
+      cell.alignment = headerStyle.alignment;
+      cell.fill = headerStyle.fill2;
+        cell.border = {
+          top: { style: 'thin', color: { argb: '000000' } },
+          left: { style: 'thin', color: { argb: '000000' } },
+          bottom: { style: 'thin', color: { argb: '000000' } },
+          right: { style: 'thin', color: { argb: '000000' } },
+        };
+  
+      
+      
+      
+    });
 
   const headerRow3 = worksheet.addRow([
     '',
@@ -1032,7 +1254,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
         cell.fill = dateRowStyle.fill;
 
         if (colNumber === 1) {
-            worksheet.mergeCells(`A${dateRow.number}:U${dateRow.number}`);
+            worksheet.mergeCells(`A${dateRow.number}:V${dateRow.number}`);
         }
     });
 
@@ -1061,6 +1283,7 @@ cableDeverouileWorksheet.columns.forEach((column) => {
                 formatDate(cargo.clotureDate) || '',
                 cargo.clotureHeure || '',
                 cargo.clotureLieu || '',
+                cargo.clotureMode || '',
                 cargo.duree || ''
             ]);
 
@@ -1076,14 +1299,14 @@ cableDeverouileWorksheet.columns.forEach((column) => {
         });
     } else {
         // If no data for the date, add a row with "Pas de création"
-        const noCreationRow = worksheet.addRow(['Pas de création']);
+        const noCreationRow = worksheet.addRow(['PAS DE CREATION']);
         noCreationRow.height = 25;
         noCreationRow.eachCell({ includeEmpty: true }, (cell) => {
           cell.font = { name: 'Arial', size: 12 ,color: { argb: '' } };
           cell.alignment = { horizontal: 'left', indent: 90, vertical: 'center', wrapText: true };
         });
 
-        worksheet.mergeCells(`A${noCreationRow.number}:U${noCreationRow.number}`);
+        worksheet.mergeCells(`A${noCreationRow.number}:V${noCreationRow.number}`);
     }
 }
 
@@ -1094,7 +1317,7 @@ const finRow = worksheet.addRow(['FIN']);
         cell.alignment = { horizontal: 'left', indent: 90, vertical: 'middle' }; // Center align the "FIN"
     });
 
-    worksheet.mergeCells(`A${finRow.number}:U${finRow.number}`);
+    worksheet.mergeCells(`A${finRow.number}:V${finRow.number}`);
 
   /*Object.keys(groupedData).forEach((creationDate) => {
     const dateRow = worksheet.addRow([`Le ${creationDate}`]);
@@ -1185,7 +1408,7 @@ row.height = Math.max(25, maxCount * 25);
 
   // Send the Excel file
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', `attachment; filename="rapport-${getLastMonthNameAndYearInFrench()}.xlsx"`);
+  res.setHeader('Content-Disposition', `attachment; filename="RAPPORT-${formatDate(start)}-${formatDate(end)}.xlsx"`);
 
   await workbook.xlsx.write(res);
   res.end();

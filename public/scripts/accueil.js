@@ -67,6 +67,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Export data to Excel
         exportButton.addEventListener('click', function () {
+            window.location.href = '/exportExcel';
+           /*
+           
             if (cargoData.length === 0) {
                 alert('No data to export.');
                 return;
@@ -106,6 +109,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Cargo Data');
             XLSX.writeFile(workbook, 'CargoData.xlsx');
+           */
         });
 
         // Fetch and display data on page load
