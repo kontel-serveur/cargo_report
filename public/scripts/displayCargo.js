@@ -39,6 +39,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             })
         }
 
+        if(Array.isArray(cargoData[0].transitaire)){
+            const transitaireContainer = document.getElementById('transitaire_container');
+            cargoData[0].transitaire.forEach((transitaire, index) => {
+                const transitaireItem = document.createElement('div');
+                transitaireItem.innerHTML = `
+                    <input type="text" id="transitaire_${index}" name="transitaire" value="${transitaire.Transitaire}" disabled>
+                `
+
+                transitaireContainer.appendChild(transitaireItem);
+            })
+        }
+
         // Check if alarme is defined and is an array
         if (Array.isArray(cargoData[0].alarme)) {
             const alarmeContainer = document.getElementById('alarme-container');
@@ -134,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setInputValue('corridor', cargoData[0].corridor);
         setInputValue('type_de_vehicule', cargoData[0].typeDeVehicule);
         setInputValue('immatriculation', cargoData[0].immatriculation);
-        setInputValue('transitaire', cargoData[0].transitaire);
+      //  setInputValue('transitaire', cargoData[0].transitaire);
         setInputValue('chauffeur', cargoData[0].chauffeur);
         setInputValue('telephone', cargoData[0].telephone);
         setInputValue('creation_date', cargoData[0].creationDate);

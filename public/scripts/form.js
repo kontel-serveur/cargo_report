@@ -79,6 +79,43 @@ const attachRemoveCodeEvent = () => {
 
 attachRemoveCodeEvent();
 
+
+
+
+const transitaireContainer = document.getElementById('transitaire-container');
+const addTransitaireBtn = document.getElementById('add-transitaire-btn');
+
+// Add a new alarme section
+addTransitaireBtn.addEventListener('click', () => {
+  const transitaireItem = document.querySelector('.transitaire-item').cloneNode(true);
+
+  // Clear input values
+  transitaireItem.querySelectorAll('input').forEach(input => {
+    input.value = '';
+  });
+
+  // Append the new section
+  transitaireContainer.appendChild(transitaireItem);
+
+  // Reattach remove event
+  attachRemoveTransitaireEvent();
+});
+
+// Remove a section
+const attachRemoveTransitaireEvent = () => {
+  document.querySelectorAll('.remove-transitaire-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+      if (document.querySelectorAll('.transitaire-item').length > 1) {
+        event.target.closest('.transitaire-item').remove();
+      } else {
+        alert('Au moins un transitaire est necessaire.');
+      }
+    });
+  });
+};
+
+attachRemoveCodeEvent();
+
 // Forward Navigation
 formSubmitBtn.addEventListener("click", function(event) {
   event.preventDefault();
@@ -133,7 +170,22 @@ formSubmitBtn.addEventListener("click", function(event) {
         const corridor = document.getElementById('corridor').value;
         const typeDeVehicule = document.getElementById('type_de_vehicule').value;
         const immatriculation = document.getElementById('immatriculation').value;
-        const transitaire = document.getElementById('transitaire').value;
+       // const transitaire = document.getElementById('transitaire').value;
+
+       const transitaireContainer = document.getElementById('transitaire-container');
+       const transitaireItems = transitaireContainer.querySelectorAll('.transitaire-item');
+       const transitaire = [];
+        
+        transitaireItems.forEach((transitaireItem) => {
+            const Transitaire = transitaireItem.querySelector('input[name="transitaire[transitaire]"]').value;
+            
+    
+            // Add each alarm object to the alarmData array
+            transitaire.push({
+                Transitaire
+                
+            });
+        });
         const chauffeur = document.getElementById('chauffeur').value;
         const telephone = document.getElementById('telephone').value;
         const creationDate = document.getElementById('creation_date').value;

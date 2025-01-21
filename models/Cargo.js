@@ -46,8 +46,11 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         transitaire: {
-            type: DataTypes.STRING,
+            type: DataTypes.JSON, // Use JSON data type for an array of objects
             allowNull: false,
+            defaultValue: [],
+           // type: DataTypes.STRING,
+           // allowNull: false,
             validate: {
                 notEmpty: true,
             },

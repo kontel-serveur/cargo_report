@@ -48,7 +48,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                     { data: 'corridor', title: 'Corridor' },
                     { data: 'typeDeVehicule', title: 'Type de vehicule' },
                     { data: 'immatriculation', title: 'Immatriculation' },
-                    { data: 'transitaire', title: 'Transitaire' },
+                    //{ data: 'transitaire', title: 'Transitaire' },
+
+                    {
+                        data: 'transitaire',
+                        title: 'Transitaire',
+                        render: function (data) {
+                            // Check if data is an array and map to extract 'code_hs' values
+                            return Array.isArray(data)
+                                ? data.map(item => item.Transitaire).join(', ') // Join the extracted 'code_hs' values
+                                : '';
+                        },
+                    },
                 ],
                 destroy: true, // Allows re-initializing the DataTable if called again
             });

@@ -28,7 +28,18 @@ $(document).ready(function () {
             { data: 'corridor' },
             { data: 'typeDeVehicule' },
             { data: 'immatriculation' },
-            { data: 'transitaire' },
+            //{ data: 'transitaire' },
+
+            {
+                data: 'transitaire',
+                title: 'Transitaire',
+                render: function (data) {
+                    // Check if data is an array and map to extract 'code_hs' values
+                    return Array.isArray(data)
+                        ? data.map(item => item.Transitaire).join(', ') // Join the extracted 'code_hs' values
+                        : '';
+                },
+            },
             {data: 'userFullName'}
         ],
     });

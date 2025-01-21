@@ -298,7 +298,8 @@ data.forEach(cargo => {
         cargo.numeroDeBalise, // 'Type Vehicule'
         cargo.typeDeVehicule, // 'Immatriculation'
         cargo.immatriculation, 
-        cargo.transitaire,      // 'Chauffeur'
+        //cargo.transitaire,
+        Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',      // 'Chauffeur'
         cargo.chauffeur,
         formatDate(cargo.creationDate),
         formatDate(cargo.clotureDate),
@@ -576,7 +577,8 @@ for (let day = 1; day <= daysInMonth; day++) {
                 cargo.corridor || '',
                 cargo.typeDeVehicule || '',
                 cargo.immatriculation || '',
-                cargo.transitaire || '',
+                //cargo.transitaire || '',
+                Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',
                 cargo.chauffeur || '',
                 cargo.telephone || '',
                 creationDate,
@@ -595,8 +597,9 @@ for (let day = 1; day <= daysInMonth; day++) {
             ]);
 
             const codeCount = cargo.codeHS?.length || 1;
+            const transitaireCount = cargo.transitaire?.length || 1;
             const alarmCount = cargo.alarme?.length || 1;
-            const maxCount = Math.max(codeCount, alarmCount);
+            const maxCount = Math.max(codeCount, alarmCount, transitaireCount);
 
             row.height = Math.max(25, maxCount * 25);
 
@@ -793,7 +796,9 @@ app.get('/exportExcelDateRange', async (req, res) => {
   console.log(data);
 
   if (!data || data.length === 0) {
-    return res.status(404).send('No data to export.');
+  //  return res.status(404).send('No data to export.');
+
+  return res.render('NotFound');
   // return res.status(200).json({ success: false, message: 'No data to export.' });
    //const hasData = false;  // Example: no data available
    // const message = "There are no records available for this query."; 
@@ -991,7 +996,8 @@ data.forEach(cargo => {
         cargo.numeroDeBalise, // 'Type Vehicule'
         cargo.typeDeVehicule, // 'Immatriculation'
         cargo.immatriculation, 
-        cargo.transitaire,      // 'Chauffeur'
+      //  cargo.transitaire,      // 'Chauffeur'
+        Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',  
         cargo.chauffeur,
         formatDate(cargo.creationDate),
         formatDate(cargo.clotureDate),
@@ -1269,7 +1275,8 @@ cableDeverouileWorksheet.columns.forEach((column) => {
                 cargo.corridor || '',
                 cargo.typeDeVehicule || '',
                 cargo.immatriculation || '',
-                cargo.transitaire || '',
+               // cargo.transitaire || '',
+                Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',
                 cargo.chauffeur || '',
                 cargo.telephone || '',
                 formattedDate, // Using the formatted date for this column
