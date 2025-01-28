@@ -115,6 +115,10 @@
                 <div class="modal-body">
                   <form id="addCableForm">
                     <div class="form-group">
+                      <label for="fullName">Niveau</label>
+                      <input type="text" class="form-control" id="cable_niveau" name="cable_niveau" value="3" disabled required>
+                    </div>
+                    <div class="form-group">
                       <label for="email">Date de deverouillage</label>
                       <input type="date" class="form-control" id="cable_date" name="cable_date" required>
                     </div>
@@ -157,6 +161,100 @@
                     </div>
                                 
                     
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enregistrer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div id="addAlarmeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addUserModalLabel">Ajouter alarme</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="addAlarmeForm">
+                                       
+                    <div id="alarme-form-container">
+                        <!-- Template for a single alarme -->
+                        <div class="alarme-form-item">
+                          <div class="formbold-input-flex">
+                            <div>
+                              <label for="alarme_niveau" class="formbold-form-label">Niveau</label>
+                              <select class="formbold-form-input" name="alarme[niveau]">
+                                  <option value="">Choisissez le niveau</option>
+                                  <option value="2">2</option>
+                                  <option value="3">3</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label for="alarme_type" class="formbold-form-label">Type d'alarme</label>
+                              <select id="alarme_type" name="alarme[type]" class="formbold-form-input">
+                                <option value="">Choisissez le type d'alarme</option>
+                              </select>
+                              
+                            </div>
+
+                            
+                          </div>
+                      
+                          <div class="formbold-input-flex">
+                            <div>
+                              <label for="alarme_date" class="formbold-form-label">Date</label>
+                              <input
+                                type="date"
+                                name="alarme[date]"
+                                placeholder=""
+                                class="formbold-form-input"
+                              />
+                            </div>
+
+                            <div>
+                              <label for="alarme_heure_debut" class="formbold-form-label">Heure</label>
+                              <input
+                                type="time"
+                                name="alarme[heure]"
+                                placeholder=""
+                                class="formbold-form-input"
+                              />
+                            </div>
+                            
+                          </div>
+                          <div>
+                            <label for="alarme_lieu" class="formbold-form-label">Lieu</label>
+                            <input
+                              type="text"
+                              name="alarme[lieu]"
+                              placeholder=""
+                              class="formbold-form-input"
+                            />
+                          </div>
+                          <div>
+                            <label for="alarme_observation" class="formbold-form-label">Observation</label>
+                            <textarea
+                              rows="6"
+                              name="alarme[observation]"
+                              placeholder="Entrez votre observation"
+                              class="formbold-form-input"
+                            ></textarea>
+                          </div>
+                      
+                          <button type="button" style="margin-top: 10px;" class="remove-alarme-btn styled-btn danger-btn">Enlever</button>
+                        </div>
+                      </div>
+                      
+                      <div style="margin-top: 10px;">
+                        <button type="button" id="add-alarme-form-btn" class="styled-btn primary-btn">Ajouter Alarme</button>
+                        
+                      </div>
                     <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enregistrer</button>
                   </form>
                 </div>
@@ -210,7 +308,9 @@
             <h3>Alarme</h3>
             <div id="alarme-container">
                 <!-- Alarm Data will be inserted here -->
+                <button id="addAlarmeButton" style="margin-bottom: 10px;" type="button" class="export">Ajouter alarme</button>
             </div>
+           
     
             <label for="cloture_date">Cloture Date</label>
             <input type="date" id="cloture_date" name="cloture_date" disabled>
@@ -289,7 +389,7 @@
             margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 1rem;
+            font-size: large;
             color: #333;
             background-color: #f9f9f9;
         }
@@ -323,7 +423,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             background-color: #f9f9f9;
-            font-size: 1rem;
+            font-size: medium;
         }
 
         .formbold-form-input:disabled {
@@ -348,8 +448,10 @@
 
         .alarme-item input,
         .alarme-item textarea {
-           
+
+          font-size: large;
             width: 98%;
+            font-size: large;
         }
 
         .back-button{

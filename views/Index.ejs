@@ -92,13 +92,18 @@
                 
                 <div>
                     <label for="lastname" class="formbold-form-label"> Corridor </label>
-                    <input
-                    type="text"
-                    name="lastname"
-                    placeholder=""
+                    <select name="lastname"
                     id="corridor"
-                    class="formbold-form-input"
-                    />
+                    class="formbold-form-input">
+                      <option value="BJM-GTB">BJM-GTB</option>
+                      <option value="KYZ-GTB Via BJM">KYZ-GTB Via BJM</option>
+                      <option value="KBR-BJM Via KYZ">KBR-BJM Via KYZ</option>
+                      <option value="KBR-BJM Via GTG">KBR-BJM Via GTG</option>
+                      <option value="KBR-KYZ">KBR-KYZ</option>
+                      <option value="KYZ-BJM">KYZ-BJM</option>
+                      <option value="KBR-GTG">KBR-GTG</option>
+                    </select>
+                   
                 </div>
               </div>
 
@@ -189,6 +194,7 @@
                   id="telephone"
                   class="formbold-form-input"
                   />
+                  <span id="telephone-error" style="color: red; display: none;">Numero de telephone doit avoir 8 chiffres</span>
               </div>
               </div>
 
@@ -221,11 +227,10 @@
                     <label for="lastname" class="formbold-form-label"> Heure debut </label>
                     <input
                     type="time"
-                    name="lastname"
-                    placeholder=""
+                    name="creation_heure_debut"
                     id="creation_heure_debut"
                     class="formbold-form-input"
-                    />
+                  />
                 </div>
               </div>
 
@@ -234,11 +239,10 @@
                     <label for="firstname" class="formbold-form-label"> Heure fin </label>
                     <input
                     type="time"
-                    name="firstname"
-                    placeholder=""
+                    name="creation_heure_fin"
                     id="creation_heure_fin"
                     class="formbold-form-input"
-                    />
+                  />
                 </div>
                
               </div>
@@ -357,7 +361,7 @@
                 <div>
                     <label for="lastname" class="formbold-form-label" > Mode </label>
                     <select id="cloture_mode" class="formbold-form-input">
-                        <option>Choisissez le mode</option>
+                        <option value="">Choisissez le mode</option>
                         <option value="forcee">Forcee</option>
                         <option value="fermeture">Fermeture</option>
                     </select>
@@ -365,6 +369,7 @@
                 </div>
               </div>
 
+             <!--
               <h3 style="margin-bottom: 16px">Duree</h3>
 
               <div>
@@ -376,7 +381,8 @@
                 id="duree"
                 class="formbold-form-input"
                 />
-            </div>
+            </div> 
+             -->
 
 
             

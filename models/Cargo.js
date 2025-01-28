@@ -97,38 +97,23 @@ module.exports = (sequelize, DataTypes) => {
         },
         clotureDate: {
             type: DataTypes.DATEONLY,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
+            allowNull: true,
             },
-        },
         clotureHeure: {
             type: DataTypes.TIME,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
+            allowNull: true,
             },
-        },
         clotureLieu: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
+            allowNull: true,
             },
-        },
         clotureMode: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-            },
+            allowNull: true,
         },
         duree: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-            },
+            allowNull: true,
         },
         addedBy: {
             type: DataTypes.INTEGER,

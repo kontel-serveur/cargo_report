@@ -4,6 +4,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
+        niveau:{
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 3
+        },
         dateCoupure:{
             type: DataTypes.DATEONLY,
             allowNull: false,

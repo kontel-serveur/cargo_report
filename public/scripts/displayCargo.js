@@ -313,4 +313,67 @@ $(document).ready(function () {
             },
         });
     });
+
+
+
+    $('#addAlarmeButton').click(function () {
+        $('#addAlarmeModal').modal('show');
+    });
+    
+    // Button and container selectors
+    const $addAlarmeFormBtn = $('#add-alarme-form-btn');
+    const $alarmeFormContainer = $('#alarme-form-container');
+    
+    // Add a new alarme section
+    $addAlarmeFormBtn.on('click', () => {
+        // Clone the first .alarme-form-item
+        const $alarmeFormItem = $('.alarme-form-item').first().clone();
+    
+        // Clear input and textarea values
+        $alarmeFormItem.find('select, textarea').val('');
+    
+        // Append the new section
+        $alarmeFormContainer.append($alarmeFormItem);
+    
+        // Reattach remove event to the new button
+        attachRemoveEventAlarme();
+    });
+
+    $(document).on('change', 'select[name="alarme[niveau]"]', function () {
+        const niveau = $(this).val();
+        const $typeSelect = $(this).closest('.alarme-form-item').find('select[name="alarme[type]"]');
+
+        // Clear previous options
+        $typeSelect.empty();
+
+        // Add relevant options based on Niveau
+        if (niveau === "2") {
+            $typeSelect.append('<option value="Delai d\'expiration du transit">Delai d\'expiration du transit</option>');
+        } else if (niveau === "3") {
+            $typeSelect.append('<option value="Deviation de la route autorisee">Deviation de la route autorisee</option>');
+            $typeSelect.append('<option value="Demi-tour">Demi-tour</option>');
+            $typeSelect.append('<option value="Arret en zone dangereuse">Arret en zone dangereuse</option>');
+            $typeSelect.append('<option value="Delai d\'expiration de la confirmation du retrait de l\'unite">Delai d\'expiration de la confirmation du retrait de l\'unite</option>');
+            $typeSelect.append('<option value="Cable de securite deverouilee">Cable de securite deverouilee</option>');
+            $typeSelect.append('<option value="Unite enlevee hors d\'une zone sure">Unite enlevee hors d\'une zone sure</option>');
+        } else {
+            // Default option if no Niveau is selected
+            $typeSelect.append('<option value="">Choisissez le type d\'alarme</option>');
+        }
+    });
+    
+    // Remove a section
+    const attachRemoveEventAlarme = () => {
+        $('.remove-alarme-btn').off('click').on('click', function () {
+            if ($('.alarme-form-item').length > 1) {
+                // Remove the closest .alarme-form-item
+                $(this).closest('.alarme-form-item').remove();
+            } else {
+                alert('Au moins une observation est requise.');
+            }
+        });
+    };
+    
+    // Attach events to existing elements on page load
+    attachRemoveEventAlarme();
 });

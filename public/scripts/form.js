@@ -117,6 +117,45 @@ const attachRemoveTransitaireEvent = () => {
 attachRemoveCodeEvent();
 
 // Forward Navigation
+document.getElementById('telephone').addEventListener('input', function () {
+  const telephone = this.value;
+  const telephoneError = document.getElementById('telephone-error');
+
+  // Check if the phone number is exactly 8 digits
+  const phoneRegex = /^\d{8}$/;
+  if (!phoneRegex.test(telephone)) {
+    telephoneError.style.display = 'block';  // Show the error message
+  } else {
+    telephoneError.style.display = 'none';  // Hide the error message
+  }
+});
+
+document.getElementById('creation_heure_debut').addEventListener('input', updateHeureFinMin);
+
+function updateHeureFinMin() {
+  const creationHeureDebut = document.getElementById('creation_heure_debut').value;
+  const creationHeureFin = document.getElementById('creation_heure_fin');
+
+  if (creationHeureDebut) {
+    // Set the 'min' attribute of 'Heure fin' to be just after 'Heure debut'
+    creationHeureFin.setAttribute('min', creationHeureDebut);
+  } else {
+    // If no start time is selected, allow any time for 'Heure fin'
+    creationHeureFin.removeAttribute('min');
+  }
+}
+
+// Ensure 'Heure fin' cannot be selected before 'Heure debut'
+document.getElementById('creation_heure_fin').addEventListener('input', function () {
+  const creationHeureDebut = document.getElementById('creation_heure_debut').value;
+  const creationHeureFin = document.getElementById('creation_heure_fin').value;
+
+  if (creationHeureDebut && creationHeureFin < creationHeureDebut) {
+    // If 'Heure fin' is smaller than 'Heure debut', reset 'Heure fin' to match 'Heure debut'
+    document.getElementById('creation_heure_fin').value = creationHeureDebut;
+  }
+});
+
 formSubmitBtn.addEventListener("click", function(event) {
   event.preventDefault();
 
@@ -140,145 +179,152 @@ formSubmitBtn.addEventListener("click", function(event) {
   } else if (stepMenuThree.classList.contains('active')) {
     // Ensure the form is selected correctly and then submit
     const form = document.querySelector('#cargoForm');
+
+    
     if (form) {
       console.log('form submitting')
 
-      async function submit(){
+      async function submit() {
         const token = localStorage.getItem('token');
-  
-    
+      
         const numeroDeTransit = document.getElementById('numero_de_transit').value;
         const numeroDeBalise = document.getElementById('numero_de_la_balise').value;
-        //const codeHS = document.getElementById('code_hs').value;
-
+        
         const codeContainer = document.getElementById('code-container');
         const codeItems = codeContainer.querySelectorAll('.code-item');
-    
+      
         const codeHS = [];
-        
         codeItems.forEach((codeItem) => {
-            const code_hs = codeItem.querySelector('input[name="code[code_hs]"]').value;
-            
-    
-            // Add each alarm object to the alarmData array
-            codeHS.push({
-                code_hs
-                
-            });
+          const code_hs = codeItem.querySelector('input[name="code[code_hs]"]').value;
+          codeHS.push({ code_hs });
         });
-
+      
         const corridor = document.getElementById('corridor').value;
         const typeDeVehicule = document.getElementById('type_de_vehicule').value;
         const immatriculation = document.getElementById('immatriculation').value;
-       // const transitaire = document.getElementById('transitaire').value;
-
-       const transitaireContainer = document.getElementById('transitaire-container');
-       const transitaireItems = transitaireContainer.querySelectorAll('.transitaire-item');
-       const transitaire = [];
-        
+      
+        const transitaireContainer = document.getElementById('transitaire-container');
+        const transitaireItems = transitaireContainer.querySelectorAll('.transitaire-item');
+        const transitaire = [];
         transitaireItems.forEach((transitaireItem) => {
-            const Transitaire = transitaireItem.querySelector('input[name="transitaire[transitaire]"]').value;
-            
-    
-            // Add each alarm object to the alarmData array
-            transitaire.push({
-                Transitaire
-                
-            });
+          const Transitaire = transitaireItem.querySelector('input[name="transitaire[transitaire]"]').value;
+          transitaire.push({ Transitaire });
         });
+      
         const chauffeur = document.getElementById('chauffeur').value;
         const telephone = document.getElementById('telephone').value;
+        const telephoneError = document.getElementById('telephone-error');
+
+  // Check if the phone number is exactly 8 digits
+        const phoneRegex = /^\d{8}$/;
+        if (!phoneRegex.test(telephone)) {
+          telephoneError.style.display = 'block';  // Show the error message if phone number is invalid
+          return;  // Prevent form submission if the phone number is not valid
+        }
+
+  // Hide error message before submitting
+        telephoneError.style.display = 'none';
         const creationDate = document.getElementById('creation_date').value;
         const creationHeureDebut = document.getElementById('creation_heure_debut').value;
         const creationHeureFin = document.getElementById('creation_heure_fin').value;
-        
+      
         const alarmeContainer = document.getElementById('alarme-container');
-    const alarmItems = alarmeContainer.querySelectorAll('.alarme-item');
-
-    const alarme = [];
-    
-    alarmItems.forEach((alarmeItem) => {
-        const niveau = alarmeItem.querySelector('select[name="alarme[niveau]"]').value;
-        const date = alarmeItem.querySelector('input[name="alarme[date]"]').value;
-        const heure = alarmeItem.querySelector('input[name="alarme[heure]"]').value;
-        const lieu = alarmeItem.querySelector('input[name="alarme[lieu]"]').value;
-        const observation = alarmeItem.querySelector('textarea[name="alarme[observation]"]').value;
-
-        // Add each alarm object to the alarmData array
-        alarme.push({
-            niveau,
-            date,
-            heure,
-            lieu,
-            observation
+        const alarmItems = alarmeContainer.querySelectorAll('.alarme-item');
+        const alarme = [];
+        alarmItems.forEach((alarmeItem) => {
+          const niveau = alarmeItem.querySelector('select[name="alarme[niveau]"]').value;
+          const date = alarmeItem.querySelector('input[name="alarme[date]"]').value;
+          const heure = alarmeItem.querySelector('input[name="alarme[heure]"]').value;
+          const lieu = alarmeItem.querySelector('input[name="alarme[lieu]"]').value;
+          const observation = alarmeItem.querySelector('textarea[name="alarme[observation]"]').value;
+          alarme.push({ niveau, date, heure, lieu, observation });
         });
-    });
-    
-        
-        const clotureDate = document.getElementById('cloture_date').value;
-        const clotureHeure = document.getElementById('cloture_heure').value;
-        const clotureLieu = document.getElementById('cloture_lieu').value;
-        const clotureMode = document.getElementById('cloture_mode').value;
-        const duree = document.getElementById('duree').value;
       
+        // const clotureDate = document.getElementById('cloture_date').value;
+        // const clotureHeure = document.getElementById('cloture_heure').value;
+        // const clotureLieu = document.getElementById('cloture_lieu').value;
+        // const clotureMode = document.getElementById('cloture_mode').value;
         
-        const cargoData = { 
-          numeroDeTransit, 
-          numeroDeBalise, 
-          codeHS, 
-          corridor, 
-          typeDeVehicule, 
-          immatriculation, 
-          transitaire, 
-          chauffeur, 
-          telephone, 
-          creationDate, 
-          creationHeureDebut, 
-          creationHeureFin, 
-          alarme, 
-          clotureDate, 
-          clotureHeure, 
-          clotureLieu, 
-          clotureMode, 
-          duree
-         };
+        const clotureDate =null;
+        const clotureHeure = null;
+        const clotureLieu =null;
+        const clotureMode =null;
+        // Convert dates to Date objects
+        const creationDateStr = new Date(creationDate + 'T00:00:00');
+        const clotureDateStr = new Date(clotureDate + 'T00:00:00');
+        const duree =null;
       
-        try {
-          const response = await fetch('/cargo/ajout', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify(cargoData),
-          });
+        // Validate dates
+     /*   if (isNaN(creationDateStr.getTime()) || isNaN(clotureDateStr.getTime())) {
+          console.error('One or both dates are invalid');
+        } else {
+          const differenceInMilliseconds = clotureDateStr - creationDateStr;
+          let duree = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24));
       
-        
-          if (response.ok) {
-            const data = await response.json();
-            console.log('Request successful:', data);
-            //localStorage.setItem('token', data.token)
-            // You can redirect or store the token here if needed
-            alert(data);
-            window.location.href = '/accueil';
-          } else {
-            const errorData = await response.json();
-            console.error('Request failed:', errorData.message);
-            alert('Request failed: ' + errorData.message);
+          // If duration is 0, set it to 1
+          if (duree === 0) {
+            duree = 1;
           }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('An error occurred during login');
+      
+          console.log('Duration (in days):', duree); */
+      
+          // Prepare the cargo data including the calculated duree
+          const cargoData = {
+            numeroDeTransit,
+            numeroDeBalise,
+            codeHS,
+            corridor,
+            typeDeVehicule,
+            immatriculation,
+            transitaire,
+            chauffeur,
+            telephone,
+            creationDate,
+            creationHeureDebut,
+            creationHeureFin,
+            alarme,
+            clotureDate,
+            clotureHeure,
+            clotureLieu,
+            clotureMode,
+            duree  // Include duree here
+          };
+      
+          try {
+            const response = await fetch('/cargo/ajout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+              body: JSON.stringify(cargoData),
+            });
+      
+            if (response.ok) {
+              const data = await response.json();
+              console.log('Request successful:', data);
+              alert(data);
+              window.location.href = '/accueil';
+            } else {
+              const errorData = await response.json();
+              console.error('Request failed:', errorData.message);
+              alert('Request failed: ' + errorData.message);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during login');
+          }
         }
-
-        
+        submit()
       }
-      submit()
+      
+      
+      
       //form.submit();
     } else {
       console.error('Form not found!');
     }
-  }
+  
 });
 
 // Backward Navigation
