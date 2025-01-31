@@ -262,6 +262,67 @@
             </div>
           </div>
 
+
+
+          <div id="addClotureModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addCableModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addCableModalLabel">Ajouter cloture</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="addClotureForm">
+                    <div class="form-group">
+                      <label for="firstname" class="formbold-form-label"> Date </label>
+                    <input
+                    type="date"
+                    name="cloturedate"
+                    placeholder=""
+                    id="cloturedate"
+                    class="formbold-form-input"
+                    />
+                    </div>
+                    <div class="form-group">
+                      <label for="lastname" class="formbold-form-label"> Heure </label>
+                    <input
+                    type="time"
+                    name="clotureheure"
+                    placeholder=""
+                    id="clotureheure"
+                    class="formbold-form-input"
+                    />
+                    </div>
+                    <div class="form-group">
+                      <label for="firstname" class="formbold-form-label"> Lieu </label>
+                    <input
+                    type="text"
+                    name="cloturelieu"
+                    placeholder=""
+                    id="cloturelieu"
+                    class="formbold-form-input"
+                    />
+                    </div>       
+                    
+                    
+                    <div class="form-group">
+                      <label for="lastname" class="formbold-form-label" > Mode </label>
+                      <select id="cloturemode" name="cloturemode" class="formbold-form-input">
+                          <option value="">Choisissez le mode</option>
+                          <option value="forcee">Forcee</option>
+                          <option value="fermeture">Fermeture</option>
+                      </select>
+                    </div> 
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enregistrer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
     
         <form id="cargoForm">
             <h1>Donnee Cargo</h1>
@@ -311,6 +372,9 @@
                 <button id="addAlarmeButton" style="margin-bottom: 10px;" type="button" class="export">Ajouter alarme</button>
             </div>
            
+            <div>
+              
+              <button id="addClotureButton" style="margin-bottom: 10px;" type="button" class="export">Ajouter cloture</button></div>
     
             <label for="cloture_date">Cloture Date</label>
             <input type="date" id="cloture_date" name="cloture_date" disabled>

@@ -65,9 +65,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <input type="number" id="alarme_niveau_${index}" name="alarme[niveau]" value="${alarme.niveau || ''}" class="formbold-form-input" disabled />
                         </div>
                         <div>
-                            <label for="alarme_date_${index}" class="formbold-form-label">Date</label>
-                            <input type="date" id="alarme_date_${index}" name="alarme[date]" value="${formatDate(alarme.date) || ''}" class="formbold-form-input" disabled />
+                            <label for="alarme_date_${index}" class="formbold-form-label">Type</label>
+                            <input type="text" id="alarme_type_${index}" name="alarme[type]" value="${alarme.type || ''}" class="formbold-form-input" disabled />
                         </div>
+                        
                     </div>
 
                     <div class="formbold-input-flex">
@@ -75,11 +76,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <label for="alarme_heure_${index}" class="formbold-form-label">Heure</label>
                             <input type="time" id="alarme_heure_${index}" name="alarme[heure]" value="${alarme.heure || ''}" class="formbold-form-input" disabled />
                         </div>
+
                         <div>
+                            <label for="alarme_date_${index}" class="formbold-form-label">Date</label>
+                            <input type="date" id="alarme_date_${index}" name="alarme[date]" value="${formatDate(alarme.date) || ''}" class="formbold-form-input" disabled />
+                        </div>
+                        
+                    </div>
+
+                    <div>
                             <label for="alarme_lieu_${index}" class="formbold-form-label">Lieu</label>
                             <input type="text" id="alarme_lieu_${index}" name="alarme[lieu]" value="${alarme.lieu || ''}" class="formbold-form-input" disabled />
                         </div>
-                    </div>
 
                     <div>
                         <label for="alarme_observation_${index}" class="formbold-form-label">Observation</label>
@@ -139,6 +147,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         };
 
+        const clotureDate = cargoData[0].clotureDate; 
+
+        const buttons = [
+            document.getElementById("addUserButton"),
+            document.getElementById("addCableButton"),
+            document.getElementById("addCommentButton"),
+            document.getElementById("addAlarmeButton"),
+            document.getElementById("addClotureButton")
+        ];
+        
+        // Disable buttons if clotureDate is not null
+        if (clotureDate) {
+            buttons.forEach(button => button.disabled = true);
+        }
+
         // Fill other form fields
         setInputValue('numero_de_transit', cargoData[0].numeroDeTransit);
         setInputValue('numero_de_la_balise', cargoData[0].numeroDeBalise);
@@ -170,6 +193,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 $(document).ready(function () {
     const token = localStorage.getItem('token');
     const cargoId = window.location.pathname.split('/').pop();
+
+    const fetchCargoData = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/cargo/donnee/${cargoId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to fetch cargo data');
+            }
+    
+            const data = await response.json();
+            const cargoData = data.cargoData;
+    
+            // Extract creation date and time
+            const creationDate = cargoData[0].creationDate; // Assuming it's in YYYY-MM-DD format
+            const creationTime = cargoData[0].creationHeureFin; // Assuming it's in HH:MM format
+    
+            return { creationDate, creationTime };
+        } catch (error) {
+            console.error("Error fetching cargo data:", error);
+            return null;
+        }
+    };
+
     $('#addUserButton').click(function () {
         $('#addUserModal').modal('show');
     });
@@ -249,6 +301,48 @@ $(document).ready(function () {
     $('#addCableButton').click(function () {
         $('#addCableModal').modal('show');
     });
+
+    fetchCargoData().then(data => {
+        if (data) {
+          const { creationDate, creationTime } = data;
+    
+          // Replace with actual creation date and time dynamically
+          const $cableDateInput = $('input[name="cable_date"]');
+          const $cableHeureInput = $('input[name="cable_time"]');
+    
+          // Set the minimum selectable date to the creation date
+          $cableDateInput.attr('min', creationDate);
+    
+          // Function to update the minimum selectable heure (time) based on selected date
+          function updateMinHeure() {
+            const selectedDate = $cableDateInput.val();
+            if (selectedDate === creationDate) {
+              // Set min hour for current date to be just after the creation heure
+              $cableHeureInput.attr('min', creationTime);
+            } else {
+              // Allow any time for other dates
+              $cableHeureInput.removeAttr('min');
+            }
+          }
+    
+          // Event listener to update min time when date changes
+          $cableDateInput.on('input', function() {
+            updateMinHeure();
+          });
+    
+          // Ensure time is not set before the minimum allowed time (based on creation hour)
+          $cableHeureInput.on('input', function() {
+            const selectedHeure = $cableHeureInput.val();
+            if (selectedHeure && selectedHeure < creationTime) {
+              // If heure is less than creationHeure, reset it to the creation heure
+              $cableHeureInput.val(creationTime);
+            }
+          });
+    
+          // Call the updateMinHeure function on page load to set the min heure correctly
+          updateMinHeure();
+        }
+      });
 
     // Handle form submission
     $('#addCableForm').submit(function (e) {
@@ -361,6 +455,49 @@ $(document).ready(function () {
             $typeSelect.append('<option value="">Choisissez le type d\'alarme</option>');
         }
     });
+
+
+    fetchCargoData().then(data => {
+        if (data) {
+          const { creationDate, creationTime } = data;
+    
+          // Replace with actual creation date and time dynamically
+          const $alarmeDateInput = $('input[name="alarme[date]"]');
+          const $alarmeHeureInput = $('input[name="alarme[heure]"]');
+    
+          // Set the minimum selectable date to the creation date
+          $alarmeDateInput.attr('min', creationDate);
+    
+          // Function to update the minimum selectable heure (time) based on selected date
+          function updateMinHeure() {
+            const selectedDate = $alarmeDateInput.val();
+            if (selectedDate === creationDate) {
+              // Set min hour for current date to be just after the creation heure
+              $alarmeHeureInput.attr('min', creationTime);
+            } else {
+              // Allow any time for other dates
+              $alarmeHeureInput.removeAttr('min');
+            }
+          }
+    
+          // Event listener to update min time when date changes
+          $alarmeDateInput.on('input', function() {
+            updateMinHeure();
+          });
+    
+          // Ensure time is not set before the minimum allowed time (based on creation hour)
+          $alarmeHeureInput.on('input', function() {
+            const selectedHeure = $alarmeHeureInput.val();
+            if (selectedHeure && selectedHeure < creationTime) {
+              // If heure is less than creationHeure, reset it to the creation heure
+              $alarmeHeureInput.val(creationTime);
+            }
+          });
+    
+          // Call the updateMinHeure function on page load to set the min heure correctly
+          updateMinHeure();
+        }
+      });
     
     // Remove a section
     const attachRemoveEventAlarme = () => {
@@ -376,4 +513,132 @@ $(document).ready(function () {
     
     // Attach events to existing elements on page load
     attachRemoveEventAlarme();
+
+
+    const getAlarmeData = () => {
+        const alarmeData = [];
+        $('.alarme-form-item').each(function () {
+            const $item = $(this);
+            const niveau = $item.find('select[name="alarme[niveau]"]').val();
+            const type = $item.find('select[name="alarme[type]"]').val();
+            const date = $item.find('input[name="alarme[date]"]').val();
+            const heure = $item.find('input[name="alarme[heure]"]').val();
+            const lieu = $item.find('input[name="alarme[lieu]"]').val();
+            const observation = $item.find('textarea[name="alarme[observation]"]').val();
+
+            // Add each alarm object to the array
+            alarmeData.push({ niveau, type, date, heure, lieu, observation });
+        });
+        return alarmeData;
+    };
+
+    $('#addAlarmeForm').submit(function (e) {
+        e.preventDefault();
+
+        const formData = {
+            alarme: getAlarmeData(),
+        };
+
+        $.ajax({
+            url: `/cargo/alarme/${cargoId}`,
+            type: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(formData),
+            success: function (response) {
+                alert('Alarme enregistre avec success');
+                console.log(response)
+                $('#addAlarmeModal').modal('hide');
+                //table.ajax.reload();
+            },
+            error: function (error) {
+                alert("Erreur d'enregistrement de l'alarme: " + error.responseText);
+            },
+        });
+
+
+
+        
+    });
+
+
+    $('#addClotureButton').click(function () {
+        $('#addClotureModal').modal('show');
+    });
+
+    fetchCargoData().then(data => {
+        if (data) {
+          const { creationDate, creationTime } = data;
+    
+          // Replace with actual creation date and time dynamically
+          const $clotureDateInput = $('input[name="cloturedate"]');
+          const $clotureHeureInput = $('input[name="clotureheure"]');
+    
+          // Set the minimum selectable date to the creation date
+          $clotureDateInput.attr('min', creationDate);
+    
+          // Function to update the minimum selectable heure (time) based on selected date
+          function updateMinHeure() {
+            const selectedDate = $clotureDateInput.val();
+            if (selectedDate === creationDate) {
+              // Set min hour for current date to be just after the creation heure
+              $clotureHeureInput.attr('min', creationTime);
+            } else {
+              // Allow any time for other dates
+              $clotureHeureInput.removeAttr('min');
+            }
+          }
+    
+          // Event listener to update min time when date changes
+          $clotureDateInput.on('input', function() {
+            updateMinHeure();
+          });
+    
+          // Ensure time is not set before the minimum allowed time (based on creation hour)
+          $clotureHeureInput.on('input', function() {
+            const selectedHeure = $clotureHeureInput.val();
+            if (selectedHeure && selectedHeure < creationTime) {
+              // If heure is less than creationHeure, reset it to the creation heure
+              $clotureHeureInput.val(creationTime);
+            }
+          });
+    
+          // Call the updateMinHeure function on page load to set the min heure correctly
+          updateMinHeure();
+        }
+      });
+
+    // Handle form submission
+    $('#addClotureForm').submit(function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        const formData = {
+            clotureDate: $('#cloturedate').val(),
+            clotureHeure: $('#clotureheure').val(),
+            clotureLieu: $('#cloturelieu').val(),
+            clotureMode: $('#cloturemode').val(),
+           
+        };
+
+        $.ajax({
+            url: `/cargo/cloture/${cargoId}`,
+            type: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(formData),
+            success: function (response) {
+                alert('Transit cloture avec success');
+                $('#addClotureModal').modal('hide'); // Hide the modal
+                console.log(response)
+                table.ajax.reload(); // Reload the table data
+            },
+            error: function (error) {
+                alert("Erreur d'enregistrement de la cloture: " + error.responseText);
+            },
+        });
+    });
 });

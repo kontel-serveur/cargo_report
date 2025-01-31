@@ -109,6 +109,60 @@ const getMySingleCargoData = async(req, res)=>{
   }
 }
 
+const addAlarme = async(req, res) =>{
+  try {
+    const id = req.params.id
+    const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+
+    if(cargo){
+        const alarme = {...cargo.alarme, alarme: req.body.alarme}
+        const existingAlarme = Array.isArray(cargo.alarme) ? cargo.alarme : [];
+        const newAlarme = Array.isArray(req.body.alarme) ? req.body.alarme : [];
+        const updatedAlarme = [...existingAlarme, ...newAlarme];
+        
+        await Cargo.update({alarme: updatedAlarme}, {where:{id:id, addedBy: req.user.id}})
+
+        return res.status(StatusCodes.OK).json('Alarme added successfully!')
+    }else{
+      return res.status(StatusCodes.NOT_FOUND).json('Cargo not found')
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const addCloture = async(req, res) =>{
+  try {
+    const id = req.params.id
+    const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+
+    if(cargo){
+      const creationDate = new Date(cargo.creationDate);
+      const clotureDate = new Date(req.body.clotureDate);
+      
+      const duree = clotureDate - creationDate;
+      
+      let dureeInDays = Math.ceil(duree / (1000 * 60 * 60 * 24)); 
+      
+      if (dureeInDays === 0) {
+          dureeInDays = 1;
+      }
+       
+        
+        await Cargo.update({clotureDate: req.body.clotureDate,
+          clotureHeure: req.body.clotureHeure,
+          clotureLieu: req.body.clotureLieu,
+          clotureMode: req.body.clotureMode, duree: dureeInDays}, {where:{id:id, addedBy: req.user.id}})
+
+        return res.status(StatusCodes.OK).json('Alarme added successfully!')
+    }else{
+      return res.status(StatusCodes.NOT_FOUND).json('Cargo not found')
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const depassementDelaiRegistration = async(req, res)=>{
   try {
     const id = req.params.id
@@ -168,4 +222,4 @@ const casSupectRegistration = async(req, res)=>{
   }
 }
 
-module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration}
+module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture}

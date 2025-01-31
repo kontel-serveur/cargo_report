@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const fs = require('fs')
 const path = require('path')
-
+const { Sequelize, Op } = require('sequelize');
 const helmet = require('helmet')
 const cors = require('cors')
 const xss = require('xss-clean')
@@ -55,7 +55,7 @@ app.get('/exportExcel', async (req, res) => {
     try {
         // Fetch Cargo and DepassementDelai data
         const [cargoData, depassementData] = await Promise.all([
-            Cargo.findAll({ raw: true }),
+            Cargo.findAll({ raw: true, where: { clotureDate: { [Sequelize.Op.ne]: null }, }, }),
             DepassementDelai.findAll({ raw: true }),
         ]);
 
@@ -180,7 +180,8 @@ console.log(data)
                                   'Immatriculation', 
                                   'Chauffeur', 
                                   'Date Creation', 
-                                  'Date Cloture', 
+                                  'Date Cloture',
+                                  'Duree du transit', 
                                   'Niveau', 
                                   'Observation'
                                               ])
@@ -260,6 +261,7 @@ console.log(data)
         cargo.chauffeur,
         formatDate(cargo.creationDate),
         formatDate(cargo.clotureDate),
+        cargo.duree,
         delai.observation?.map(observation => observation.niveau).join('\n\n') || '',          // 'Niveau'
         delai.observation?.map(observation => observation.observation).join('\n\n') || '',      // 'Observation'
       ]);
