@@ -12,6 +12,13 @@ $(document).ready(function () {
             dataSrc: 'cargoData', // Path to array of data in JSON response
         },
         columns: [
+            { 
+                title: ' ', 
+                data: null, 
+                render: function (data, type, row, meta) {
+                    return meta.row + 1; // Index starts from 1
+                }
+            },
             { data: 'numeroDeTransit' },
             { data: 'numeroDeBalise' },
             //{ data: 'codeHS' },

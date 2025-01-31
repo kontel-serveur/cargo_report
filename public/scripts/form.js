@@ -9,11 +9,11 @@ const stepThree = document.querySelector('.formbold-form-step-3');
 const formSubmitBtn = document.querySelector('.formbold-btn');
 const formBackBtn = document.querySelector('.formbold-back-btn');
 
-const alarmeContainer = document.getElementById('alarme-container');
-const addAlarmeBtn = document.getElementById('add-alarme-btn');
+//const alarmeContainer = document.getElementById('alarme-container');
+//const addAlarmeBtn = document.getElementById('add-alarme-btn');
 
 // Add a new alarme section
-addAlarmeBtn.addEventListener('click', () => {
+/*addAlarmeBtn.addEventListener('click', () => {
   const alarmeItem = document.querySelector('.alarme-item').cloneNode(true);
 
   // Clear input values
@@ -43,7 +43,7 @@ const attachRemoveEvent = () => {
 
 attachRemoveEvent();
 
-
+*/
 
 const codeContainer = document.getElementById('code-container');
 const addCodeBtn = document.getElementById('add-code-btn');
@@ -156,53 +156,44 @@ document.getElementById('creation_heure_fin').addEventListener('input', function
   }
 });
 
-formSubmitBtn.addEventListener("click", function(event) {
+formSubmitBtn.addEventListener("click", function (event) {
   event.preventDefault();
 
   if (stepMenuOne.classList.contains('active')) {
     stepMenuOne.classList.remove('active');
     stepMenuTwo.classList.add('active');
-    
+
     stepOne.classList.remove('active');
     stepTwo.classList.add('active');
-    
+
     formBackBtn.classList.add('active');
-  } else if (stepMenuTwo.classList.contains('active')) {
-    stepMenuTwo.classList.remove('active');
-    stepMenuThree.classList.add('active');
-    
-    stepTwo.classList.remove('active');
-    stepThree.classList.add('active');
-    
-    formBackBtn.classList.add('active'); // Ensure back button stays visible
     formSubmitBtn.textContent = 'Submit'; // Change button text to "Submit"
-  } else if (stepMenuThree.classList.contains('active')) {
+  } else if (stepMenuTwo.classList.contains('active')) {
     // Ensure the form is selected correctly and then submit
     const form = document.querySelector('#cargoForm');
 
-    
     if (form) {
-      console.log('form submitting')
+      console.log('Form submitting...');
 
       async function submit() {
         const token = localStorage.getItem('token');
-      
+
         const numeroDeTransit = document.getElementById('numero_de_transit').value;
         const numeroDeBalise = document.getElementById('numero_de_la_balise').value;
-        
+
         const codeContainer = document.getElementById('code-container');
         const codeItems = codeContainer.querySelectorAll('.code-item');
-      
+
         const codeHS = [];
         codeItems.forEach((codeItem) => {
           const code_hs = codeItem.querySelector('input[name="code[code_hs]"]').value;
           codeHS.push({ code_hs });
         });
-      
+
         const corridor = document.getElementById('corridor').value;
         const typeDeVehicule = document.getElementById('type_de_vehicule').value;
         const immatriculation = document.getElementById('immatriculation').value;
-      
+
         const transitaireContainer = document.getElementById('transitaire-container');
         const transitaireItems = transitaireContainer.querySelectorAll('.transitaire-item');
         const transitaire = [];
@@ -210,25 +201,25 @@ formSubmitBtn.addEventListener("click", function(event) {
           const Transitaire = transitaireItem.querySelector('input[name="transitaire[transitaire]"]').value;
           transitaire.push({ Transitaire });
         });
-      
+
         const chauffeur = document.getElementById('chauffeur').value;
         const telephone = document.getElementById('telephone').value;
         const telephoneError = document.getElementById('telephone-error');
 
-  // Check if the phone number is exactly 8 digits
+        // Check if the phone number is exactly 8 digits
         const phoneRegex = /^\d{8}$/;
         if (!phoneRegex.test(telephone)) {
-          telephoneError.style.display = 'block';  // Show the error message if phone number is invalid
-          return;  // Prevent form submission if the phone number is not valid
+          telephoneError.style.display = 'block'; // Show the error message if phone number is invalid
+          return; // Prevent form submission if the phone number is not valid
         }
 
-  // Hide error message before submitting
+        // Hide error message before submitting
         telephoneError.style.display = 'none';
         const creationDate = document.getElementById('creation_date').value;
         const creationHeureDebut = document.getElementById('creation_heure_debut').value;
         const creationHeureFin = document.getElementById('creation_heure_fin').value;
-      
-        const alarmeContainer = document.getElementById('alarme-container');
+
+      /*  const alarmeContainer = document.getElementById('alarme-container');
         const alarmItems = alarmeContainer.querySelectorAll('.alarme-item');
         const alarme = [];
         alarmItems.forEach((alarmeItem) => {
@@ -238,108 +229,77 @@ formSubmitBtn.addEventListener("click", function(event) {
           const lieu = alarmeItem.querySelector('input[name="alarme[lieu]"]').value;
           const observation = alarmeItem.querySelector('textarea[name="alarme[observation]"]').value;
           alarme.push({ niveau, date, heure, lieu, observation });
-        });
-      
-        // const clotureDate = document.getElementById('cloture_date').value;
-        // const clotureHeure = document.getElementById('cloture_heure').value;
-        // const clotureLieu = document.getElementById('cloture_lieu').value;
-        // const clotureMode = document.getElementById('cloture_mode').value;
-        
-        const clotureDate =null;
+        });*/
+
+        // Cloture fields are null
+        const alarme = [];
+        const clotureDate = null;
         const clotureHeure = null;
-        const clotureLieu =null;
-        const clotureMode =null;
-        // Convert dates to Date objects
-        const creationDateStr = new Date(creationDate + 'T00:00:00');
-        const clotureDateStr = new Date(clotureDate + 'T00:00:00');
-        const duree =null;
-      
-        // Validate dates
-     /*   if (isNaN(creationDateStr.getTime()) || isNaN(clotureDateStr.getTime())) {
-          console.error('One or both dates are invalid');
-        } else {
-          const differenceInMilliseconds = clotureDateStr - creationDateStr;
-          let duree = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24));
-      
-          // If duration is 0, set it to 1
-          if (duree === 0) {
-            duree = 1;
+        const clotureLieu = null;
+        const clotureMode = null;
+        const duree = null;
+
+        // Prepare the cargo data including the calculated duree
+        const cargoData = {
+          numeroDeTransit,
+          numeroDeBalise,
+          codeHS,
+          corridor,
+          typeDeVehicule,
+          immatriculation,
+          transitaire,
+          chauffeur,
+          telephone,
+          creationDate,
+          creationHeureDebut,
+          creationHeureFin,
+          alarme,
+          clotureDate,
+          clotureHeure,
+          clotureLieu,
+          clotureMode,
+          duree, // Include duree here
+        };
+
+        try {
+          const response = await fetch('/cargo/ajout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(cargoData),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log('Request successful:', data);
+            alert('Cargo added successfully');
+            window.location.href = '/accueil';
+          } else {
+            const errorData = await response.json();
+            console.error('Request failed:', errorData.message);
+            alert('Request failed: ' + errorData.message);
           }
-      
-          console.log('Duration (in days):', duree); */
-      
-          // Prepare the cargo data including the calculated duree
-          const cargoData = {
-            numeroDeTransit,
-            numeroDeBalise,
-            codeHS,
-            corridor,
-            typeDeVehicule,
-            immatriculation,
-            transitaire,
-            chauffeur,
-            telephone,
-            creationDate,
-            creationHeureDebut,
-            creationHeureFin,
-            alarme,
-            clotureDate,
-            clotureHeure,
-            clotureLieu,
-            clotureMode,
-            duree  // Include duree here
-          };
-      
-          try {
-            const response = await fetch('/cargo/ajout', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-              },
-              body: JSON.stringify(cargoData),
-            });
-      
-            if (response.ok) {
-              const data = await response.json();
-              console.log('Request successful:', data);
-              alert(data);
-              window.location.href = '/accueil';
-            } else {
-              const errorData = await response.json();
-              console.error('Request failed:', errorData.message);
-              alert('Request failed: ' + errorData.message);
-            }
-          } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during login');
-          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred during submission');
         }
-        submit()
       }
-      
-      
-      
-      //form.submit();
+
+      submit();
     } else {
       console.error('Form not found!');
     }
-  
+  }
 });
+
 
 // Backward Navigation
 formBackBtn.addEventListener("click", function(event) {
   event.preventDefault();
 
-  if (stepMenuThree.classList.contains('active')) {
-    stepMenuThree.classList.remove('active');
-    stepMenuTwo.classList.add('active');
-    
-    stepThree.classList.remove('active');
-    stepTwo.classList.add('active');
-    
-    formSubmitBtn.textContent = 'Next'; // Reset the button text to "Next"
-  } else if (stepMenuTwo.classList.contains('active')) {
+  if (stepMenuTwo.classList.contains('active')) {
     stepMenuTwo.classList.remove('active');
     stepMenuOne.classList.add('active');
     

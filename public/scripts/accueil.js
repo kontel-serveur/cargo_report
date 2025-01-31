@@ -32,6 +32,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             table = cargoTable.DataTable({
                 data: data,
                 columns: [
+                    { 
+                        title: ' ', 
+                        data: null, 
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1; // Index starts from 1
+                        }
+                    },
                     { data: 'numeroDeTransit', title: 'Numero de transit' },
                     { data: 'numeroDeBalise', title: 'Numero de la balise' },
                     //{ data: 'codeHS', title: 'Code Hs' },

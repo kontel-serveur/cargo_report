@@ -161,6 +161,8 @@ console.log(data)
 
   const casSuspectWorksheet = workbook.addWorksheet('CAS SUSPECT')
 
+  const arretWorksheet = workbook.addWorksheet('ARRET EN ZONE DANGEREUSE')
+
   const dailyHeaderStyle = {
     font: { bold: true, name: 'Arial', size: 12 },
     alignment: { horizontal: 'center', vertical: 'middle' },
@@ -208,6 +210,16 @@ console.log(data)
                                                 
                                                             ])
 
+  arretWorksheet.addRow(['N° du Trst', 
+                                                'Type Vehicule', 
+                                                'Immatriculation', 
+                                                'Chauffeur', 
+                                                'Date', 
+                                                'Heure',
+                                                'Lieu' 
+                                                
+                                                            ])
+
   dailyWorksheet.eachRow((row, rowIndex) => {
     if (rowIndex === 1) {
       row.eachCell((cell) => {
@@ -233,6 +245,19 @@ console.log(data)
   });
 
   casSuspectWorksheet.eachRow((row, rowIndex) => {
+    row.height = 30;
+    if (rowIndex === 1) {
+      row.eachCell((cell) => {
+        cell.font = dailyHeaderStyle.font;
+        cell.alignment = dailyHeaderStyle.alignment;
+        cell.fill =  { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } };
+        cell.border = dailyHeaderStyle.border;
+      });
+    }
+  });
+
+
+  arretWorksheet.eachRow((row, rowIndex) => {
     row.height = 30;
     if (rowIndex === 1) {
       row.eachCell((cell) => {
@@ -289,7 +314,28 @@ data.forEach(cargo => {
       ]);
    
   }
+  if (cargo.alarme && Array.isArray(cargo.alarme)) {
+    cargo.alarme
+      .filter(alarm => alarm.type === "Arret en zone dangereuse")
+      .forEach(alarm => {
+        arretWorksheet.addRow([
+          cargo.numeroDeTransit,
+          cargo.typeDeVehicule,
+          cargo.immatriculation,
+          cargo.chauffeur,
+          formatDate(alarm.date), // Assuming the date property exists
+          alarm.heure, // Assuming the heure property exists
+          alarm.lieu
+        ]);
+      });
+  }
+  
 });
+
+
+
+
+
 
 
 data.forEach(cargo => {
@@ -312,6 +358,11 @@ data.forEach(cargo => {
 });
 
 cableDeverouileWorksheet.columns.forEach((column) => {
+  column.width = 20; 
+});
+
+
+arretWorksheet.columns.forEach((column) => {
   column.width = 20; 
 });
 
@@ -738,7 +789,7 @@ app.get('/exportExcelDateRange', async (req, res) => {
     try {
       // Fetch Cargo and DepassementDelai data
       const [cargoData, depassementData] = await Promise.all([
-        Cargo.findAll({ raw: true }),
+        Cargo.findAll({ raw: true, where: { clotureDate: { [Sequelize.Op.ne]: null }, } }),
         DepassementDelai.findAll({ raw: true }),
       ]);
 
@@ -857,6 +908,7 @@ app.get('/exportExcelDateRange', async (req, res) => {
   const depassementDelaiWorksheet = workbook.addWorksheet('DEPASSEMENT DU DELAI');
   const cableDeverouileWorksheet = workbook.addWorksheet('CABLE DE SECURITE DEVEROUILLE');
   const casSuspectWorksheet = workbook.addWorksheet('CAS SUSPECT');
+  const arretWorksheet = workbook.addWorksheet('ARRET EN ZONE DANGEREUSE')
 
   const dailyHeaderStyle = {
     font: { bold: true, name: 'Arial', size: 12 },
@@ -877,7 +929,8 @@ app.get('/exportExcelDateRange', async (req, res) => {
                                   'Immatriculation', 
                                   'Chauffeur', 
                                   'Date Creation', 
-                                  'Date Cloture', 
+                                  'Date Cloture',
+                                  'Duree du transit',  
                                   'Niveau', 
                                   'Observation'
                                               ]);
@@ -902,6 +955,16 @@ app.get('/exportExcelDateRange', async (req, res) => {
                                                 'Commentaire' 
                                                 
                                                             ]);
+
+arretWorksheet.addRow(['N° du Trst', 
+                                                              'Type Vehicule', 
+                                                              'Immatriculation', 
+                                                              'Chauffeur', 
+                                                              'Date', 
+                                                              'Heure',
+                                                              'Lieu' 
+                                                              
+                                                                          ])
 
   // Add data rows to worksheets (following the same logic as before)
 
@@ -943,6 +1006,19 @@ app.get('/exportExcelDateRange', async (req, res) => {
   });
 
 
+  arretWorksheet.eachRow((row, rowIndex) => {
+    row.height = 30;
+    if (rowIndex === 1) {
+      row.eachCell((cell) => {
+        cell.font = dailyHeaderStyle.font;
+        cell.alignment = dailyHeaderStyle.alignment;
+        cell.fill =  { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffffff' } };
+        cell.border = dailyHeaderStyle.border;
+      });
+    }
+  });
+
+
   let rowIndex = 2;
   Object.keys(dailyDataCount).forEach((dateKey) => {
     dailyWorksheet.addRow([dateKey, dailyDataCount[dateKey]]);
@@ -959,6 +1035,7 @@ app.get('/exportExcelDateRange', async (req, res) => {
         cargo.chauffeur,
         formatDate(cargo.creationDate),
         formatDate(cargo.clotureDate),
+        cargo.duree,
         delai.observation?.map(observation => observation.niveau).join('\n\n') || '',          // 'Niveau'
         delai.observation?.map(observation => observation.observation).join('\n\n') || '',      // 'Observation'
       ]);
@@ -986,6 +1063,22 @@ data.forEach(cargo => {
         cargo.cableDeverouille.heureCoupure
       ]);
    
+  }
+
+  if (cargo.alarme && Array.isArray(cargo.alarme)) {
+    cargo.alarme
+      .filter(alarm => alarm.type === "Arret en zone dangereuse")
+      .forEach(alarm => {
+        arretWorksheet.addRow([
+          cargo.numeroDeTransit,
+          cargo.typeDeVehicule,
+          cargo.immatriculation,
+          cargo.chauffeur,
+          formatDate(alarm.date), // Assuming the date property exists
+          alarm.heure, // Assuming the heure property exists
+          alarm.lieu
+        ]);
+      });
   }
 });
 
@@ -1023,6 +1116,10 @@ cableDeverouileWorksheet.columns.forEach((column) => {
   };
 
   dailyWorksheet.columns.forEach((column) => {
+    column.width = 20; 
+  });
+
+  arretWorksheet.columns.forEach((column) => {
     column.width = 20; 
   });
 
