@@ -132,20 +132,24 @@ console.log(data)
     acc[creationDate].push(cargo);
     return acc;
   }, {});
-
+  
   const currentMonth = getCurrentMonth();
+  const currentsYear = new Date().getFullYear();
+  const daysInMonths = new Date(currentsYear, currentMonth + 1, 0).getDate();
+  
   const dailyDataCount = {};
-
- 
-  for (let i = 1; i <= 31; i++) {
-    const dateKey = `${String(i).padStart(2, '0')}/${String(currentMonth + 1).padStart(2, '0')}/${new Date().getFullYear()}`;
+  
+  // Ensure we only iterate up to the actual days in the month
+  for (let i = 1; i <= daysInMonths; i++) {
+    const dateKey = `${String(i).padStart(2, '0')}/${String(currentMonth + 1).padStart(2, '0')}/${currentsYear}`;
     dailyDataCount[dateKey] = 0;
   }
-
+  
   // Count the data entries for each day
   Object.keys(groupedData).forEach((creationDate) => {
-    const day = creationDate.split('/')[0]; // Get the day part of the date
-    dailyDataCount[creationDate] = groupedData[creationDate].length;
+    if (dailyDataCount.hasOwnProperty(creationDate)) {
+      dailyDataCount[creationDate] = groupedData[creationDate].length;
+    }
   });
 
 
@@ -276,23 +280,29 @@ console.log(data)
     rowIndex++;
   });
 
+
   data.forEach(cargo => {
-  if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
-    cargo.depassementDelais.forEach(delai => {
-      depassementDelaiWorksheet.addRow([
-        cargo.numeroDeTransit,    // 'Type Vehicule'
-        cargo.typeDeVehicule, // 'Immatriculation'
-        cargo.immatriculation,       // 'Chauffeur'
-        cargo.chauffeur,
-        formatDate(cargo.creationDate),
-        formatDate(cargo.clotureDate),
-        cargo.duree,
-        delai.observation?.map(observation => observation.niveau).join('\n\n') || '',          // 'Niveau'
-        delai.observation?.map(observation => observation.observation).join('\n\n') || '',      // 'Observation'
-      ]);
-    });
-  }
-});
+    if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
+      const creationDate = new Date(cargo.creationDate);
+      
+      // Ensure the cargo's creation date is within the current month and year
+      if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
+        cargo.depassementDelais.forEach(delai => {
+          depassementDelaiWorksheet.addRow([
+            cargo.numeroDeTransit,    // 'Type Vehicule'
+            cargo.typeDeVehicule,     // 'Immatriculation'
+            cargo.immatriculation,    // 'Chauffeur'
+            cargo.chauffeur,
+            formatDate(cargo.creationDate),
+            formatDate(cargo.clotureDate),
+            cargo.duree,
+            delai.observation?.map(observation => observation.niveau).join('\n\n') || '', // 'Niveau'
+            delai.observation?.map(observation => observation.observation).join('\n\n') || '', // 'Observation'
+          ]);
+        });
+      }
+    }
+  });
 
 depassementDelaiWorksheet.columns.forEach((column) => {
   column.width = 20; 
@@ -301,35 +311,43 @@ dailyWorksheet.columns.forEach((column) => {
   column.width = 20; 
 });
 
+const currentYear = new Date().getFullYear(); // Current year
+const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
 data.forEach(cargo => {
-  if (cargo.cableDeverouille && cargo.cableDeverouille !==null) {
-    
+  const creationDate = new Date(cargo.creationDate); // Consistently use this for filtering
+
+  // Include only if creationDate is within the current month and year
+  if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
+    // Add cableDeverouille entry
+    if (cargo.cableDeverouille && cargo.cableDeverouille !== null) {
       cableDeverouileWorksheet.addRow([
-        cargo.numeroDeTransit,    // 'Type Vehicule'
-        cargo.typeDeVehicule, // 'Immatriculation'
-        cargo.immatriculation,       // 'Chauffeur'
+        cargo.numeroDeTransit,    
+        cargo.typeDeVehicule,     
+        cargo.immatriculation,    
         cargo.chauffeur,
         formatDate(cargo.cableDeverouille.dateCoupure),
         cargo.cableDeverouille.heureCoupure
       ]);
-   
+    }
+
+    // Add alarm entries of type "Arret en zone dangereuse"
+    if (cargo.alarme && Array.isArray(cargo.alarme)) {
+      cargo.alarme
+        .filter(alarm => alarm.type === "Arret en zone dangereuse")
+        .forEach(alarm => {
+          arretWorksheet.addRow([
+            cargo.numeroDeTransit,
+            cargo.typeDeVehicule,
+            cargo.immatriculation,
+            cargo.chauffeur,
+            formatDate(alarm.date), // Keep using alarm date for display
+            alarm.heure,
+            alarm.lieu
+          ]);
+        });
+    }
   }
-  if (cargo.alarme && Array.isArray(cargo.alarme)) {
-    cargo.alarme
-      .filter(alarm => alarm.type === "Arret en zone dangereuse")
-      .forEach(alarm => {
-        arretWorksheet.addRow([
-          cargo.numeroDeTransit,
-          cargo.typeDeVehicule,
-          cargo.immatriculation,
-          cargo.chauffeur,
-          formatDate(alarm.date), // Assuming the date property exists
-          alarm.heure, // Assuming the heure property exists
-          alarm.lieu
-        ]);
-      });
-  }
-  
 });
 
 
@@ -337,23 +355,24 @@ data.forEach(cargo => {
 
 
 
-
 data.forEach(cargo => {
-  if (cargo.casSuspect && cargo.casSuspect !==null) {
-    
+  const creationDate = new Date(cargo.creationDate); // Consistently use this for filtering
+
+  // Include only if creationDate is within the current month and year
+  if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
+    if (cargo.casSuspect && cargo.casSuspect !== null) {
       casSuspectWorksheet.addRow([
         cargo.numeroDeTransit,   
-        cargo.numeroDeBalise, // 'Type Vehicule'
-        cargo.typeDeVehicule, // 'Immatriculation'
-        cargo.immatriculation, 
-        //cargo.transitaire,
-        Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',      // 'Chauffeur'
+        cargo.numeroDeBalise,    
+        cargo.typeDeVehicule,    
+        cargo.immatriculation,    
+        Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',    
         cargo.chauffeur,
         formatDate(cargo.creationDate),
         formatDate(cargo.clotureDate),
         cargo.casSuspect.commentaire
       ]);
-   
+    }
   }
 });
 
@@ -600,8 +619,7 @@ mergedCell5.border = {
   worksheet.views = [{ state: 'frozen', ySplit: 3 }]; 
 
  // const currentMonth = new Date().getMonth(); // Current month (0-11)
-const currentYear = new Date().getFullYear(); // Current year
-const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Get the number of days in the current month
+ // Get the number of days in the current month
 
 // Loop through all the days of the current month
 for (let day = 1; day <= daysInMonth; day++) {
@@ -886,20 +904,24 @@ app.get('/exportExcelDateRange', async (req, res) => {
     acc[creationDate].push(cargo);
     return acc;
   }, {});
-
+  
   const currentMonth = getCurrentMonth();
+  const currentYear = new Date().getFullYear();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  
   const dailyDataCount = {};
-
-  // Ensure to count only data within the current month and the given date range
-  for (let i = 1; i <= 31; i++) {
-    const dateKey = `${String(i).padStart(2, '0')}/${String(currentMonth + 1).padStart(2, '0')}/${new Date().getFullYear()}`;
+  
+  // Ensure we only iterate up to the actual days in the month
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dateKey = `${String(i).padStart(2, '0')}/${String(currentMonth + 1).padStart(2, '0')}/${currentYear}`;
     dailyDataCount[dateKey] = 0;
   }
-
-  // Count the data entries for each day within the filtered date range
+  
+  // Count the data entries for each day
   Object.keys(groupedData).forEach((creationDate) => {
-    const day = creationDate.split('/')[0]; // Get the day part of the date
-    dailyDataCount[creationDate] = groupedData[creationDate].length;
+    if (dailyDataCount.hasOwnProperty(creationDate)) {
+      dailyDataCount[creationDate] = groupedData[creationDate].length;
+    }
   });
 
   const workbook = new ExcelJS.Workbook();
@@ -1395,7 +1417,8 @@ cableDeverouileWorksheet.columns.forEach((column) => {
 
             const codeCount = cargo.codeHS?.length || 1;
             const alarmCount = cargo.alarme?.length || 1;
-            const maxCount = Math.max(codeCount, alarmCount);
+            const transitaireCount = cargo.transitaire?.length || 1;
+            const maxCount = Math.max(codeCount, alarmCount, transitaireCount);
 
             row.height = Math.max(25, maxCount * 25);
 
