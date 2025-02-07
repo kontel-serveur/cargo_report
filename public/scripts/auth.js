@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(data => {
         if (!data.token) {
           localStorage.removeItem('token');
+          alert("Votre session a expire")
           window.location.href = '/';
         }
       })
