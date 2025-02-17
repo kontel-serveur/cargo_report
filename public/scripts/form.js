@@ -217,8 +217,8 @@ formSubmitBtn.addEventListener("click", function (event) {
        /* telephoneError.style.display = 'none';*/
         const creationDate = document.getElementById('creation_date').value;
         const creationHeureDebut = document.getElementById('creation_heure_debut').value;
-        const creationDateFin = document.getElementById('creation_date_fin')
-        const creationHeureFin = document.getElementById('creation_heure_fin').value;
+        const creationDateFin = document.getElementById('creation_date_fin').value || null;
+        const creationHeureFin = document.getElementById('creation_heure_fin').value || null;
 
       /*  const alarmeContainer = document.getElementById('alarme-container');
         const alarmItems = alarmeContainer.querySelectorAll('.alarme-item');
@@ -276,7 +276,8 @@ formSubmitBtn.addEventListener("click", function (event) {
           if (response.ok) {
             const data = await response.json();
             console.log('Request successful:', data);
-            alert('Cargo added successfully');
+           // alert('Cargo added successfully');
+           alert(data)
             window.location.href = '/accueil';
           } else {
             const errorData = await response.json();

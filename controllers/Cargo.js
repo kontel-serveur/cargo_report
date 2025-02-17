@@ -26,7 +26,7 @@ const cargoRegistration = async(req, res)=> {
 
     try {
 
-      const existingCargo = await Cargo.findOne({where: {numeroDeBalise: req.body.numeroDeBalise}})
+      const existingCargo = await Cargo.findOne({where: {numeroDeBalise: req.body.numeroDeBalise, clotureDate: null}})
 
       if (existingCargo){
         const cargo =  await Cargo.create({
@@ -52,7 +52,7 @@ const cargoRegistration = async(req, res)=> {
           addedBy: req.user.id
       })
 
-      return res.status(StatusCodes.OK).json('Le numero de balise a ete utilise sur un autre camion, Veuillez ajouter un commentaire')
+      return res.status(StatusCodes.OK).json('Transit enregistre avec success. Le numero de balise a ete utilise sur un autre camion toujours en cour de transit')
       }else{
         const cargo =  await Cargo.create({
           numeroDeTransit: req.body.numeroDeTransit,

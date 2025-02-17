@@ -329,6 +329,61 @@
             </div>
           </div>
 
+
+
+
+          <div id="addClotureModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addCableModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addCableModalLabel">Ajouter cloture</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="addClotureForm">
+                    <div class="form-group">
+                      <label for="firstname" class="formbold-form-label"> Date </label>
+                    <input
+                    type="date"
+                    name="creationdatefin"
+                    placeholder=""
+                    id="creationdatefin"
+                    class="formbold-form-input"
+                    />
+                    </div>
+                    <div class="form-group">
+                      <label for="lastname" class="formbold-form-label"> Heure </label>
+                    <input
+                    type="time"
+                    name="creationheurefin"
+                    placeholder=""
+                    id="clotureheure"
+                    class="formbold-form-input"
+                    />
+                    </div>
+                    <div class="form-group">
+                      <label for="firstname" class="formbold-form-label"> Lieu </label>
+                    <input
+                    type="text"
+                    name="cloturelieu"
+                    placeholder=""
+                    id="cloturelieu"
+                    class="formbold-form-input"
+                    />
+                    </div>       
+                    
+                    
+                   
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Enregistrer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
     
         <form id="cargoForm">
             <h1>Donnee Cargo</h1>
@@ -368,6 +423,11 @@
     
             <label for="creation_heure_debut">Creation Heure Debut</label>
             <input type="time" id="creation_heure_debut" name="creation_heure_debut" disabled>
+
+            <button id="addCreationFinButton" style="margin-bottom: 10px; margin-top: 16px;" type="button" class="export">Ajouter fin de creation</button>
+
+            <label for="creation_heure_fin">Creation Date Fin</label>
+            <input type="date" id="creation_date_fin" name="creation_date_fin" disabled>
     
             <label for="creation_heure_fin">Creation Heure Fin</label>
             <input type="time" id="creation_heure_fin" name="creation_heure_fin" disabled>

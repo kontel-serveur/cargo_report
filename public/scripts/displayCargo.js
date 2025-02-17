@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setInputValue('telephone', cargoData[0].telephone);
         setInputValue('creation_date', cargoData[0].creationDate);
         setInputValue('creation_heure_debut', cargoData[0].creationHeureDebut);
+        setInputValue('creation_date_fin', cargoData[0].creationDateFin)
         setInputValue('creation_heure_fin', cargoData[0].creationHeureFin);
         setInputValue('cloture_date', cargoData[0].clotureDate);
         setInputValue('cloture_heure', cargoData[0].clotureHeure);
@@ -186,6 +187,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching cargo data:', error);
         alert('An error occurred while fetching the cargo data.');
     }
+
+
+    const creationDateFinInput = document.getElementById("creation_date_fin");
+    const addCreationFinButton = document.getElementById("addCreationFinButton");
+
+    function toggleButtonVisibility() {
+        if (!creationDateFinInput.value) {
+            addCreationFinButton.style.display = "block";
+        } else {
+            addCreationFinButton.style.display = "none";
+        }
+    }
+
+    // Initial check in case the input has a value on load
+    toggleButtonVisibility();
+
+    // Check when the input changes
+    creationDateFinInput.addEventListener("input", toggleButtonVisibility);
 
 
 });
