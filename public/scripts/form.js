@@ -117,7 +117,7 @@ const attachRemoveTransitaireEvent = () => {
 attachRemoveCodeEvent();
 
 // Forward Navigation
-document.getElementById('telephone').addEventListener('input', function () {
+/*document.getElementById('telephone').addEventListener('input', function () {
   const telephone = this.value;
   const telephoneError = document.getElementById('telephone-error');
 
@@ -128,7 +128,7 @@ document.getElementById('telephone').addEventListener('input', function () {
   } else {
     telephoneError.style.display = 'none';  // Hide the error message
   }
-});
+}); */
 
 document.getElementById('creation_heure_debut').addEventListener('input', updateHeureFinMin);
 
@@ -214,9 +214,10 @@ formSubmitBtn.addEventListener("click", function (event) {
         }
 
         // Hide error message before submitting
-        telephoneError.style.display = 'none';
+       /* telephoneError.style.display = 'none';*/
         const creationDate = document.getElementById('creation_date').value;
         const creationHeureDebut = document.getElementById('creation_heure_debut').value;
+        const creationDateFin = document.getElementById('creation_date_fin')
         const creationHeureFin = document.getElementById('creation_heure_fin').value;
 
       /*  const alarmeContainer = document.getElementById('alarme-container');
@@ -252,6 +253,7 @@ formSubmitBtn.addEventListener("click", function (event) {
           telephone,
           creationDate,
           creationHeureDebut,
+          creationDateFin,
           creationHeureFin,
           alarme,
           clotureDate,

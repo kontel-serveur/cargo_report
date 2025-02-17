@@ -16,6 +16,7 @@ document.getElementById('cargoForm').addEventListener('submit', async (event) =>
     const telephone = document.getElementById('telephone').value;
     const creationDate = document.getElementById('creation_date').value;
     const creationHeureDebut = document.getElementById('creation_heure_debut').value;
+    const creationDateFin = document.getElementById('creation_date_fin').value;
     const creationHeureFin = document.getElementById('creation_heure_fin').value;
     const alarme = document.getElementById('numero_de_transit').value;
     const clotureDate = document.getElementById('cloture_date').value;
@@ -37,6 +38,7 @@ document.getElementById('cargoForm').addEventListener('submit', async (event) =>
       telephone, 
       creationDate, 
       creationHeureDebut, 
+      creationDateFin,
       creationHeureFin, 
       alarme, 
       clotureDate, 

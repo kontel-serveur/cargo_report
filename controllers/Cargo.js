@@ -41,6 +41,7 @@ const cargoRegistration = async(req, res)=> {
           telephone: req.body.telephone,
           creationDate: req.body.creationDate,
           creationHeureDebut: req.body.creationHeureDebut,
+          creationDateFin: req.body.creationDateFin,
           creationHeureFin: req.body.creationHeureFin,
           alarme: req.body.alarme,
           clotureDate: req.body.clotureDate,
@@ -65,6 +66,7 @@ const cargoRegistration = async(req, res)=> {
           telephone: req.body.telephone,
           creationDate: req.body.creationDate,
           creationHeureDebut: req.body.creationHeureDebut,
+          creationDateFin: req.body.creationDateFin,
           creationHeureFin: req.body.creationHeureFin,
           alarme: req.body.alarme,
           clotureDate: req.body.clotureDate,
@@ -126,6 +128,24 @@ const addAlarme = async(req, res) =>{
     }else{
       return res.status(StatusCodes.NOT_FOUND).json('Cargo not found')
     }
+  } catch (error) {
+    console.log(error)
+  }
+}
+const addCreationFin = async(req, res)=>{
+  try {
+    const id = req.params.id
+    const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+
+    if(cargo){
+      await Cargo.update({creationDateFin: req.body.creationDateFin,
+        creationHeureFin: req.body.creationHeureFin }, {where:{id:id, addedBy: req.user.id}})
+
+        return res.status(StatusCodes.OK).json('La creation a ete enregistre avec succes!')
+    }else{
+      return res.status(StatusCodes.NOT_FOUND).json('Cargo not found')
+    }
+
   } catch (error) {
     console.log(error)
   }
@@ -222,4 +242,4 @@ const casSupectRegistration = async(req, res)=>{
   }
 }
 
-module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture}
+module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture, addCreationFin}

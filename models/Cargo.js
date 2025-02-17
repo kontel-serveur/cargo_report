@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         numeroDeBalise: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
            // unique: true,
-            validate: {
+            /*validate: {
                 notEmpty: true,
-            },
+            },*/
         },
         codeHS: {
             type: DataTypes.JSON, // Use JSON data type for an array of objects
@@ -83,12 +83,17 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: true,
             },
         },
+
+        creationDateFin: {
+            type: DataTypes.DATEONLY,
+            allowNull: true,
+        },
         creationHeureFin: {
             type: DataTypes.TIME,
-            allowNull: false,
-            validate: {
+            allowNull: true,
+           /* validate: {
                 notEmpty: true,
-            },
+            },*/
         },
         alarme: {
             type: DataTypes.JSON, // Use JSON data type for an array of objects

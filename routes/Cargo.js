@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture} = require('../controllers/Cargo')
+const {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture, addCreationFin} = require('../controllers/Cargo')
 
 router.post('/ajout', cargoRegistration)
 router.get('/donnee', getMyCargoData)
@@ -12,6 +12,7 @@ router.post('/cas-suspect/:id', casSupectRegistration)
 
 router.patch('/alarme/:id', addAlarme)
 router.patch('/cloture/:id', addCloture)
+router.patch('/creation-fin/:id', addCreationFin)
 //router.post('/login', userLogin)
 
 module.exports = router
