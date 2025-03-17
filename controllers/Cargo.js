@@ -25,7 +25,7 @@ const handleSequelizeError = (error) => {
 const cargoRegistration = async(req, res)=> {
 
     try {
-
+      
       const existingCargo = await Cargo.findOne({where: {numeroDeBalise: req.body.numeroDeBalise, clotureDate: null}})
 
       if (existingCargo){

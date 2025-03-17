@@ -116,12 +116,12 @@ async function fetchCargoWithoutClotureDate() {
 const data = await fetchCargoWithDepassementDelai()
 const data_not_clotured = await fetchCargoWithoutClotureDate()
 
-console.log(data)
+console.log('Clotured', data)
 console.log('Not clotured', data_not_clotured)
 
   if (!data || data.length === 0) {
     console.log(data_not_clotured)
-    return res.status(404).send('No data to export.');
+  //  return res.status(404).send('No data to export.');
   }
 
   const formatDate = (dateString) => {
@@ -147,6 +147,15 @@ console.log('Not clotured', data_not_clotured)
   };
 
   const groupedData = data.reduce((acc, cargo) => {
+    const creationDate = formatDate(cargo.creationDate);
+    if (!acc[creationDate]) acc[creationDate] = [];
+    acc[creationDate].push(cargo);
+    return acc;
+  }, {});
+
+
+
+  const groupedDataNonCloture = data_not_clotured.reduce((acc, cargo) => {
     const creationDate = formatDate(cargo.creationDate);
     if (!acc[creationDate]) acc[creationDate] = [];
     acc[creationDate].push(cargo);
@@ -723,6 +732,291 @@ const finRow = worksheet.addRow(['FIN']);
 
     worksheet.mergeCells(`A${finRow.number}:U${finRow.number}`);
 
+
+
+
+
+
+
+    const headerRow1NonCloture = nonClotureWorksheet.addRow([
+      `RAPPORT DE ${getLastMonthNameAndYearInFrench()} NON-CLOTUREE`
+    ]);
+    
+    headerRow1NonCloture.height = 35
+    headerRow1NonCloture.eachCell((cell) => {
+      cell.font = headerStyle.fontHeader;
+      cell.alignment = headerRow1Style.alignment;
+      cell.fill = headerStyle.fill;
+      cell.border = headerStyle.border; 
+    });
+  
+    nonClotureWorksheet.mergeCells(`A1:V1`); 
+  
+    const headerRow2NonCloture = nonClotureWorksheet.addRow([
+      'N° du Trst',
+      'N° Balise',
+      'Code HS',
+      'Corridor',
+      'Info Véhicule',
+      
+      '',
+      'Personne de contact',
+      '',
+      '',
+      'Création',
+      '',
+      '',
+      'Alarme',
+      '',
+      '',
+      '',
+      '',
+      'Cloture',
+      '',
+      '',
+      '',
+      'Durée Trst'
+    ]);
+  
+    const mergeRangeNonCloture = 'E2:F2';
+  const mergedCellsNonCloture = nonClotureWorksheet.getCell('E2');
+  
+  if (!mergedCellsNonCloture.isMerged) {
+    nonClotureWorksheet.mergeCells(mergeRangeNonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCellNonCloture = nonClotureWorksheet.getCell('E2');
+  mergedCellNonCloture.font = headerStyle.font;
+  mergedCellNonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCellNonCloture.fill = headerStyle.fill2;
+  mergedCellNonCloture.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+  const mergeRange2NonCloture= 'G2:I2';
+  const mergedCells2NonCloture = nonClotureWorksheet.getCell('G2');
+  
+  if (!mergedCells2NonCloture.isMerged) {
+    nonClotureWorksheet.mergeCells(mergeRange2NonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell2NonCloture = nonClotureWorksheet.getCell('G2');
+  mergedCell2NonCloture.font = headerStyle.font;
+  mergedCell2NonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell2NonCloture.fill = headerStyle.fill2;
+  mergedCell2NonCloture.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+  
+  const mergeRange3NonCloture= 'J2:L2';
+  const mergedCells3NonCloture = nonClotureWorksheet.getCell('J2');
+  
+  if (!mergedCells3NonCloture.isMerged) {
+    nonClotureWorksheet.mergeCells(mergeRange3NonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell3NonCloture = nonClotureWorksheet.getCell('J2');
+  mergedCell3NonCloture.font = headerStyle.font;
+  mergedCell3NonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell3NonCloture.fill = headerStyle.fill2;
+  mergedCell3NonCloture.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+  const mergeRange4NonCloture= 'M2:Q2';
+  const mergedCells4NonCloture = nonClotureWorksheet.getCell('M2');
+  
+  if (!mergedCells4NonCloture.isMerged) {
+    nonClotureWorksheet.mergeCells(mergeRange4NonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell4NonCloture = nonClotureWorksheet.getCell('M2');
+  mergedCell4NonCloture.font = headerStyle.font;
+  mergedCell4NonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell4NonCloture.fill = headerStyle.fill2;
+  mergedCell4NonCloture.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+  
+  const mergeRange5NonCloture= 'R2:U2';
+  const mergedCells5NonCloture = nonClotureWorksheet.getCell('R2');
+  
+  if (!mergedCells5NonCloture.isMerged) {
+    nonClotureWorksheet.mergeCells(mergeRange5NonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+  }
+  
+  // Apply styles to the merged cell
+  const mergedCell5NonCloture = nonClotureWorksheet.getCell('R2');
+  mergedCell5NonCloture.font = headerStyle.font;
+  mergedCell5NonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+  mergedCell5NonCloture.fill = headerStyle.fill2;
+  mergedCell5NonCloture.border = {
+    top: { style: 'thin', color: { argb: '000000' } },
+    left: { style: 'thin', color: { argb: '000000' } },
+    bottom: { style: 'thin', color: { argb: '000000' } },
+    right: { style: 'thin', color: { argb: '000000' } }
+  };
+  
+  
+    headerRow2NonCloture.eachCell((cell, i) => {
+      cell.font = headerStyle.font;
+      cell.alignment = headerStyle.alignment;
+      cell.fill = headerStyle.fill2;
+        cell.border = {
+          top: { style: 'thin', color: { argb: '000000' } },
+          left: { style: 'thin', color: { argb: '000000' } },
+          bottom: { style: 'thin', color: { argb: '000000' } },
+          right: { style: 'thin', color: { argb: '000000' } },
+        };
+  
+      
+      
+      
+    });
+  
+    const headerRow3NonCloture = nonClotureWorksheet.addRow([
+      '',
+      '',
+      '',
+      '',
+      'Type Véhicule',
+      'Immatriculation',
+      'Transitaire',
+      'Chauffeur',
+      'Téléphone',
+      'Date',
+      'H Début',
+      'H Fin',
+      
+      'Niveau',
+      'Date',
+      'Heure',
+      'Lieu',
+      'Observation',
+      
+      'Date',
+      'Heure',
+      'Lieu',
+      'Mode',
+      ''
+    ]);
+    headerRow3NonCloture.eachCell((cell) => {
+      cell.font = headerStyle.font;
+      cell.alignment = headerStyle.alignment;
+      cell.fill = headerStyle.fill2;
+      cell.border = headerStyle.border; 
+    });
+  
+    nonClotureWorksheet.views = [{ state: 'frozen', ySplit: 3 }]; 
+
+
+
+
+
+
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const creationDate = `${day < 10 ? '0' : ''}${day}/${currentMonth + 1 < 10 ? '0' : ''}${currentMonth + 1}/${currentYear}`;
+  
+      const dateRow = nonClotureWorksheet.addRow([`Le ${creationDate}`]);
+      dateRow.height = 35;
+      dateRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          cell.font = dateRowStyle.font;
+          cell.alignment = dateRowStyle.alignment;
+          cell.fill = dateRowStyle.fill;
+  
+          if (colNumber === 1) {
+              nonClotureWorksheet.mergeCells(`A${dateRow.number}:V${dateRow.number}`);
+          }
+      });
+  
+      // Check if there is data for the current creationDate
+      if (groupedDataNonCloture[creationDate] && groupedDataNonCloture[creationDate].length > 0) {
+          // If there is data for this date, loop through it
+          groupedDataNonCloture[creationDate].forEach(async (cargo) => {
+              const row = nonClotureWorksheet.addRow([
+                  cargo.numeroDeTransit || '',
+                  cargo.numeroDeBalise || '',
+                  Array.isArray(cargo.codeHS) ? cargo.codeHS.map(item => item.code_hs).join('\n') : '',
+                  cargo.corridor || '',
+                  cargo.typeDeVehicule || '',
+                  cargo.immatriculation || '',
+                  //cargo.transitaire || '',
+                  Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',
+                  cargo.chauffeur || '',
+                  cargo.telephone || '',
+                  creationDate,
+                  cargo.creationHeureDebut || '',
+                  cargo.creationHeureFin || '',
+                  cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
+                  cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+                  cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
+                  cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
+                  cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
+                  //formatDate(cargo.clotureDate) || '',
+                  '',
+                  cargo.clotureHeure || '',
+                  cargo.clotureLieu || '',
+                  cargo.clotureMode || '',
+                  cargo.duree || ''
+              ]);
+  
+              const codeCount = cargo.codeHS?.length || 1;
+              const transitaireCount = cargo.transitaire?.length || 1;
+              const alarmCount = cargo.alarme?.length || 1;
+              const maxCount = Math.max(codeCount, alarmCount, transitaireCount);
+  
+              row.height = Math.max(25, maxCount * 25);
+  
+              row.eachCell((cell) => {
+                  cell.alignment = { horizontal: 'left', vertical: 'top', wrapText: true }; // Text wrapping and alignment
+              });
+          });
+      } else {
+          // If no data for the date, add a row with "Pas de création"
+          const noCreationRow = nonClotureWorksheet.addRow(['PAS DE CREATION']);
+          noCreationRow.height = 25;
+          noCreationRow.eachCell({ includeEmpty: true }, (cell) => {
+              cell.font = { name: 'Arial', size: 12 ,color: { argb: '' } }; // Style the "Pas de création" row
+              cell.alignment = { horizontal: 'left', indent: 90, vertical: 'center', wrapText: true };
+          });
+  
+          nonClotureWorksheet.mergeCells(`A${noCreationRow.number}:U${noCreationRow.number}`);
+      }
+      
+  }
+  
+  const finRowNonCloture = nonClotureWorksheet.addRow(['FIN']);
+  finRowNonCloture.height = 20; // Adjust height if necessary
+  finRowNonCloture.eachCell({ includeEmpty: true }, (cell) => {
+          cell.font = { bold: true, name: 'Arial', size: 27 }; // Make "FIN" bold
+          cell.alignment = { horizontal: 'left', indent: 90, vertical: 'middle' }; // Center align the "FIN"
+      });
+  
+      nonClotureWorksheet.mergeCells(`A${finRowNonCloture.number}:U${finRowNonCloture.number}`);
+
   /*Object.keys(groupedData).forEach((creationDate) => {
     const dateRow = worksheet.addRow([`Le ${creationDate}`]);
     dateRow.height = 35; 
@@ -807,6 +1101,14 @@ row.height = Math.max(25, maxCount * 25);
     }
   });
 
+  nonClotureWorksheet.columns.forEach((column, index) => {
+    if (index === 16) {
+      column.width = 40; 
+    } else {
+      column.width = 20;
+    }
+  });
+
   const fileName = `${getLastMonthNameAndYearInFrench()}.xlsx`;
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -884,10 +1186,39 @@ app.get('/exportExcelDateRange', async (req, res) => {
     }
   }
 
+  async function fetchCargoWithoutClotureDate(start, end) {
+    try {
+        // Fetch Cargo where clotureDate is NULL
+        const cargoData = await Cargo.findAll({ 
+            raw: true, 
+            where: { clotureDate: null } 
+        });
+
+        // Apply date filtering for cargos based on creationDate
+        const filteredCargo = cargoData.filter(cargo => {
+            const creationDate = new Date(cargo.creationDate);
+
+            return (
+                (!start || creationDate >= start) &&
+                (!end || creationDate <= end)
+            );
+        });
+
+        return filteredCargo;
+    } catch (error) {
+        console.error('Error fetching Cargo without ClotureDate:', error);
+        throw error;
+    }
+}
+
+
   const data = await fetchCargoWithDepassementDelai();
+  const data_not_clotured = await fetchCargoWithoutClotureDate(start, end);
+
+  
 
   console.log(data);
-
+  console.log(data_not_clotured)
   if (!data || data.length === 0) {
   //  return res.status(404).send('No data to export.');
 
@@ -927,6 +1258,16 @@ app.get('/exportExcelDateRange', async (req, res) => {
     return acc;
 }, {});
 
+
+const groupedDataNonCloture = data_not_clotured.reduce((acc, cargo) => {
+  const creationDate = formatDate(cargo.creationDate); // Format the date to match expected format
+  if (!acc[creationDate]) acc[creationDate] = [];
+  acc[creationDate].push(cargo);
+  return acc;
+}, {});
+
+
+
 // Create an object to store counts for the selected period
 const dailyDataCount = {};
 
@@ -947,7 +1288,12 @@ Object.keys(groupedData).forEach((creationDate) => {
 
 
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet(`${getLastMonthNameAndYearInFrench()}`);
+ // const worksheet = workbook.addWorksheet(`${getLastMonthNameAndYearInFrench()}`);
+  const worksheet = workbook.addWorksheet(`${formatDate(start)}-${formatDate(end)}`.replace(/[\/:*?[\]]/g, '-'))
+
+ // const nonClotureWorksheet = workbook.addWorksheet(`${getLastMonthNameAndYearInFrench()} NON-CLOTUREE`)
+  const nonClotureWorksheet = workbook.addWorksheet(`${formatDate(start)}-${formatDate(end)} NON-CLOTUREE`.replace(/[\/:*?[\]]/g, '-'))
+
   const dailyWorksheet = workbook.addWorksheet('CREATION JOURNALIERE');
   const depassementDelaiWorksheet = workbook.addWorksheet('DEPASSEMENT DU DELAI');
   const cableDeverouileWorksheet = workbook.addWorksheet('CABLE DE SECURITE DEVEROUILLE');
@@ -1466,6 +1812,290 @@ const finRow = worksheet.addRow(['FIN']);
 
     worksheet.mergeCells(`A${finRow.number}:V${finRow.number}`);
 
+
+
+
+
+
+
+
+
+
+
+
+    const headerRow1NonCloture = nonClotureWorksheet.addRow([
+      `RAPPORT DU ${formatDate(start)} AU ${formatDate(end)} NON-CLOTUREE`
+    ]);
+    
+    headerRow1NonCloture.height = 35
+    headerRow1NonCloture.eachCell((cell) => {
+      cell.font = headerStyle.fontHeader;
+      cell.alignment = headerRow1Style.alignment;
+      cell.fill = headerStyle.fill;
+      cell.border = headerStyle.border; 
+    });
+  
+    nonClotureWorksheet.mergeCells(`A1:V1`); 
+  
+    const headerRow2NonCloture = nonClotureWorksheet.addRow([
+      'N° du Trst',
+      'N° Balise',
+      'Code HS',
+      'Corridor',
+      'Info Véhicule',
+      '',
+      '',
+      'Personne de contact',
+      '',
+      '',
+      'Création',
+      '',
+      'Alarme',
+      '',
+      '',
+      '',
+      '',
+      'Cloture',
+      '',
+      '',
+      '',
+      
+      'Durée Trst'
+    ]);
+    const mergeRangeNonCloture = 'E2:F2';
+    const mergedCellsNonCloture = nonClotureWorksheet.getCell('E2');
+    
+    if (!mergedCellsNonCloture.isMerged) {
+      nonClotureWorksheet.mergeCells(mergeRangeNonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+    }
+    
+    // Apply styles to the merged cell
+    const mergedCellNonCloture = nonClotureWorksheet.getCell('E2');
+    mergedCellNonCloture.font = headerStyle.font;
+    mergedCellNonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+    mergedCellNonCloture.fill = headerStyle.fill2;
+    mergedCellNonCloture.border = {
+      top: { style: 'thin', color: { argb: '000000' } },
+      left: { style: 'thin', color: { argb: '000000' } },
+      bottom: { style: 'thin', color: { argb: '000000' } },
+      right: { style: 'thin', color: { argb: '000000' } }
+    };
+    
+    
+    const mergeRange2NonCloture= 'G2:I2';
+    const mergedCells2NonCloture = nonClotureWorksheet.getCell('G2');
+    
+    if (!mergedCells2NonCloture.isMerged) {
+      nonClotureWorksheet.mergeCells(mergeRange2NonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+    }
+    
+    // Apply styles to the merged cell
+    const mergedCell2NonCloture = nonClotureWorksheet.getCell('G2');
+    mergedCell2NonCloture.font = headerStyle.font;
+    mergedCell2NonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+    mergedCell2NonCloture.fill = headerStyle.fill2;
+    mergedCell2NonCloture.border = {
+      top: { style: 'thin', color: { argb: '000000' } },
+      left: { style: 'thin', color: { argb: '000000' } },
+      bottom: { style: 'thin', color: { argb: '000000' } },
+      right: { style: 'thin', color: { argb: '000000' } }
+    };
+    
+    
+    
+    const mergeRange3NonCloture= 'J2:L2';
+    const mergedCells3NonCloture = nonClotureWorksheet.getCell('J2');
+    
+    if (!mergedCells3NonCloture.isMerged) {
+      nonClotureWorksheet.mergeCells(mergeRange3NonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+    }
+    
+    // Apply styles to the merged cell
+    const mergedCell3NonCloture = nonClotureWorksheet.getCell('J2');
+    mergedCell3NonCloture.font = headerStyle.font;
+    mergedCell3NonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+    mergedCell3NonCloture.fill = headerStyle.fill2;
+    mergedCell3NonCloture.border = {
+      top: { style: 'thin', color: { argb: '000000' } },
+      left: { style: 'thin', color: { argb: '000000' } },
+      bottom: { style: 'thin', color: { argb: '000000' } },
+      right: { style: 'thin', color: { argb: '000000' } }
+    };
+    
+    
+    const mergeRange4NonCloture= 'M2:Q2';
+    const mergedCells4NonCloture = nonClotureWorksheet.getCell('M2');
+    
+    if (!mergedCells4NonCloture.isMerged) {
+      nonClotureWorksheet.mergeCells(mergeRange4NonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+    }
+    
+    // Apply styles to the merged cell
+    const mergedCell4NonCloture = nonClotureWorksheet.getCell('M2');
+    mergedCell4NonCloture.font = headerStyle.font;
+    mergedCell4NonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+    mergedCell4NonCloture.fill = headerStyle.fill2;
+    mergedCell4NonCloture.border = {
+      top: { style: 'thin', color: { argb: '000000' } },
+      left: { style: 'thin', color: { argb: '000000' } },
+      bottom: { style: 'thin', color: { argb: '000000' } },
+      right: { style: 'thin', color: { argb: '000000' } }
+    };
+    
+    
+    
+    const mergeRange5NonCloture= 'R2:U2';
+    const mergedCells5NonCloture = nonClotureWorksheet.getCell('R2');
+    
+    if (!mergedCells5NonCloture.isMerged) {
+      nonClotureWorksheet.mergeCells(mergeRange5NonCloture); // Merge the 'Info Véhicule' column with the adjacent empty column
+    }
+    
+    // Apply styles to the merged cell
+    const mergedCell5NonCloture = nonClotureWorksheet.getCell('R2');
+    mergedCell5NonCloture.font = headerStyle.font;
+    mergedCell5NonCloture.alignment = { horizontal: 'center', vertical: 'middle' };
+    mergedCell5NonCloture.fill = headerStyle.fill2;
+    mergedCell5NonCloture.border = {
+      top: { style: 'thin', color: { argb: '000000' } },
+      left: { style: 'thin', color: { argb: '000000' } },
+      bottom: { style: 'thin', color: { argb: '000000' } },
+      right: { style: 'thin', color: { argb: '000000' } }
+    };
+    
+    
+      headerRow2NonCloture.eachCell((cell, i) => {
+        cell.font = headerStyle.font;
+        cell.alignment = headerStyle.alignment;
+        cell.fill = headerStyle.fill2;
+          cell.border = {
+            top: { style: 'thin', color: { argb: '000000' } },
+            left: { style: 'thin', color: { argb: '000000' } },
+            bottom: { style: 'thin', color: { argb: '000000' } },
+            right: { style: 'thin', color: { argb: '000000' } },
+          };
+    
+        
+        
+        
+      });
+  
+    const headerRow3NonCloture = nonClotureWorksheet.addRow([
+      '',
+      '',
+      '',
+      '',
+      'Type Véhicule',
+      'Immatriculation',
+      'Transitaire',
+      'Chauffeur',
+      'Téléphone',
+      'Date',
+      'H Début',
+      'H Fin',
+      
+      'Niveau',
+      'Date',
+      'Heure',
+      'Lieu',
+      'Observation',
+      
+      'Date',
+      'Heure',
+      'Lieu',
+      'Mode',
+      ''
+    ]);
+    headerRow3NonCloture.eachCell((cell) => {
+      cell.font = headerStyle.font;
+      cell.alignment = headerStyle.alignment;
+      cell.fill = headerStyle.fill2;
+      cell.border = headerStyle.border; 
+    });
+  
+    nonClotureWorksheet.views = [{ state: 'frozen', ySplit: 3 }]; 
+  
+    let currentDateNonCloture = new Date(start); // Start from the given start date
+  
+    while (currentDateNonCloture <= end) {
+        const formattedDate = `${currentDateNonCloture.getDate() < 10 ? '0' : ''}${currentDateNonCloture.getDate()}/${currentDateNonCloture.getMonth() + 1 < 10 ? '0' : ''}${currentDateNonCloture.getMonth() + 1}/${currentDateNonCloture.getFullYear()}`;
+    
+        const dateRow = nonClotureWorksheet.addRow([`Le ${formattedDate}`]);
+        dateRow.height = 35;
+        dateRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+            cell.font = dateRowStyle.font;
+            cell.alignment = dateRowStyle.alignment;
+            cell.fill = dateRowStyle.fill;
+    
+            if (colNumber === 1) {
+                nonClotureWorksheet.mergeCells(`A${dateRow.number}:V${dateRow.number}`);
+            }
+        });
+    
+        // Check if there is data for the current date
+        if (groupedDataNonCloture[formattedDate] && groupedDataNonCloture[formattedDate].length > 0) {
+            groupedDataNonCloture[formattedDate].forEach(cargo => {
+                const row = nonClotureWorksheet.addRow([
+                    cargo.numeroDeTransit || '',
+                    cargo.numeroDeBalise || '',
+                    Array.isArray(cargo.codeHS) ? cargo.codeHS.map(item => item.code_hs).join('\n') : '',
+                    cargo.corridor || '',
+                    cargo.typeDeVehicule || '',
+                    cargo.immatriculation || '',
+                    Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',
+                    cargo.chauffeur || '',
+                    cargo.telephone || '',
+                    formattedDate,
+                    cargo.creationHeureDebut || '',
+                    cargo.creationHeureFin || '',
+                    cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
+                    cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+                    cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
+                    cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
+                    cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
+                   // formatDate(cargo.clotureDate) || '',
+                   '',
+                    cargo.clotureHeure || '',
+                    cargo.clotureLieu || '',
+                    cargo.clotureMode || '',
+                    cargo.duree || ''
+                ]);
+    
+                const codeCount = cargo.codeHS?.length || 1;
+                const alarmCount = cargo.alarme?.length || 1;
+                const transitaireCount = cargo.transitaire?.length || 1;
+                const maxCount = Math.max(codeCount, alarmCount, transitaireCount);
+    
+                row.height = Math.max(25, maxCount * 25);
+                row.eachCell((cell) => {
+                    cell.alignment = { horizontal: 'left', vertical: 'top', wrapText: true };
+                });
+            });
+        } else {
+            // If no data for the date, add a row with "Pas de création"
+            const noCreationRow = nonClotureWorksheet.addRow(['PAS DE CREATION']);
+            noCreationRow.height = 25;
+            noCreationRow.eachCell({ includeEmpty: true }, (cell) => {
+                cell.font = { name: 'Arial', size: 12, color: { argb: '' } };
+                cell.alignment = { horizontal: 'left', indent: 90, vertical: 'center', wrapText: true };
+            });
+    
+                nonClotureWorksheet.mergeCells(`A${noCreationRow.number}:V${noCreationRow.number}`);
+        }
+    
+        // Move to the next day
+        currentDateNonCloture.setDate(currentDateNonCloture.getDate() + 1);
+    }
+  
+  const finRowNonCloture = nonClotureWorksheet.addRow(['FIN']);
+      finRowNonCloture.height = 20; // Adjust height if necessary
+      finRowNonCloture.eachCell({ includeEmpty: true }, (cell) => {
+          cell.font = { bold: true, name: 'Arial', size: 27 }; // Make "FIN" bold
+          cell.alignment = { horizontal: 'left', indent: 90, vertical: 'middle' }; // Center align the "FIN"
+      });
+  
+      nonClotureWorksheet.mergeCells(`A${finRowNonCloture.number}:V${finRowNonCloture.number}`);
+
   /*Object.keys(groupedData).forEach((creationDate) => {
     const dateRow = worksheet.addRow([`Le ${creationDate}`]);
     dateRow.height = 35; 
@@ -1544,6 +2174,15 @@ row.height = Math.max(25, maxCount * 25);
   });*/
 
   worksheet.columns.forEach((column, index) => {
+    if (index === 16) {
+      column.width = 40; 
+    } else {
+      column.width = 20;
+    }
+  });
+
+
+  nonClotureWorksheet.columns.forEach((column, index) => {
     if (index === 16) {
       column.width = 40; 
     } else {
