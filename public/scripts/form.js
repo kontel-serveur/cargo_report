@@ -130,7 +130,46 @@ attachRemoveCodeEvent();
   }
 }); */
 
+
 document.getElementById('creation_heure_debut').addEventListener('input', updateHeureFinMin);
+document.getElementById('creation_heure_fin').addEventListener('input', validateHeureFin);
+document.getElementById('creation_date_fin').addEventListener('input', validateDateFin);
+
+function updateHeureFinMin() {
+  const creationHeureDebut = document.getElementById('creation_heure_debut').value;
+  const creationHeureFin = document.getElementById('creation_heure_fin');
+
+  if (creationHeureDebut) {
+    // Set the 'min' attribute of 'Heure fin' to be at least 'Heure debut'
+    creationHeureFin.setAttribute('min', creationHeureDebut);
+  } else {
+    // If no start time is selected, remove restriction
+    creationHeureFin.removeAttribute('min');
+  }
+}
+
+function validateHeureFin() {
+  const creationHeureDebut = document.getElementById('creation_heure_debut').value;
+  const creationHeureFinInput = document.getElementById('creation_heure_fin');
+  const creationHeureFin = creationHeureFinInput.value;
+
+  if (creationHeureDebut && creationHeureFin < creationHeureDebut) {
+    // If 'Heure fin' is before 'Heure debut', set it equal to 'Heure debut'
+    creationHeureFinInput.value = creationHeureDebut;
+  }
+}
+
+function validateDateFin() {
+  const creationDate = document.getElementById('creation_date').value;
+  const creationDateFinInput = document.getElementById('creation_date_fin');
+
+  if (creationDateFinInput.value < creationDate) {
+    // If 'Date fin' is before 'Date debut', set it equal to 'Date debut'
+    creationDateFinInput.value = creationDate;
+  }
+}
+
+/*document.getElementById('creation_heure_debut').addEventListener('input', updateHeureFinMin);
 
 function updateHeureFinMin() {
   const creationHeureDebut = document.getElementById('creation_heure_debut').value;
@@ -145,6 +184,8 @@ function updateHeureFinMin() {
   }
 }
 
+
+
 // Ensure 'Heure fin' cannot be selected before 'Heure debut'
 document.getElementById('creation_heure_fin').addEventListener('input', function () {
   const creationHeureDebut = document.getElementById('creation_heure_debut').value;
@@ -154,7 +195,7 @@ document.getElementById('creation_heure_fin').addEventListener('input', function
     // If 'Heure fin' is smaller than 'Heure debut', reset 'Heure fin' to match 'Heure debut'
     document.getElementById('creation_heure_fin').value = creationHeureDebut;
   }
-});
+}); */
 
 formSubmitBtn.addEventListener("click", function (event) {
   event.preventDefault();

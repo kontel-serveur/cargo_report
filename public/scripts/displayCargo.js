@@ -241,6 +241,85 @@ $(document).ready(function () {
         }
     };
 
+    $('#addCreationFinButton').click(function () {
+        $('#addCreationFin').modal('show');
+    });
+    
+    // Ensure elements update only after modal is fully shown
+    $('#addCreationFin').on('shown.bs.modal', function () {
+        fetchCargoData().then(data => {
+            if (data) {
+                const { creationDate, creationTime } = data;
+    
+                // Select input fields inside the modal
+                const $creationDateFinInput = $('#creationdatefin'); 
+                const $creationHeureFinInput = $('#creationheurefin');
+    
+                // Set the minimum selectable date to the creation date
+                $creationDateFinInput.attr('min', creationDate);
+    
+                // Function to update the minimum selectable time based on selected date
+                function updateMinHeure() {
+                    const selectedDate = $creationDateFinInput.val();
+                    if (selectedDate === creationDate) {
+                        // Set min hour for current date to be just after the creation hour
+                        $creationHeureFinInput.attr('min', creationTime);
+                    } else {
+                        // Allow any time for other dates
+                        $creationHeureFinInput.removeAttr('min');
+                    }
+                }
+    
+                // Event listener to update min time when date changes
+                $creationDateFinInput.off('input').on('input', updateMinHeure);
+    
+                // Ensure 'Heure fin' is not earlier than 'Heure debut'
+                $creationHeureFinInput.off('input').on('input', function () {
+                    const selectedHeure = $creationHeureFinInput.val();
+                    if (selectedHeure && selectedHeure < creationTime) {
+                        // If selected time is before creation time, reset it
+                        $creationHeureFinInput.val(creationTime);
+                    }
+                });
+    
+                // Call the updateMinHeure function when the modal opens
+                updateMinHeure();
+            }
+        });
+    });
+
+
+    $('#addCreationFinForm').submit(function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        const formData = {
+            creationDateFin: $('#creationdatefin').val(),
+            creationHeureFin: $('#creationheurefin').val(),
+           
+        };
+
+        $.ajax({
+            url: `/cargo/creation-fin/${cargoId}`,
+            type: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(formData),
+            success: function (response) {
+                alert('Fin de la creation enregistre avec success');
+                $('#addCreationFin').modal('hide'); // Hide the modal
+                console.log(response)
+               // table.ajax.reload(); // Reload the table data
+            },
+            error: function (error) {
+                alert("Erreur d'enregistrement de la fin de creation: " + error.responseText);
+            },
+        });
+    });
+    
+
+
     $('#addUserButton').click(function () {
         $('#addUserModal').modal('show');
     });

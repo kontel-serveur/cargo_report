@@ -96,11 +96,31 @@ app.get('/exportExcel', async (req, res) => {
     }
 }
 
+async function fetchCargoWithoutClotureDate() {
+  try {
+      // Fetch Cargo where clotureDate is NULL
+      const cargoData = await Cargo.findAll({
+          raw: true,
+          where: {
+              clotureDate: null, // Filter for NULL clotureDate
+          },
+      });
+
+      return cargoData;
+  } catch (error) {
+      console.error('Error fetching Cargo without ClotureDate:', error);
+      throw error;
+  }
+}
+
 const data = await fetchCargoWithDepassementDelai()
+const data_not_clotured = await fetchCargoWithoutClotureDate()
 
 console.log(data)
+console.log('Not clotured', data_not_clotured)
 
   if (!data || data.length === 0) {
+    console.log(data_not_clotured)
     return res.status(404).send('No data to export.');
   }
 
@@ -156,6 +176,8 @@ console.log(data)
 
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet(`${getLastMonthNameAndYearInFrench()}`);
+
+  const nonClotureWorksheet = workbook.addWorksheet(`${getLastMonthNameAndYearInFrench()} NON-CLOTUREE`);
 
   const dailyWorksheet = workbook.addWorksheet('CREATION JOURNALIERE');
 
