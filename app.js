@@ -1155,9 +1155,9 @@ app.get('/exportExcelDateRange', async (req, res) => {
         // Skip cargos that don't match the date range filter
         if (
           (start && creationDate < start) ||
-          (end && creationDate > end) ||
+          (end && creationDate > end) /*||
           (start && clotureDate < start) ||
-          (end && clotureDate > end)
+          (end && clotureDate > end)*/
         ) {
           return null; // Skip this cargo if it doesn't match the date range
         }

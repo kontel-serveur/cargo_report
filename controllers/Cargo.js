@@ -119,6 +119,21 @@ const getMySingleCargoData = async(req, res)=>{
   }
 }
 
+const updateCargoData = async(req, res)=>{
+  try {
+    const id  = req.params.id
+    const cargoData = await Cargo.findOne({where: {id: id}})
+
+    if (cargoData){
+
+    }else{
+      
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const addAlarme = async(req, res) =>{
   try {
     const id = req.params.id
