@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
   
         if (!response.ok) {
+          alert('Erreur lors le mis a jour de votre mot de passe!');
           throw new Error('Failed to update password');
         }
   

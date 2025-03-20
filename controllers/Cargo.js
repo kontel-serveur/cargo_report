@@ -52,6 +52,12 @@ const cargoRegistration = async(req, res)=> {
           addedBy: req.user.id
       })
 
+      const casSupect = await CasSuspect.create({
+        cargo: cargo.id,
+        //commentaire: req.body.commentaire
+        commentaire: "Le numero de balise a ete utilise sur un autre camion toujours en cour de transit"
+      })
+
       return res.status(StatusCodes.OK).json('Transit enregistre avec success. Le numero de balise a ete utilise sur un autre camion toujours en cour de transit')
       }else{
         const cargo =  await Cargo.create({
@@ -90,7 +96,8 @@ const cargoRegistration = async(req, res)=> {
 
 const getMyCargoData = async(req, res) =>{
     try {
-        const cargoData = await Cargo.findAll({where: {addedBy: req.user.id}})
+       // const cargoData = await Cargo.findAll({where: {addedBy: req.user.id}})
+       const cargoData = await Cargo.findAll()
 
         return res.status(StatusCodes.OK).json({cargoData})
     } catch (error) {
@@ -101,7 +108,8 @@ const getMyCargoData = async(req, res) =>{
 const getMySingleCargoData = async(req, res)=>{
   try {
       const id  = req.params.id
-      const cargoData = await Cargo.findAll({where: {addedBy: req.user.id, id: id}})
+      //const cargoData = await Cargo.findAll({where: {addedBy: req.user.id, id: id}})
+      const cargoData = await Cargo.findAll({where: {id: id}})
       const depassementDelai = await DepassementDelai.findAll({where: {cargo: id}})
       const cableDeverouille = await CableDeverouille.findAll({where: {cargo: id}})
 
@@ -114,15 +122,51 @@ const getMySingleCargoData = async(req, res)=>{
 const addAlarme = async(req, res) =>{
   try {
     const id = req.params.id
-    const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+    //const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+    const cargo = await Cargo.findOne({where: {id: id}})
 
     if(cargo){
         const alarme = {...cargo.alarme, alarme: req.body.alarme}
         const existingAlarme = Array.isArray(cargo.alarme) ? cargo.alarme : [];
         const newAlarme = Array.isArray(req.body.alarme) ? req.body.alarme : [];
         const updatedAlarme = [...existingAlarme, ...newAlarme];
+        console.log(newAlarme)
         
-        await Cargo.update({alarme: updatedAlarme}, {where:{id:id, addedBy: req.user.id}})
+      //  await Cargo.update({alarme: updatedAlarme}, {where:{id:id, addedBy: req.user.id}})
+      await Cargo.update({alarme: updatedAlarme}, {where:{id:id}})
+
+     /* const delaiAlarm = newAlarme.find(alarm => alarm.type === "Delai d'expiration du transit"); */
+      const cableDeverouilleAlarm = newAlarme.find(alarm => alarm.type === "Cable de securite deverouilee");
+
+      const matchingAlarms = newAlarme.filter(alarm => 
+        alarm.type === "Delai d'expiration du transit" || 
+        alarm.type === "Delai d'expiration de la confirmation du retrait de l'unite"
+      );
+
+      if (matchingAlarms.length > 0) {
+        const observationData = matchingAlarms.map(alarm => ({
+          niveau: alarm.niveau,
+          observation: alarm.observation
+        }));
+      
+        const depassement_delai = await DepassementDelai.create({
+          cargo: cargo.id,
+          observation: observationData
+        });
+      
+        console.log("DepassementDelai created:", depassement_delai);
+      }
+
+      if(cableDeverouilleAlarm){
+        await CableDeverouille.create({
+          cargo: cargo.id,
+          //dateCoupure: req.body.dateCoupure,
+          //heureCoupure: req.body.heureCoupure
+          dateCoupure: cableDeverouilleAlarm.date,
+          heureCoupure: cableDeverouilleAlarm.heure
+        })
+      }
+      
 
         return res.status(StatusCodes.OK).json('Alarme added successfully!')
     }else{
@@ -135,11 +179,16 @@ const addAlarme = async(req, res) =>{
 const addCreationFin = async(req, res)=>{
   try {
     const id = req.params.id
-    const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+    //const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+    const cargo = await Cargo.findOne({where: {id: id}})
 
     if(cargo){
-      await Cargo.update({creationDateFin: req.body.creationDateFin,
-        creationHeureFin: req.body.creationHeureFin }, {where:{id:id, addedBy: req.user.id}})
+     /* await Cargo.update({creationDateFin: req.body.creationDateFin,
+        creationHeureFin: req.body.creationHeureFin }, {where:{id:id, addedBy: req.user.id}})*/
+
+
+        await Cargo.update({creationDateFin: req.body.creationDateFin,
+          creationHeureFin: req.body.creationHeureFin }, {where:{id:id}})
 
         return res.status(StatusCodes.OK).json('La creation a ete enregistre avec succes!')
     }else{
@@ -154,7 +203,8 @@ const addCreationFin = async(req, res)=>{
 const addCloture = async(req, res) =>{
   try {
     const id = req.params.id
-    const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+    //const cargo = await Cargo.findOne({where: {addedBy: req.user.id, id: id}})
+    const cargo = await Cargo.findOne({where: {id: id}})
 
     if(cargo){
       const creationDate = new Date(cargo.creationDate);
@@ -169,10 +219,15 @@ const addCloture = async(req, res) =>{
       }
        
         
-        await Cargo.update({clotureDate: req.body.clotureDate,
+       /* await Cargo.update({clotureDate: req.body.clotureDate,
           clotureHeure: req.body.clotureHeure,
           clotureLieu: req.body.clotureLieu,
-          clotureMode: req.body.clotureMode, duree: dureeInDays}, {where:{id:id, addedBy: req.user.id}})
+          clotureMode: req.body.clotureMode, duree: dureeInDays}, {where:{id:id, addedBy: req.user.id}})*/
+
+          await Cargo.update({clotureDate: req.body.clotureDate,
+            clotureHeure: req.body.clotureHeure,
+            clotureLieu: req.body.clotureLieu,
+            clotureMode: req.body.clotureMode, duree: dureeInDays}, {where:{id:id}})
 
         return res.status(StatusCodes.OK).json('Alarme added successfully!')
     }else{
@@ -225,16 +280,16 @@ const casSupectRegistration = async(req, res)=>{
   try {
     const id = req.params.id
     const cas = await CasSuspect.findOne({where: {cargo: id}})
-    if(cas){
-      return res.status(StatusCodes.BAD_REQUEST).json('Donnee deja enregistree')
-    }else{
+   // if(cas){
+   //   return res.status(StatusCodes.BAD_REQUEST).json('Donnee deja enregistree')
+   // }else{
       const casSupect = await CasSuspect.create({
         cargo: id,
         commentaire: req.body.commentaire
       })
   
       return res.status(StatusCodes.OK).json({casSupect})
-    }
+   // }
     
   } catch (error) {
     console.log(error)

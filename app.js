@@ -194,9 +194,10 @@ console.log('Not clotured', data_not_clotured)
 
   const cableDeverouileWorksheet = workbook.addWorksheet('CABLE DE SECURITE DEVEROUILLE')
 
-  const casSuspectWorksheet = workbook.addWorksheet('CAS SUSPECT')
+  
 
   const arretWorksheet = workbook.addWorksheet('ARRET EN ZONE DANGEREUSE')
+  const casSuspectWorksheet = workbook.addWorksheet('CAS SUSPECT')
 
   const dailyHeaderStyle = {
     font: { bold: true, name: 'Arial', size: 12 },
@@ -311,6 +312,8 @@ console.log('Not clotured', data_not_clotured)
     rowIndex++;
   });
 
+  const currentYear = new Date().getFullYear();
+
 
   data.forEach(cargo => {
     if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
@@ -342,7 +345,7 @@ dailyWorksheet.columns.forEach((column) => {
   column.width = 20; 
 });
 
-const currentYear = new Date().getFullYear(); // Current year
+ // Current year
 const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
 data.forEach(cargo => {
