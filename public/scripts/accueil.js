@@ -35,41 +35,58 @@ document.addEventListener('DOMContentLoaded', async function () {
                     { 
                         title: ' ', 
                         data: null, 
+                        orderable: false, // Disable ordering for this column
                         render: function (data, type, row, meta) {
                             return meta.row + 1; // Index starts from 1
                         }
                     },
                     { data: 'numeroDeTransit', title: 'Numero de transit' },
                     { data: 'numeroDeBalise', title: 'Numero de la balise' },
-                    //{ data: 'codeHS', title: 'Code Hs' },
                     {
                         data: 'codeHS',
                         title: 'Code Hs',
                         render: function (data) {
-                            // Check if data is an array and map to extract 'code_hs' values
-                            return Array.isArray(data)
-                                ? data.map(item => item.code_hs).join(', ') // Join the extracted 'code_hs' values
-                                : '';
+                            return Array.isArray(data) ? data.map(item => item.code_hs).join(', ') : '';
                         },
                     },
                     { data: 'corridor', title: 'Corridor' },
                     { data: 'typeDeVehicule', title: 'Type de vehicule' },
                     { data: 'immatriculation', title: 'Immatriculation' },
-                    //{ data: 'transitaire', title: 'Transitaire' },
-
                     {
                         data: 'transitaire',
                         title: 'Transitaire',
                         render: function (data) {
-                            // Check if data is an array and map to extract 'code_hs' values
-                            return Array.isArray(data)
-                                ? data.map(item => item.Transitaire).join(', ') // Join the extracted 'code_hs' values
-                                : '';
+                            return Array.isArray(data) ? data.map(item => item.Transitaire).join(', ') : '';
+                        },
+                    },
+                    {
+                        data: 'clotureDate',
+                        title: 'Status',
+                        render: function (data) {
+                            return data === null || data === '' ? 'En cours' : 'Terminé';
                         },
                     },
                 ],
-                destroy: true, // Allows re-initializing the DataTable if called again
+                order: [[1, 'asc']], // Sort by 'numeroDeTransit' in ascending order
+                destroy: true, 
+            
+                // Update numbering after sorting
+                rowCallback: function (row, data, index) {
+                    $('td:eq(0)', row).html(index + 1); // Update first column with correct numbering
+                },
+            
+                createdRow: function (row, data, dataIndex) {
+                    let status = data.clotureDate === null || data.clotureDate === '' ? 'En cours' : 'Terminé';
+                    let statusCell = $('td', row).eq(8); // Column index 8 (Status)
+            
+                    if (status === 'En cours') {
+                        statusCell.css('color', 'red').css('font-weight', 'bold');
+                    } else {
+                        statusCell.css('color', 'green').css('font-weight', 'bold');
+                    }
+                }
             });
+            
     
             // Add click event listener to table rows
             $('#cargoTable tbody').on('click', 'tr', function () {
@@ -81,6 +98,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
         }
 
+        
         
 
         // Export data to Excel
@@ -132,4 +150,26 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Fetch and display data on page load
         fetchCargoData();
+        
+    });
+
+
+    $(document).ready(function () {
+    
+    
+    
+    
+        $('#addExportButton').click(function () {
+            $('#addExportModal').modal('show');
+        });
+    
+        $('input[name="daterange"]').daterangepicker({
+            opens: 'left'
+          }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            window.location.href = `/exportExcelDateRange?startDate=${start.format('YYYY-MM-DD')}&endDate=${end.format('YYYY-MM-DD')}`;
+          });
+    
+    
+        
     });

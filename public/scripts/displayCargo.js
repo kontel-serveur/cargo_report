@@ -414,7 +414,8 @@ function updateTypeOptions(niveauSelect, index) {
             document.getElementById("addCommentButton"),
             document.getElementById("addAlarmeButton"),
             document.getElementById("addClotureButton"),
-            document.getElementById("submitDataForm")
+            document.getElementById("submitDataForm"),
+            document.getElementById("deleteTransit")
         ];
         
         // Disable buttons if clotureDate is not null
@@ -778,7 +779,9 @@ $(document).ready(function () {
                 alert('Fin de la creation enregistre avec success');
                 $('#addCreationFin').modal('hide'); // Hide the modal
                 console.log(response)
-                loading(cargoId)
+                //loading(cargoId)
+                window.location.reload();
+
                // table.ajax.reload(); // Reload the table data
             },
             error: function (error) {
@@ -1271,13 +1274,40 @@ $(document).ready(function () {
                 alert('Transit mis a jour avec success');
                 //$('#addClotureModal').modal('hide'); // Hide the modal
                 console.log(response);
-                loading(cargoId);
+                //loading(cargoId);
+                window.location.reload();
+
                 table.ajax.reload(); // Reload the table data
             },
             error: function (error) {
                 alert("Erreur d'enregistrement de la cloture: " + error.responseText);
             },
         });
+    });
+
+    $('#deleteTransit').click(function () {
+        // Show confirmation dialog
+        const isConfirmed = confirm("Êtes-vous sûr de vouloir supprimer ce transit ?");
+        
+        if (isConfirmed) {
+            $.ajax({
+                url: `/cargo/donnee/${cargoId}/delete`,
+                type: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                success: function (response) {
+                    console.log(response);
+                    window.location.href = '/accueil'; // Redirect to homepage after success
+                },
+                error: function (error) {
+                    alert("Erreur durant la suppression: " + error.responseText);
+                },
+            });
+        } else {
+            console.log("Suppression annulée");
+        }
     });
 
 

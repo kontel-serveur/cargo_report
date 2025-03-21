@@ -149,6 +149,24 @@ const updateCargoData = async(req, res)=>{
   }
 }
 
+const deleteCargo = async(req, res)=>{
+  try {
+    const id = req.params.id
+    const cargoData = await Cargo.findOne({where: {id: id, clotureDate: null}})
+
+    if(cargoData){
+      await Cargo.destroy({ where: { id: id, clotureDate: null } });
+
+      return res.status(StatusCodes.OK).json("Cargo deleted successfully");
+    }else{
+      return res.status(StatusCodes.NOT_FOUND).json('Not found!')
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const addAlarme = async(req, res) =>{
   try {
     const id = req.params.id
@@ -327,4 +345,4 @@ const casSupectRegistration = async(req, res)=>{
   }
 }
 
-module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture, addCreationFin, updateCargoData}
+module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture, addCreationFin, updateCargoData, deleteCargo}

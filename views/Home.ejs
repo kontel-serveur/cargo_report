@@ -12,6 +12,14 @@
  
     <script src="/scripts/datatables.min.js"></script>
     <script src="/scripts/xslx.min.js"></script>
+    <script src="/scripts/bootstrap.min.js"></script>
+    <link href="/scripts/bootstrap.css" rel="stylesheet" />
+    <script type="text/javascript" src="/scripts/moment.min.js"></script>
+    <script type="text/javascript" src="/scripts/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="/scripts/daterangepicker.css" />
+
+    <script src="./admin/assets/js/bootstrap.min.js"></script>
+    <script src="./admin/assets/css/bootstrap.css"></script>
 
    
     <title>Accueil</title>
@@ -22,7 +30,39 @@
 
     <!-- Table to display cargo data -->
     <div class="content" style="padding: 10px;">
-        <button id="exportExcel" class="export">Exporter</button>
+        
+
+        
+        <div style="display: flex; justify-content: space-between; padding-left: 10px; padding-right: 10px; flex-wrap: wrap;">
+            <button id="exportExcel" class="export">Exporter</button>
+            <button id="addExportButton" style="width: 200px;" class="export">Exporter par date</button>
+          </div>
+
+          <div id="addExportModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Selectionner une date</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form id="addExportForm">
+                   
+            
+                      <div class="form-group">
+                         <input type="text" id="daterange-input" class="form-control" name="daterange" />
+                      </div>
+                     
+                    
+                     <!-- <button type="submit" class="btn btn-primary">Enregistrer</button>-->
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
         <table id="cargoTable" border="1">
             <thead>
                 <tr>
@@ -34,6 +74,7 @@
                     <th>Type de Vehicule</th>
                     <th>Immatriculation</th>
                     <th>Transitaire</th>
+                    <th>Status</th>
                    
                 </tr>
             </thead>
