@@ -320,7 +320,7 @@ console.log('Not clotured', data_not_clotured)
       const creationDate = new Date(cargo.creationDate);
       
       // Ensure the cargo's creation date is within the current month and year
-      if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
+    /*  if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
         cargo.depassementDelais.forEach(delai => {
           depassementDelaiWorksheet.addRow([
             cargo.numeroDeTransit,    // 'Type Vehicule'
@@ -334,7 +334,39 @@ console.log('Not clotured', data_not_clotured)
             delai.observation?.map(observation => observation.observation).join('\n\n') || '', // 'Observation'
           ]);
         });
-      }
+      }*/
+
+        if (cargo.alarme && Array.isArray(cargo.alarme)) {
+          // Filter alarms by type and current month/year
+          const alarmsForCurrentCargo = cargo.alarme
+            .filter(alarm => 
+              (alarm.type === "Delai d'expiration du transit" || 
+              alarm.type === "Delai d'expiration de la confirmation du retrait de l'unite") &&
+              creationDate.getMonth() === currentMonth &&
+              creationDate.getFullYear() === currentYear
+            );
+          
+          if (alarmsForCurrentCargo.length > 0) {
+            // Combine the 'niveau' and 'observation' of all alarms into single strings
+            const niveaux = alarmsForCurrentCargo.map(alarm => alarm.niveau).join('\n\n');
+            const observations = alarmsForCurrentCargo.map(alarm => alarm.observation).join('\n\n');
+        
+            // Add one row with combined alarm details
+            depassementDelaiWorksheet.addRow([
+              cargo.numeroDeTransit,
+              cargo.typeDeVehicule,
+              cargo.immatriculation,
+              cargo.chauffeur,
+              formatDate(cargo.creationDate),  // Use creationDate for the alarm
+              formatDate(cargo.clotureDate),   // No clotureDate for alarms
+              cargo.duree,                     // No duree for alarms
+              niveaux || '',                   // Combined 'niveau' from all alarms
+              observations || '',              // Combined 'observation' from all alarms
+            ]);
+          }
+        }
+        
+
     }
   });
 
@@ -354,7 +386,7 @@ data.forEach(cargo => {
   // Include only if creationDate is within the current month and year
   if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
     // Add cableDeverouille entry
-    if (cargo.cableDeverouille && cargo.cableDeverouille !== null) {
+   /* if (cargo.cableDeverouille && cargo.cableDeverouille !== null) {
       cableDeverouileWorksheet.addRow([
         cargo.numeroDeTransit,    
         cargo.typeDeVehicule,     
@@ -363,7 +395,22 @@ data.forEach(cargo => {
         formatDate(cargo.cableDeverouille.dateCoupure),
         cargo.cableDeverouille.heureCoupure
       ]);
-    }
+    }*/
+
+      if (cargo.alarme && Array.isArray(cargo.alarme)) {
+        cargo.alarme
+          .filter(alarm => alarm.type === "Cable de securite deverouilee")
+          .forEach(alarm => {
+            cableDeverouileWorksheet.addRow([
+              cargo.numeroDeTransit,
+              cargo.typeDeVehicule,
+              cargo.immatriculation,
+              cargo.chauffeur,
+              formatDate(alarm.date), // Using alarm date
+              alarm.heure
+            ]);
+          });
+      }
 
     // Add alarm entries of type "Arret en zone dangereuse"
     if (cargo.alarme && Array.isArray(cargo.alarme)) {
@@ -1419,7 +1466,7 @@ arretWorksheet.addRow(['N° du Trst',
   });
 
   data.forEach(cargo => {
-  if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
+ /* if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
     cargo.depassementDelais.forEach(delai => {
       depassementDelaiWorksheet.addRow([
         cargo.numeroDeTransit,    // 'Type Vehicule'
@@ -1433,6 +1480,34 @@ arretWorksheet.addRow(['N° du Trst',
         delai.observation?.map(observation => observation.observation).join('\n\n') || '',      // 'Observation'
       ]);
     });
+  }*/
+
+  if (cargo.alarme && Array.isArray(cargo.alarme)) {
+    // Filter alarms by type and current month/year
+    const alarmsForCurrentCargo = cargo.alarme
+      .filter(alarm => 
+        (alarm.type === "Delai d'expiration du transit" || 
+        alarm.type === "Delai d'expiration de la confirmation du retrait de l'unite")
+      );
+    
+    if (alarmsForCurrentCargo.length > 0) {
+      // Combine the 'niveau' and 'observation' of all alarms into single strings
+      const niveaux = alarmsForCurrentCargo.map(alarm => alarm.niveau).join('\n\n');
+      const observations = alarmsForCurrentCargo.map(alarm => alarm.observation).join('\n\n');
+  
+      // Add one row with combined alarm details
+      depassementDelaiWorksheet.addRow([
+        cargo.numeroDeTransit,
+        cargo.typeDeVehicule,
+        cargo.immatriculation,
+        cargo.chauffeur,
+        formatDate(cargo.creationDate),  // Use creationDate for the alarm
+        formatDate(cargo.clotureDate),   // No clotureDate for alarms
+        cargo.duree,                     // No duree for alarms
+        niveaux || '',                   // Combined 'niveau' from all alarms
+        observations || '',              // Combined 'observation' from all alarms
+      ]);
+    }
   }
 });
 
@@ -1445,7 +1520,7 @@ dailyWorksheet.columns.forEach((column) => {
 });
 
 data.forEach(cargo => {
-  if (cargo.cableDeverouille && cargo.cableDeverouille !==null) {
+ /* if (cargo.cableDeverouille && cargo.cableDeverouille !==null) {
     
       cableDeverouileWorksheet.addRow([
         cargo.numeroDeTransit,    // 'Type Vehicule'
@@ -1456,7 +1531,22 @@ data.forEach(cargo => {
         cargo.cableDeverouille.heureCoupure
       ]);
    
-  }
+  }*/
+
+      if (cargo.alarme && Array.isArray(cargo.alarme)) {
+        cargo.alarme
+          .filter(alarm => alarm.type === "Cable de securite deverouilee")
+          .forEach(alarm => {
+            cableDeverouileWorksheet.addRow([
+              cargo.numeroDeTransit,
+              cargo.typeDeVehicule,
+              cargo.immatriculation,
+              cargo.chauffeur,
+              formatDate(alarm.date), // Using alarm date
+              alarm.heure
+            ]);
+          });
+      }
 
   if (cargo.alarme && Array.isArray(cargo.alarme)) {
     cargo.alarme

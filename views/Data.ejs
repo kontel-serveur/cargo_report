@@ -379,55 +379,89 @@
         <form id="cargoForm">
             <h1>Donnee Cargo</h1>
             <label for="numero_de_transit">Numero de Transit</label>
-            <input type="text" id="numero_de_transit" name="numero_de_transit" disabled>
+            <input type="text" id="numero_de_transit" name="numero_de_transit">
     
             <label for="numero_de_la_balise">Numero de Balise</label>
-            <input type="text" id="numero_de_la_balise" name="numero_de_la_balise" disabled>
+            <input type="text" id="numero_de_la_balise" name="numero_de_la_balise">
     
             <label for="code_hs">Code HS</label>
             <div id="code_hs_container">
               
             </div>
+            <button type="button" id="add_code_hs" class="styled-btn primary-btn">Ajouter Code HS</button>
+            <button type="button" id="remove_code_hs" class="styled-btn danger-btn" style="display: none;">Enlever Code HS</button>
+            <hr/>
+            
     
             <label for="corridor">Corridor</label>
-            <input type="text" id="corridor" name="corridor" disabled>
+            <!--<input type="text" id="corridor" name="corridor" disabled>-->
+            <select id="corridor" name="corridor">
+              <option value="BJM-GTB">BJM-GTB</option>
+                      <option value="KYZ-GTB Via BJM">KYZ-GTB Via BJM</option>
+                      <option value="KBR-BJM Via KYZ">KBR-BJM Via KYZ</option>
+                      <option value="KBR-BJM Via GTG">KBR-BJM Via GTG</option>
+                      <option value="KBR-KYZ">KBR-KYZ</option>
+                      <option value="KYZ-BJM">KYZ-BJM</option>
+                      <option value="KBR-GTG">KBR-GTG</option>
+            </select>
     
             <label for="type_de_vehicule">Type de Vehicule</label>
-            <input type="text" id="type_de_vehicule" name="type_de_vehicule" disabled>
+            <!--<input type="text" id="type_de_vehicule" name="type_de_vehicule" disabled>-->
+            <select id="type_de_vehicule" name="type_de_vehicule">
+                        <option value="Vehicule a moteur">Vehicule a moteur</option>
+                        <option value="Camion">Camion</option>
+            </select>
     
             <label for="immatriculation">Immatriculation</label>
-            <input type="text" id="immatriculation" name="immatriculation" disabled>
+            <input type="text" id="immatriculation" name="immatriculation">
     
             <label for="transitaire">Transitaire</label>
             <div id="transitaire_container">
               
             </div>
+
+            <button type="button" id="add_transitaire" class="styled-btn primary-btn">Ajouter Transitaire</button>
+            <button type="button" id="remove_transitaire" class="styled-btn danger-btn" style="display: none;">Enlever</button>
+
+            <hr/>
     
             <label for="chauffeur">Chauffeur</label>
-            <input type="text" id="chauffeur" name="chauffeur" disabled>
+            <input type="text" id="chauffeur" name="chauffeur">
     
             <label for="telephone">Telephone</label>
-            <input type="text" id="telephone" name="telephone" disabled>
+            <input type="text" id="telephone" name="telephone" >
     
             <label for="creation_date">Creation Date</label>
-            <input type="date" id="creation_date" name="creation_date" disabled>
+            <input type="date" id="creation_date" name="creation_date">
     
             <label for="creation_heure_debut">Creation Heure Debut</label>
-            <input type="time" id="creation_heure_debut" name="creation_heure_debut" disabled>
+            <input type="time" id="creation_heure_debut" name="creation_heure_debut">
 
             <button id="addCreationFinButton" style="margin-bottom: 10px; margin-top: 16px;" type="button" class="export">Ajouter fin de creation</button>
 
             <label for="creation_heure_fin">Creation Date Fin</label>
-            <input type="date" id="creation_date_fin" name="creation_date_fin" disabled>
+            <input type="date" id="creation_date_fin" name="creation_date_fin">
     
             <label for="creation_heure_fin">Creation Heure Fin</label>
-            <input type="time" id="creation_heure_fin" name="creation_heure_fin" disabled>
+            <input type="time" id="creation_heure_fin" name="creation_heure_fin">
+
+            
+
+            <hr/>
     
             <h3>Alarme</h3>
             <div id="alarme-container">
                 <!-- Alarm Data will be inserted here -->
-                <button id="addAlarmeButton" style="margin-bottom: 10px;" type="button" class="export">Ajouter alarme</button>
+                
             </div>
+            <button type="button" id="add_alarme" class="styled-btn primary-btn">Ajouter Alarme</button>
+                <button type="button" id="remove_alarme" class="styled-btn danger-btn" style="display: none;">Enlever</button>
+
+                <button id="submitDataForm" style="margin-bottom: 10px; margin-left: 50%;" type="submit" class="export">Mettre a jour les donnees ci-dessus</button>
+                <hr/>
+
+
+            <button id="addAlarmeButton" style="margin-bottom: 10px;" type="button" class="export">Ajouter alarme</button>
            
             <div>
               
@@ -504,6 +538,17 @@
             color: #444;
         }
 
+        select{
+          width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: large;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
         input[type="text"],
         input[type="date"],
         input[type="time"] {
@@ -516,6 +561,8 @@
             color: #333;
             background-color: #f9f9f9;
         }
+
+
 
         input[type="text"]:disabled,
         input[type="date"]:disabled,

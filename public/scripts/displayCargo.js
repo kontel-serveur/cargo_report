@@ -27,32 +27,128 @@ document.addEventListener('DOMContentLoaded', async () => {
             return date.toISOString().split('T')[0]; // Return in "yyyy-MM-dd" format
         };
 
-        if(Array.isArray(cargoData[0].codeHS)){
+      /*  if(Array.isArray(cargoData[0].codeHS)){
             const codeHSContainer = document.getElementById('code_hs_container');
             cargoData[0].codeHS.forEach((code, index) => {
                 const codeHSItem = document.createElement('div');
                 codeHSItem.innerHTML = `
-                    <input type="text" id="code_hs" name="code_hs" value="${code.code_hs}" disabled>
+                    <input type="text" id="code_hs" name="code_hs" value="${code.code_hs}">
                 `
 
                 codeHSContainer.appendChild(codeHSItem);
             })
-        }
+        }*/
 
-        if(Array.isArray(cargoData[0].transitaire)){
+            //Code HS
+
+            const codeHSContainer = document.getElementById('code_hs_container');
+    const addCodeHSButton = document.getElementById('add_code_hs');
+    const removeCodeHSButton = document.getElementById('remove_code_hs');
+
+    // Function to create a new Code HS input field
+    function addCodeHS(value = '') {
+        const codeHSItem = document.createElement('div');
+        codeHSItem.classList.add('code_hs_item');
+        codeHSItem.innerHTML = `
+            <input type="text" name="code_hs" value="${value}">
+        `;
+        codeHSContainer.appendChild(codeHSItem);
+
+        // Show remove button if there is more than one input
+        updateRemoveButton();
+    }
+
+    // Function to remove the last Code HS input field
+    function removeCodeHS() {
+        const codeHSItems = document.querySelectorAll('.code_hs_item');
+        if (codeHSItems.length > 1) {
+            codeHSContainer.removeChild(codeHSItems[codeHSItems.length - 1]);
+        }
+        updateRemoveButton();
+    }
+
+    // Show or hide remove button
+    function updateRemoveButton() {
+        const codeHSItems = document.querySelectorAll('.code_hs_item');
+        removeCodeHSButton.style.display = codeHSItems.length > 1 ? 'inline-block' : 'none';
+    }
+
+    // Populate inputs from API data
+    if (Array.isArray(cargoData[0].codeHS)) {
+        cargoData[0].codeHS.forEach((code) => {
+            addCodeHS(code.code_hs);
+        });
+    } else {
+        addCodeHS(); // Default one input if no data
+    }
+
+    // Event listeners
+    addCodeHSButton.addEventListener('click', () => addCodeHS());
+    removeCodeHSButton.addEventListener('click', removeCodeHS);
+
+
+    //Transitaire
+      /*  if(Array.isArray(cargoData[0].transitaire)){
             const transitaireContainer = document.getElementById('transitaire_container');
             cargoData[0].transitaire.forEach((transitaire, index) => {
                 const transitaireItem = document.createElement('div');
                 transitaireItem.innerHTML = `
-                    <input type="text" id="transitaire_${index}" name="transitaire" value="${transitaire.Transitaire}" disabled>
+                    <input type="text" id="transitaire_${index}" name="transitaire" value="${transitaire.Transitaire}">
                 `
 
                 transitaireContainer.appendChild(transitaireItem);
             })
+        }*/
+
+
+            const transitaireContainer = document.getElementById('transitaire_container');
+    const addTransitaireButton = document.getElementById('add_transitaire');
+    const removeTransitaireButton = document.getElementById('remove_transitaire');
+
+    // Function to create a new Transitaire input field
+    function addTransitaire(value = '') {
+        const index = transitaireContainer.children.length;
+        const transitaireItem = document.createElement('div');
+        transitaireItem.classList.add('transitaire_item');
+        transitaireItem.innerHTML = `
+            <input type="text" id="transitaire_${index}" name="transitaire" value="${value}">
+        `;
+        transitaireContainer.appendChild(transitaireItem);
+
+        // Show remove button if there is more than one input
+        updateRemoveButtonTransitaire();
+    }
+
+    // Function to remove the last Transitaire input field
+    function removeTransitaire() {
+        const transitaireItems = document.querySelectorAll('.transitaire_item');
+        if (transitaireItems.length > 1) {
+            transitaireContainer.removeChild(transitaireItems[transitaireItems.length - 1]);
         }
+        updateRemoveButtonTransitaire();
+    }
+
+    // Show or hide remove button
+    function updateRemoveButtonTransitaire() {
+        const transitaireItems = document.querySelectorAll('.transitaire_item');
+        removeTransitaireButton.style.display = transitaireItems.length > 1 ? 'inline-block' : 'none';
+    }
+
+    // Populate inputs from API data
+    if (Array.isArray(cargoData[0].transitaire)) {
+        cargoData[0].transitaire.forEach((transitaire) => {
+            addTransitaire(transitaire.Transitaire);
+        });
+    } else {
+        addTransitaire(); // Default one input if no data
+    }
+
+    // Event listeners
+    addTransitaireButton.addEventListener('click', () => addTransitaire());
+    removeTransitaireButton.addEventListener('click', removeTransitaire);
 
         // Check if alarme is defined and is an array
-        if (Array.isArray(cargoData[0].alarme)) {
+       /* if (Array.isArray(cargoData[0].alarme)) {
             const alarmeContainer = document.getElementById('alarme-container');
             cargoData[0].alarme.forEach((alarme, index) => {
                 const alarmeItem = document.createElement('div');
@@ -99,9 +195,172 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         } else {
             console.warn('Alarme data is not available or not an array', cargoData[0].alarme);
-        }
+        } */
+
+            function validateDateTimeInputs(dateInput, timeInput, index) {
+                // Get cargo creation date and time from cargoData
+                const cargoCreationDate = cargoData[0].creationDate;
+                const cargoCreationTime = cargoData[0].creationHeureDebut;
+                
+                // Add event listeners to the date and time inputs
+                dateInput.addEventListener('change', function() {
+                    validateDateTime(dateInput, timeInput, cargoCreationDate, cargoCreationTime);
+                });
+                
+                timeInput.addEventListener('change', function() {
+                    validateDateTime(dateInput, timeInput, cargoCreationDate, cargoCreationTime);
+                });
+                
+                // Initial validation (if the fields already have values)
+                validateDateTime(dateInput, timeInput, cargoCreationDate, cargoCreationTime);
+            }
 
 
+            function validateDateTime(dateInput, timeInput, cargoCreationDate, cargoCreationTime) {
+                // Get selected date and time values
+                const selectedDate = dateInput.value;
+                const selectedTime = timeInput.value;
+                
+                // Skip validation if either field is empty
+                if (!selectedDate || !selectedTime) return;
+                
+                // Compare dates
+                if (selectedDate < cargoCreationDate) {
+                    // Selected date is before cargo creation date - reset to cargo creation date
+                    dateInput.value = cargoCreationDate;
+                    timeInput.value = cargoCreationTime;
+                    alert("La date d'alarme ne peut pas être antérieure à la date de création de cargo.");
+                } 
+                else if (selectedDate === cargoCreationDate) {
+                    // If same date, ensure time is not before cargo creation time
+                    if (selectedTime < cargoCreationTime) {
+                        timeInput.value = cargoCreationTime;
+                        alert("L'heure d'alarme ne peut pas être antérieure à l'heure de création de cargo.");
+                    }
+                }
+            }
+
+        
+            const alarmeContainer = document.getElementById('alarme-container');
+            const addAlarmeButton = document.getElementById('add_alarme');
+            const removeAlarmeButton = document.getElementById('remove_alarme');
+        
+            // Function to create a new Alarme input field
+            function addAlarme(data = {}) {
+                const index = alarmeContainer.children.length;
+                const alarmeItem = document.createElement('div');
+                alarmeItem.classList.add('alarme-item');
+                alarmeItem.innerHTML = `
+                    <div class="formbold-input-flex">
+                        <div>
+                            <label for="alarme_niveau_${index}" class="formbold-form-label">Niveau</label>
+                            <select id="alarme_niveau_${index}" name="alarme[niveau]" class="formbold-form-input">
+                                
+                                <option value="2" ${data.niveau === '2' ? 'selected' : ''}>2</option>
+                                <option value="3" ${data.niveau === '3' ? 'selected' : ''}>3</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="alarme_type_${index}" class="formbold-form-label">Type</label>
+                            <select id="alarme_type_${index}" name="alarme[type]" class="formbold-form-input">
+                                
+                            </select>
+                        </div>
+                    </div>
+                    <div class="formbold-input-flex">
+                        <div>
+                            <label for="alarme_date_${index}" class="formbold-form-label">Date</label>
+                            <input type="date" id="alarme_date_${index}" name="alarme[date]" value="${data.date || ''}" class="formbold-form-input" />
+                        </div>
+
+                        <div>
+                            <label for="alarme_heure_${index}" class="formbold-form-label">Heure</label>
+                            <input type="time" id="alarme_heure_${index}" name="alarme[heure]" value="${data.heure || ''}" class="formbold-form-input" />
+                        </div>
+                        
+                    </div>
+                    <div>
+                        <label for="alarme_lieu_${index}" class="formbold-form-label">Lieu</label>
+                        <input type="text" id="alarme_lieu_${index}" name="alarme[lieu]" value="${data.lieu || ''}" class="formbold-form-input" />
+                    </div>
+                    <div>
+                        <label for="alarme_observation_${index}" class="formbold-form-label">Observation</label>
+                        <textarea rows="6" id="alarme_observation_${index}" name="alarme[observation]" class="formbold-form-input">${data.observation || ''}</textarea>
+                    </div>
+                `;
+        
+                alarmeContainer.appendChild(alarmeItem);
+                
+        
+                // Show remove button if there is more than one input
+                updateRemoveButtonAlarme();
+        
+                // Attach event listeners to Niveau select
+                const niveauSelect = alarmeItem.querySelector(`#alarme_niveau_${index}`);
+                niveauSelect.addEventListener('change', function () {
+                    updateTypeOptions(niveauSelect, index);
+                });
+        
+                // Initially update Type options based on the pre-selected Niveau value
+                updateTypeOptions(niveauSelect, index);
+                const dateInput = alarmeItem.querySelector(`#alarme_date_${index}`);
+                const timeInput = alarmeItem.querySelector(`#alarme_heure_${index}`);
+                validateDateTimeInputs(dateInput, timeInput, index);
+            }
+        
+            // Function to update the Type options based on the selected Niveau
+            // Function to update the Type options based on the selected Niveau
+function updateTypeOptions(niveauSelect, index) {
+    const typeSelect = document.getElementById(`alarme_type_${index}`);
+    const niveau = niveauSelect.value;
+
+    // Clear existing options completely
+    typeSelect.innerHTML = '';
+
+    // Append options based on Niveau value
+    if (niveau === "2") {
+        typeSelect.innerHTML = '<option value="Delai d\'expiration du transit">Delai d\'expiration du transit</option>';
+    } else if (niveau === "3") {
+        typeSelect.innerHTML = `
+            <option value="Deviation de la route autorisee">Deviation de la route autorisee</option>
+            <option value="Demi-tour">Demi-tour</option>
+            <option value="Arret en zone dangereuse">Arret en zone dangereuse</option>
+            <option value="Delai d\'expiration de la confirmation du retrait de l\'unite">Delai d\'expiration de la confirmation du retrait de l\'unite</option>
+            <option value="Cable de securite deverouilee">Cable de securite deverouilee</option>
+            <option value="Unite enlevee hors d\'une zone sure">Unite enlevee hors d\'une zone sure</option>
+        `;
+    }
+}
+        
+            // Function to remove the last Alarme input field
+            function removeAlarme() {
+                const alarmeItems = document.querySelectorAll('.alarme-item');
+                if (alarmeItems.length > 1) {
+                    alarmeContainer.removeChild(alarmeItems[alarmeItems.length - 1]);
+                }
+                updateRemoveButtonAlarme();
+            }
+        
+            // Show or hide remove button
+            function updateRemoveButtonAlarme() {
+                const alarmeItems = document.querySelectorAll('.alarme-item');
+                removeAlarmeButton.style.display = alarmeItems.length > 1 ? 'inline-block' : 'none';
+            }
+        
+            // Populate inputs from API data
+            if (Array.isArray(cargoData[0].alarme)) {
+                cargoData[0].alarme.forEach((alarme) => {
+                    addAlarme(alarme);
+                });
+            } else {
+                addAlarme(); // Default one input if no data
+            }
+        
+            // Event listeners
+            addAlarmeButton.addEventListener('click', () => addAlarme());
+            removeAlarmeButton.addEventListener('click', removeAlarme);
+
+    //Depassement delai
 
         if (Array.isArray(depassementDelai)) {
             const observationContainer = document.getElementById('observation-container-item');
@@ -154,7 +413,8 @@ document.addEventListener('DOMContentLoaded', async () => {
            // document.getElementById("addCableButton"),
             document.getElementById("addCommentButton"),
             document.getElementById("addAlarmeButton"),
-            document.getElementById("addClotureButton")
+            document.getElementById("addClotureButton"),
+            document.getElementById("submitDataForm")
         ];
         
         // Disable buttons if clotureDate is not null
@@ -244,7 +504,7 @@ async function loading(cargoId){
                     <input type="text" id="code_hs" name="code_hs" value="${code.code_hs}" disabled>
                 `
 
-                codeHSContainer.appendChild(codeHSItem);
+             //   codeHSContainer.appendChild(codeHSItem);
             })
         }
 
@@ -256,7 +516,7 @@ async function loading(cargoId){
                     <input type="text" id="transitaire_${index}" name="transitaire" value="${transitaire.Transitaire}" disabled>
                 `
 
-                transitaireContainer.appendChild(transitaireItem);
+             //   transitaireContainer.appendChild(transitaireItem);
             })
         }
 
@@ -304,7 +564,7 @@ async function loading(cargoId){
                     </div>
                 `;
 
-                alarmeContainer.appendChild(alarmeItem);
+              //  alarmeContainer.appendChild(alarmeItem);
             });
         } else {
             console.warn('Alarme data is not available or not an array', cargoData[0].alarme);
@@ -363,7 +623,8 @@ async function loading(cargoId){
            // document.getElementById("addCableButton"),
             document.getElementById("addCommentButton"),
             document.getElementById("addAlarmeButton"),
-            document.getElementById("addClotureButton")
+            document.getElementById("addClotureButton"),
+            document.getElementById("submitDataForm")
         ];
         
         // Disable buttons if clotureDate is not null
@@ -949,4 +1210,75 @@ $(document).ready(function () {
             },
         });
     });
+
+
+
+    $('#cargoForm').submit(function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        let transitaireArray = [];
+        $('#transitaire_container input[name="transitaire"]').each(function () {
+            transitaireArray.push({ Transitaire: $(this).val() });
+        });
+
+        let codeHSArray = [];
+        $('#code_hs_container input[name="code_hs"]').each(function () {
+            codeHSArray.push({ code_hs: $(this).val() });
+        });
+
+        let alarmeArray = [];
+        $('#alarme-container .alarme-item').each(function () {
+            const alarme = {
+                niveau: $(this).find('select[name="alarme[niveau]"]').val(),
+                type: $(this).find('select[name="alarme[type]"]').val(),
+                heure: $(this).find('input[name="alarme[heure]"]').val(),
+                date: $(this).find('input[name="alarme[date]"]').val(),
+                lieu: $(this).find('input[name="alarme[lieu]"]').val(),
+                observation: $(this).find('textarea[name="alarme[observation]"]').val()
+            };
+            alarmeArray.push(alarme);
+        });
+
+        const formData = {
+            numeroDeTransit: $('#numero_de_transit').val(),
+            numeroDeBalise: $('#numero_de_la_balise').val(),
+            //  codeHS: req.body.codeHS,
+            codeHS: codeHSArray,
+            corridor: $('#corridor').val(),
+            typeDeVehicule: $('#type_de_vehicule').val(),
+            immatriculation: $('#immatriculation').val(),
+            //transitaire: $('#transite_place_to_be').val(),
+            transitaire: transitaireArray,
+            chauffeur: $('#chauffeur').val(),
+            telephone: $('#telephone').val(),
+            creationDate: $('#creation_date').val(),
+            creationHeureDebut: $('#creation_heure_debut').val(),
+            creationDateFin: $('#creation_date_fin').val(),
+            creationHeureFin: $('#creation_heure_fin').val(),
+            alarme: alarmeArray
+           
+        };
+
+        $.ajax({
+            url: `/cargo/donnee/${cargoId}/update`,
+            type: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify(formData),
+            success: function (response) {
+                alert('Transit mis a jour avec success');
+                //$('#addClotureModal').modal('hide'); // Hide the modal
+                console.log(response);
+                loading(cargoId);
+                table.ajax.reload(); // Reload the table data
+            },
+            error: function (error) {
+                alert("Erreur d'enregistrement de la cloture: " + error.responseText);
+            },
+        });
+    });
+
+
 });

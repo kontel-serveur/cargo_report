@@ -125,9 +125,24 @@ const updateCargoData = async(req, res)=>{
     const cargoData = await Cargo.findOne({where: {id: id}})
 
     if (cargoData){
-
+      await Cargo.update({numeroDeTransit: req.body.numeroDeTransit,
+        numeroDeBalise: req.body.numeroDeBalise,
+        codeHS: req.body.codeHS,
+        corridor: req.body.corridor,
+        typeDeVehicule: req.body.typeDeVehicule,
+        immatriculation: req.body.immatriculation,
+        transitaire: req.body.transitaire,
+        chauffeur: req.body.chauffeur,
+        telephone: req.body.telephone,
+        creationDate: req.body.creationDate,
+        creationHeureDebut: req.body.creationHeureDebut,
+        creationDateFin: req.body.creationDateFin,
+        creationHeureFin: req.body.creationHeureFin,
+        alarme: req.body.alarme
+      }, {where: {id: id}})
+        return res.status(StatusCodes.OK).json('Transit mis a jour avec success!')
     }else{
-      
+      return res.status(StatusCodes.NOT_FOUND).json('Cargo not found')
     }
   } catch (error) {
     console.log(error)
@@ -312,4 +327,4 @@ const casSupectRegistration = async(req, res)=>{
   }
 }
 
-module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture, addCreationFin}
+module.exports = {cargoRegistration, getMyCargoData, getMySingleCargoData, depassementDelaiRegistration, cableDeverouilleRegistration, casSupectRegistration, addAlarme, addCloture, addCreationFin, updateCargoData}
