@@ -9,12 +9,13 @@ const helmet = require('helmet')
 const cors = require('cors')
 const xss = require('xss-clean')
 const Swal = require('sweetalert2')
+const bcrypt = require('bcryptjs');
 
 const bodyParser = require('body-parser');
 const ExcelJS = require('exceljs')
 
 const db = require('./models');
-const {Cargo, DepassementDelai, CableDeverouille, CasSuspect} = require('./models')
+const {Cargo, DepassementDelai, CableDeverouille, CasSuspect, User} = require('./models')
 
 
 const UserAuthentication = require('./middleware/User')
@@ -2364,8 +2365,29 @@ app.get('/',(req, res)=>{
   app.use(express.static(path.join(__dirname, 'public')));
 const port = process.env.PORT || 3000;
 
-db.sequelize.sync().then((req)=>{
-    app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
+db.sequelize.sync().then(async () => {
+  // Check if the admin user already exists
+  const existingAdmin = await User.findOne({ where: { email: "admin@kontel.bi" } });
+
+  if (!existingAdmin) {
+      const hashedPassword = bcrypt.hashSync("password123", 12);
+
+      await User.create({
+          fullName: "Admin",
+          email: "admin@kontel.bi",
+          password: hashedPassword,
+          allowed: true,
+          admin: true
       });
-})
+
+      console.log("Admin user created successfully.");
+  } else {
+      console.log("Admin user already exists.");
+  }
+
+  app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+  });
+}).catch(error => {
+  console.error("Error syncing database:", error);
+});
