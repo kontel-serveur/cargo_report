@@ -36,7 +36,11 @@ app.set('trust proxy', 1);
 app.use(express.json());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(helmet())
+//app.use(helmet())
+app.use(helmet({
+  contentSecurityPolicy: false,
+  referrerPolicy: false
+}));
 app.use(cors())
 app.use(xss())
 app.use(bodyParser.json());
@@ -337,35 +341,49 @@ console.log('Not clotured', data_not_clotured)
         });
       }*/
 
-        if (cargo.alarme && Array.isArray(cargo.alarme)) {
-          // Filter alarms by type and current month/year
-          const alarmsForCurrentCargo = cargo.alarme
-            .filter(alarm => 
-              (alarm.type === "Delai d'expiration du transit" || 
-              alarm.type === "Delai d'expiration de la confirmation du retrait de l'unite") &&
-              creationDate.getMonth() === currentMonth &&
-              creationDate.getFullYear() === currentYear
-            );
-          
-          if (alarmsForCurrentCargo.length > 0) {
-            // Combine the 'niveau' and 'observation' of all alarms into single strings
+        const parseJSON = (data) => {
+    try {
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return [];
+    }
+};
+
+data.forEach(cargo => {
+    // Ensure cargo.alarme is parsed correctly
+    const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+
+    if (alarmeArray.length > 0) {
+        // Filter alarms by type and current month/year
+        const alarmsForCurrentCargo = alarmeArray.filter(alarm => 
+            (alarm.type === "Delai d'expiration du transit" || 
+            alarm.type === "Delai d'expiration de la confirmation du retrait de l'unite") &&
+            creationDate.getMonth() === currentMonth &&
+            creationDate.getFullYear() === currentYear
+        );
+
+        if (alarmsForCurrentCargo.length > 0) {
+            // Combine 'niveau' and 'observation' of all alarms into single strings
             const niveaux = alarmsForCurrentCargo.map(alarm => alarm.niveau).join('\n\n');
             const observations = alarmsForCurrentCargo.map(alarm => alarm.observation).join('\n\n');
         
             // Add one row with combined alarm details
             depassementDelaiWorksheet.addRow([
-              cargo.numeroDeTransit,
-              cargo.typeDeVehicule,
-              cargo.immatriculation,
-              cargo.chauffeur,
-              formatDate(cargo.creationDate),  // Use creationDate for the alarm
-              formatDate(cargo.clotureDate),   // No clotureDate for alarms
-              cargo.duree,                     // No duree for alarms
-              niveaux || '',                   // Combined 'niveau' from all alarms
-              observations || '',              // Combined 'observation' from all alarms
+                cargo.numeroDeTransit || '',
+                cargo.typeDeVehicule || '',
+                cargo.immatriculation || '',
+                cargo.chauffeur || '',
+                formatDate(cargo.creationDate) || '',  // Use creationDate for the alarm
+                formatDate(cargo.clotureDate) || '',   // No clotureDate for alarms
+                cargo.duree || '',                     // No duree for alarms
+                niveaux || '',                         // Combined 'niveau' from all alarms
+                observations || ''                     // Combined 'observation' from all alarms
             ]);
-          }
         }
+    }
+});
+
         
 
     }
@@ -398,65 +416,93 @@ data.forEach(cargo => {
       ]);
     }*/
 
-      if (cargo.alarme && Array.isArray(cargo.alarme)) {
-        cargo.alarme
-          .filter(alarm => alarm.type === "Cable de securite deverouilee")
-          .forEach(alarm => {
-            cableDeverouileWorksheet.addRow([
-              cargo.numeroDeTransit,
-              cargo.typeDeVehicule,
-              cargo.immatriculation,
-              cargo.chauffeur,
-              formatDate(alarm.date), // Using alarm date
-              alarm.heure
-            ]);
-          });
-      }
-
-    // Add alarm entries of type "Arret en zone dangereuse"
-    if (cargo.alarme && Array.isArray(cargo.alarme)) {
-      cargo.alarme
-        .filter(alarm => alarm.type === "Arret en zone dangereuse")
-        .forEach(alarm => {
-          arretWorksheet.addRow([
-            cargo.numeroDeTransit,
-            cargo.typeDeVehicule,
-            cargo.immatriculation,
-            cargo.chauffeur,
-            formatDate(alarm.date), // Keep using alarm date for display
-            alarm.heure,
-            alarm.lieu
-          ]);
-        });
+      const parseJSON = (data) => {
+    try {
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return [];
     }
-  }
-});
-
-
-
-
-
+};
 
 data.forEach(cargo => {
-  const creationDate = new Date(cargo.creationDate); // Consistently use this for filtering
+    // Ensure cargo.alarme is parsed correctly
+    const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
 
-  // Include only if creationDate is within the current month and year
-  if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
-    if (cargo.casSuspect && cargo.casSuspect !== null) {
-      casSuspectWorksheet.addRow([
-        cargo.numeroDeTransit,   
-        cargo.numeroDeBalise,    
-        cargo.typeDeVehicule,    
-        cargo.immatriculation,    
-        Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',    
-        cargo.chauffeur,
-        formatDate(cargo.creationDate),
-        formatDate(cargo.clotureDate),
-        cargo.casSuspect.commentaire
-      ]);
+    if (alarmeArray.length > 0) {
+        // Filter and process "Cable de securite deverouilee" alarms
+        alarmeArray
+            .filter(alarm => alarm.type === "Cable de securite deverouilee")
+            .forEach(alarm => {
+                cableDeverouileWorksheet.addRow([
+                    cargo.numeroDeTransit || '',
+                    cargo.typeDeVehicule || '',
+                    cargo.immatriculation || '',
+                    cargo.chauffeur || '',
+                    formatDate(alarm.date) || '',
+                    alarm.heure || ''
+                ]);
+            });
+
+        // Filter and process "Arret en zone dangereuse" alarms
+        alarmeArray
+            .filter(alarm => alarm.type === "Arret en zone dangereuse")
+            .forEach(alarm => {
+                arretWorksheet.addRow([
+                    cargo.numeroDeTransit || '',
+                    cargo.typeDeVehicule || '',
+                    cargo.immatriculation || '',
+                    cargo.chauffeur || '',
+                    formatDate(alarm.date) || '',
+                    alarm.heure || '',
+                    alarm.lieu || ''
+                ]);
+            });
     }
+});
+
   }
 });
+
+
+
+
+
+
+const parseJSON = (data) => {
+    try {
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return [];
+    }
+};
+
+data.forEach(cargo => {
+    const creationDate = new Date(cargo.creationDate);
+
+    // Include only if creationDate is within the current month and year
+    if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
+
+        // Ensure cargo.transitaire is parsed correctly
+        const transitaireArray = Array.isArray(cargo.transitaire) ? cargo.transitaire : parseJSON(cargo.transitaire);
+
+        if (cargo.casSuspect && cargo.casSuspect !== null) {
+            casSuspectWorksheet.addRow([
+                cargo.numeroDeTransit || '',
+                cargo.numeroDeBalise || '',
+                cargo.typeDeVehicule || '',
+                cargo.immatriculation || '',
+                transitaireArray.length > 0 ? transitaireArray.map(item => item.Transitaire).join('\n') : '',
+                cargo.chauffeur || '',
+                formatDate(cargo.creationDate) || '',
+                formatDate(cargo.clotureDate) || '',
+                cargo.casSuspect.commentaire || ''
+            ]);
+        }
+    }
+});
+
 
 cableDeverouileWorksheet.columns.forEach((column) => {
   column.width = 20; 
@@ -723,35 +769,48 @@ for (let day = 1; day <= daysInMonth; day++) {
     if (groupedData[creationDate] && groupedData[creationDate].length > 0) {
         // If there is data for this date, loop through it
         groupedData[creationDate].forEach(async (cargo) => {
-            const row = worksheet.addRow([
-                cargo.numeroDeTransit || '',
-                cargo.numeroDeBalise || '',
-                Array.isArray(cargo.codeHS) ? cargo.codeHS.map(item => item.code_hs).join('\n') : '',
-                cargo.corridor || '',
-                cargo.typeDeVehicule || '',
-                cargo.immatriculation || '',
-                //cargo.transitaire || '',
-                Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',
-                cargo.chauffeur || '',
-                cargo.telephone || '',
-                creationDate,
-                cargo.creationHeureDebut || '',
-                cargo.creationHeureFin || '',
-                cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
-                cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
-                cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
-                cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
-                cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
-                formatDate(cargo.clotureDate) || '',
-                cargo.clotureHeure || '',
-                cargo.clotureLieu || '',
-                cargo.clotureMode || '',
-                cargo.duree || ''
-            ]);
 
-            const codeCount = cargo.codeHS?.length || 1;
-            const transitaireCount = cargo.transitaire?.length || 1;
-            const alarmCount = cargo.alarme?.length || 1;
+          const parseJSON = (data) => {
+              try {
+                  return JSON.parse(data);
+              } catch (error) {
+                  console.error("Error parsing JSON:", error);
+                  return [];
+              }
+          };
+
+          const codeHSArray = Array.isArray(cargo.codeHS) ? cargo.codeHS : parseJSON(cargo.codeHS);
+          const transitaireArray = Array.isArray(cargo.transitaire) ? cargo.transitaire : parseJSON(cargo.transitaire);
+          const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+
+           const row = worksheet.addRow([
+              cargo.numeroDeTransit || '',
+              cargo.numeroDeBalise || '',
+              codeHSArray.map(item => item.code_hs).join('\n') || '',
+              cargo.corridor || '',
+              cargo.typeDeVehicule || '',
+              cargo.immatriculation || '',
+              transitaireArray.map(item => item.Transitaire).join('\n\n') || '',
+              cargo.chauffeur || '',
+              cargo.telephone || '',
+              creationDate,
+              cargo.creationHeureDebut || '',
+              cargo.creationHeureFin || '',
+              alarmeArray.map(alarme => alarme.niveau).join('\n\n') || '',
+              alarmeArray.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+              alarmeArray.map(alarme => alarme.heure).join('\n\n') || '',
+              alarmeArray.map(alarme => alarme.lieu).join('\n\n') || '',
+              alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+              formatDate(cargo.clotureDate) || '',
+              cargo.clotureHeure || '',
+              cargo.clotureLieu || '',
+              cargo.clotureMode || '',
+              cargo.duree || ''
+          ]);
+
+            const codeCount = codeHSArray?.length || 1;
+            const transitaireCount = transitaireArray?.length || 1;
+            const alarmCount = alarmeArray?.length || 1;
             const maxCount = Math.max(codeCount, alarmCount, transitaireCount);
 
             row.height = Math.max(25, maxCount * 25);
@@ -1007,36 +1066,48 @@ const finRow = worksheet.addRow(['FIN']);
       if (groupedDataNonCloture[creationDate] && groupedDataNonCloture[creationDate].length > 0) {
           // If there is data for this date, loop through it
           groupedDataNonCloture[creationDate].forEach(async (cargo) => {
+
+            const parseJSON = (data) => {
+              try {
+                  return JSON.parse(data);
+              } catch (error) {
+                  console.error("Error parsing JSON:", error);
+                  return [];
+              }
+          };
+
+          const codeHSArray = Array.isArray(cargo.codeHS) ? cargo.codeHS : parseJSON(cargo.codeHS);
+          const transitaireArray = Array.isArray(cargo.transitaire) ? cargo.transitaire : parseJSON(cargo.transitaire);
+          const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+
               const row = nonClotureWorksheet.addRow([
-                  cargo.numeroDeTransit || '',
-                  cargo.numeroDeBalise || '',
-                  Array.isArray(cargo.codeHS) ? cargo.codeHS.map(item => item.code_hs).join('\n') : '',
-                  cargo.corridor || '',
-                  cargo.typeDeVehicule || '',
-                  cargo.immatriculation || '',
-                  //cargo.transitaire || '',
-                  Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',
-                  cargo.chauffeur || '',
-                  cargo.telephone || '',
-                  creationDate,
-                  cargo.creationHeureDebut || '',
-                  cargo.creationHeureFin || '',
-                  cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
-                  cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
-                  cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
-                  cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
-                  cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
-                  //formatDate(cargo.clotureDate) || '',
-                  '',
-                  cargo.clotureHeure || '',
-                  cargo.clotureLieu || '',
-                  cargo.clotureMode || '',
-                  cargo.duree || ''
-              ]);
+              cargo.numeroDeTransit || '',
+              cargo.numeroDeBalise || '',
+              codeHSArray.map(item => item.code_hs).join('\n') || '',
+              cargo.corridor || '',
+              cargo.typeDeVehicule || '',
+              cargo.immatriculation || '',
+              transitaireArray.map(item => item.Transitaire).join('\n\n') || '',
+              cargo.chauffeur || '',
+              cargo.telephone || '',
+              creationDate,
+              cargo.creationHeureDebut || '',
+              cargo.creationHeureFin || '',
+              alarmeArray.map(alarme => alarme.niveau).join('\n\n') || '',
+              alarmeArray.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+              alarmeArray.map(alarme => alarme.heure).join('\n\n') || '',
+              alarmeArray.map(alarme => alarme.lieu).join('\n\n') || '',
+              alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+              formatDate(cargo.clotureDate) || '',
+              cargo.clotureHeure || '',
+              cargo.clotureLieu || '',
+              cargo.clotureMode || '',
+              cargo.duree || ''
+          ]);
   
-              const codeCount = cargo.codeHS?.length || 1;
-              const transitaireCount = cargo.transitaire?.length || 1;
-              const alarmCount = cargo.alarme?.length || 1;
+              const codeCount = codeHSArray?.length || 1;
+              const transitaireCount = transitaireArray?.length || 1;
+              const alarmCount = alarmeArray?.length || 1;
               const maxCount = Math.max(codeCount, alarmCount, transitaireCount);
   
               row.height = Math.max(25, maxCount * 25);
@@ -1483,33 +1554,47 @@ arretWorksheet.addRow(['N° du Trst',
     });
   }*/
 
-  if (cargo.alarme && Array.isArray(cargo.alarme)) {
-    // Filter alarms by type and current month/year
-    const alarmsForCurrentCargo = cargo.alarme
-      .filter(alarm => 
-        (alarm.type === "Delai d'expiration du transit" || 
-        alarm.type === "Delai d'expiration de la confirmation du retrait de l'unite")
-      );
-    
-    if (alarmsForCurrentCargo.length > 0) {
-      // Combine the 'niveau' and 'observation' of all alarms into single strings
-      const niveaux = alarmsForCurrentCargo.map(alarm => alarm.niveau).join('\n\n');
-      const observations = alarmsForCurrentCargo.map(alarm => alarm.observation).join('\n\n');
-  
-      // Add one row with combined alarm details
-      depassementDelaiWorksheet.addRow([
-        cargo.numeroDeTransit,
-        cargo.typeDeVehicule,
-        cargo.immatriculation,
-        cargo.chauffeur,
-        formatDate(cargo.creationDate),  // Use creationDate for the alarm
-        formatDate(cargo.clotureDate),   // No clotureDate for alarms
-        cargo.duree,                     // No duree for alarms
-        niveaux || '',                   // Combined 'niveau' from all alarms
-        observations || '',              // Combined 'observation' from all alarms
-      ]);
-    }
-  }
+         const parseJSON = (data) => {
+            try {
+                return JSON.parse(data);
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+                return [];
+            }
+        };
+
+        data.forEach(cargo => {
+            // Ensure cargo.alarme is parsed correctly
+            const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+
+            if (alarmeArray.length > 0) {
+                // Filter alarms by type
+                const alarmsForCurrentCargo = alarmeArray.filter(alarm => 
+                    alarm.type === "Delai d'expiration du transit" || 
+                    alarm.type === "Delai d'expiration de la confirmation du retrait de l'unite"
+                );
+
+                if (alarmsForCurrentCargo.length > 0) {
+                    // Combine 'niveau' and 'observation' from all alarms
+                    const niveaux = alarmsForCurrentCargo.map(alarm => alarm.niveau).join('\n\n');
+                    const observations = alarmsForCurrentCargo.map(alarm => alarm.observation).join('\n\n');
+
+                    // Add one row with combined alarm details
+                    depassementDelaiWorksheet.addRow([
+                        cargo.numeroDeTransit || '',
+                        cargo.typeDeVehicule || '',
+                        cargo.immatriculation || '',
+                        cargo.chauffeur || '',
+                        formatDate(cargo.creationDate) || '',  // Use creationDate for the alarm
+                        formatDate(cargo.clotureDate) || '',   // No clotureDate for alarms
+                        cargo.duree || '',                     // No duree for alarms
+                        niveaux || '',                         // Combined 'niveau' from all alarms
+                        observations || ''                     // Combined 'observation' from all alarms
+                    ]);
+                }
+            }
+        });
+
 });
 
 depassementDelaiWorksheet.columns.forEach((column) => {
@@ -1534,57 +1619,78 @@ data.forEach(cargo => {
    
   }*/
 
-      if (cargo.alarme && Array.isArray(cargo.alarme)) {
-        cargo.alarme
-          .filter(alarm => alarm.type === "Cable de securite deverouilee")
-          .forEach(alarm => {
-            cableDeverouileWorksheet.addRow([
-              cargo.numeroDeTransit,
-              cargo.typeDeVehicule,
-              cargo.immatriculation,
-              cargo.chauffeur,
-              formatDate(alarm.date), // Using alarm date
-              alarm.heure
-            ]);
-          });
-      }
+      const parseJSON = (data) => {
+    try {
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return [];
+    }
+};
 
-  if (cargo.alarme && Array.isArray(cargo.alarme)) {
-    cargo.alarme
-      .filter(alarm => alarm.type === "Arret en zone dangereuse")
-      .forEach(alarm => {
-        arretWorksheet.addRow([
-          cargo.numeroDeTransit,
-          cargo.typeDeVehicule,
-          cargo.immatriculation,
-          cargo.chauffeur,
-          formatDate(alarm.date), // Assuming the date property exists
-          alarm.heure, // Assuming the heure property exists
-          alarm.lieu
-        ]);
-      });
-  }
+// Ensure cargo.alarme is a valid array
+const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+
+if (alarmeArray.length > 0) {
+    alarmeArray
+        .filter(alarm => alarm.type === "Cable de securite deverouilee")
+        .forEach(alarm => {
+            cableDeverouileWorksheet.addRow([
+                cargo.numeroDeTransit || '',
+                cargo.typeDeVehicule || '',
+                cargo.immatriculation || '',
+                cargo.chauffeur || '',
+                formatDate(alarm.date) || '',
+                alarm.heure || ''
+            ]);
+        });
+
+    alarmeArray
+        .filter(alarm => alarm.type === "Arret en zone dangereuse")
+        .forEach(alarm => {
+            arretWorksheet.addRow([
+                cargo.numeroDeTransit || '',
+                cargo.typeDeVehicule || '',
+                cargo.immatriculation || '',
+                cargo.chauffeur || '',
+                formatDate(alarm.date) || '',
+                alarm.heure || '',
+                alarm.lieu || ''
+            ]);
+        });
+}
+
 });
 
+
+const parseJSON = (data) => {
+    try {
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return [];
+    }
+};
 
 data.forEach(cargo => {
-  if (cargo.casSuspect && cargo.casSuspect !==null) {
-    
-      casSuspectWorksheet.addRow([
-        cargo.numeroDeTransit,   
-        cargo.numeroDeBalise, // 'Type Vehicule'
-        cargo.typeDeVehicule, // 'Immatriculation'
-        cargo.immatriculation, 
-      //  cargo.transitaire,      // 'Chauffeur'
-        Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',  
-        cargo.chauffeur,
-        formatDate(cargo.creationDate),
-        formatDate(cargo.clotureDate),
-        cargo.casSuspect.commentaire
-      ]);
-   
-  }
+    // Ensure cargo.transitaire is an array
+    const transitaireArray = Array.isArray(cargo.transitaire) ? cargo.transitaire : parseJSON(cargo.transitaire);
+
+    if (cargo.casSuspect && cargo.casSuspect !== null) {
+        casSuspectWorksheet.addRow([
+            cargo.numeroDeTransit || '',
+            cargo.numeroDeBalise || '',
+            cargo.typeDeVehicule || '',
+            cargo.immatriculation || '',
+            transitaireArray.length > 0 ? transitaireArray.map(item => item.Transitaire).join('\n') : '',
+            cargo.chauffeur || '',
+            formatDate(cargo.creationDate) || '',
+            formatDate(cargo.clotureDate) || '',
+            cargo.casSuspect.commentaire || ''
+        ]);
+    }
 });
+
 
 cableDeverouileWorksheet.columns.forEach((column) => {
   column.width = 20; 
@@ -1846,34 +1952,47 @@ cableDeverouileWorksheet.columns.forEach((column) => {
       // Check if there is data for the current date
       if (groupedData[formattedDate] && groupedData[formattedDate].length > 0) {
           groupedData[formattedDate].forEach(cargo => {
-              const row = worksheet.addRow([
-                  cargo.numeroDeTransit || '',
-                  cargo.numeroDeBalise || '',
-                  Array.isArray(cargo.codeHS) ? cargo.codeHS.map(item => item.code_hs).join('\n') : '',
-                  cargo.corridor || '',
-                  cargo.typeDeVehicule || '',
-                  cargo.immatriculation || '',
-                  Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',
-                  cargo.chauffeur || '',
-                  cargo.telephone || '',
-                  formattedDate,
-                  cargo.creationHeureDebut || '',
-                  cargo.creationHeureFin || '',
-                  cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
-                  cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
-                  cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
-                  cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
-                  cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
-                  formatDate(cargo.clotureDate) || '',
-                  cargo.clotureHeure || '',
-                  cargo.clotureLieu || '',
-                  cargo.clotureMode || '',
-                  cargo.duree || ''
-              ]);
+              const parseJSON = (data) => {
+                try {
+                    return JSON.parse(data);
+                } catch (error) {
+                    console.error("Error parsing JSON:", error);
+                    return [];
+                }
+            };
+
+            const codeHSArray = Array.isArray(cargo.codeHS) ? cargo.codeHS : parseJSON(cargo.codeHS);
+            const transitaireArray = Array.isArray(cargo.transitaire) ? cargo.transitaire : parseJSON(cargo.transitaire);
+            const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+
+            const row = worksheet.addRow([
+                cargo.numeroDeTransit || '',
+                cargo.numeroDeBalise || '',
+                codeHSArray.map(item => item.code_hs).join('\n') || '',
+                cargo.corridor || '',
+                cargo.typeDeVehicule || '',
+                cargo.immatriculation || '',
+                transitaireArray.map(item => item.Transitaire).join('\n') || '',
+                cargo.chauffeur || '',
+                cargo.telephone || '',
+                formattedDate,
+                cargo.creationHeureDebut || '',
+                cargo.creationHeureFin || '',
+                alarmeArray.map(alarme => alarme.niveau).join('\n\n') || '',
+                alarmeArray.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+                alarmeArray.map(alarme => alarme.heure).join('\n\n') || '',
+                alarmeArray.map(alarme => alarme.lieu).join('\n\n') || '',
+                alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+                formatDate(cargo.clotureDate) || '',
+                cargo.clotureHeure || '',
+                cargo.clotureLieu || '',
+                cargo.clotureMode || '',
+                cargo.duree || ''
+            ]);
   
-              const codeCount = cargo.codeHS?.length || 1;
-              const alarmCount = cargo.alarme?.length || 1;
-              const transitaireCount = cargo.transitaire?.length || 1;
+              const codeCount = codeHSArray?.length || 1;
+              const alarmCount = alarmeArray?.length || 1;
+              const transitaireCount = transitaireArray?.length || 1;
               const maxCount = Math.max(codeCount, alarmCount, transitaireCount);
   
               row.height = Math.max(25, maxCount * 25);
@@ -2129,35 +2248,46 @@ const finRow = worksheet.addRow(['FIN']);
         // Check if there is data for the current date
         if (groupedDataNonCloture[formattedDate] && groupedDataNonCloture[formattedDate].length > 0) {
             groupedDataNonCloture[formattedDate].forEach(cargo => {
+                const parseJSON = (data) => {
+                    try {
+                        return JSON.parse(data);
+                    } catch (error) {
+                        console.error("Error parsing JSON:", error);
+                        return [];
+                    }
+                };
+
+                const codeHSArray = Array.isArray(cargo.codeHS) ? cargo.codeHS : parseJSON(cargo.codeHS);
+                const transitaireArray = Array.isArray(cargo.transitaire) ? cargo.transitaire : parseJSON(cargo.transitaire);
+                const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+
                 const row = nonClotureWorksheet.addRow([
                     cargo.numeroDeTransit || '',
                     cargo.numeroDeBalise || '',
-                    Array.isArray(cargo.codeHS) ? cargo.codeHS.map(item => item.code_hs).join('\n') : '',
+                    codeHSArray.map(item => item.code_hs).join('\n') || '',
                     cargo.corridor || '',
                     cargo.typeDeVehicule || '',
                     cargo.immatriculation || '',
-                    Array.isArray(cargo.transitaire) ? cargo.transitaire.map(item => item.Transitaire).join('\n') : '',
+                    transitaireArray.map(item => item.Transitaire).join('\n') || '',
                     cargo.chauffeur || '',
                     cargo.telephone || '',
                     formattedDate,
                     cargo.creationHeureDebut || '',
                     cargo.creationHeureFin || '',
-                    cargo.alarme?.map(alarme => alarme.niveau).join('\n\n') || '',
-                    cargo.alarme?.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
-                    cargo.alarme?.map(alarme => alarme.heure).join('\n\n') || '',
-                    cargo.alarme?.map(alarme => alarme.lieu).join('\n\n') || '',
-                    cargo.alarme?.map(alarme => alarme.observation).join('\n\n') || '',
-                   // formatDate(cargo.clotureDate) || '',
-                   '',
+                    alarmeArray.map(alarme => alarme.niveau).join('\n\n') || '',
+                    alarmeArray.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
+                    alarmeArray.map(alarme => alarme.heure).join('\n\n') || '',
+                    alarmeArray.map(alarme => alarme.lieu).join('\n\n') || '',
+                    alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+                    formatDate(cargo.clotureDate) || '',
                     cargo.clotureHeure || '',
                     cargo.clotureLieu || '',
                     cargo.clotureMode || '',
                     cargo.duree || ''
                 ]);
-    
-                const codeCount = cargo.codeHS?.length || 1;
-                const alarmCount = cargo.alarme?.length || 1;
-                const transitaireCount = cargo.transitaire?.length || 1;
+                const codeCount = codeHSArray?.length || 1;
+                const alarmCount = alarmeArray?.length || 1;
+                const transitaireCount = transitaireArray?.length || 1;
                 const maxCount = Math.max(codeCount, alarmCount, transitaireCount);
     
                 row.height = Math.max(25, maxCount * 25);
@@ -2294,6 +2424,9 @@ row.height = Math.max(25, maxCount * 25);
   res.end();
 });
 
+  app.use('/assets', express.static(path.join(__dirname, 'assets')));
+  app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.get('/',(req, res)=>{
   res.render('Login', {
@@ -2361,9 +2494,10 @@ app.get('/',(req, res)=>{
       res.render('admin/dashboard')
     })
 
-  app.use('/assets', express.static(path.join(__dirname, 'assets')));
-  app.use(express.static(path.join(__dirname, 'public')));
+
+  
 const port = process.env.PORT || 3000;
+
 
 db.sequelize.sync().then(async () => {
   // Check if the admin user already exists
@@ -2384,9 +2518,9 @@ db.sequelize.sync().then(async () => {
   } else {
       console.log("Admin user already exists.");
   }
-
-  app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
+const HOST = '0.0.0.0';
+  app.listen(port, HOST, () => {
+      console.log(`Server running on ${HOST} port ${port}`);
   });
 }).catch(error => {
   console.error("Error syncing database:", error);

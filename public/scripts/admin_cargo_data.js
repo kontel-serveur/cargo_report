@@ -24,74 +24,95 @@ document.addEventListener('DOMContentLoaded', async () => {
             return date.toISOString().split('T')[0]; // Return in "yyyy-MM-dd" format
         };
 
-        if(Array.isArray(cargoData.codeHS)){
-            const codeHSContainer = document.getElementById('code_hs_container');
-            cargoData.codeHS.forEach((code, index) => {
-                const codeHSItem = document.createElement('div');
-                codeHSItem.classList.add('code_hs_item')
-                codeHSItem.innerHTML = `
-                    <input type="text" id="code_hs" name="code_hs" value="${code.code_hs}" disabled>
-                `
+        // Safe parsing function
+const parseJSON = (data) => {
+    try {
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return [];
+    }
+};
 
-                codeHSContainer.appendChild(codeHSItem);
-            })
-        }
+// Parsing codeHS if needed
+if (cargoData.codeHS) {
+    const codeHSArray = Array.isArray(cargoData.codeHS) ? cargoData.codeHS : parseJSON(cargoData.codeHS);
+    if (codeHSArray.length > 0) {
+        const codeHSContainer = document.getElementById('code_hs_container');
+        codeHSArray.forEach((code, index) => {
+            const codeHSItem = document.createElement('div');
+            codeHSItem.classList.add('code_hs_item');
+            codeHSItem.innerHTML = `
+                <input type="text" id="code_hs" name="code_hs" value="${code.code_hs || ''}" disabled>
+            `;
+            codeHSContainer.appendChild(codeHSItem);
+        });
+    }
+}
 
+// Parsing transitaire if needed
+if (cargoData.transitaire) {
+    const transitaireArray = Array.isArray(cargoData.transitaire) ? cargoData.transitaire : parseJSON(cargoData.transitaire);
+    if (transitaireArray.length > 0) {
+        const transitaireContainer = document.getElementById('transitaire-container');
+        transitaireArray.forEach((transitaire, index) => {
+            const transitaireItem = document.createElement('div');
+            transitaireItem.classList.add('transitaire_item');
+            transitaireItem.innerHTML = `
+                <input type="text" id="transitaire" name="transitaire" value="${transitaire.Transitaire || ''}" disabled>
+            `;
+            transitaireContainer.appendChild(transitaireItem);
+        });
+    }
+}
 
-        if(Array.isArray(cargoData.transitaire)){
-            const transitaireContainer = document.getElementById('transitaire-container');
-            cargoData.transitaire.forEach((transitaire, index) => {
-                const transitaireItem = document.createElement('div');
-                transitaireItem.classList.add('transitaire_item')
-                transitaireItem.innerHTML = `
-                    <input type="text" id="transitaire" name="transitaire" value="${transitaire.Transitaire}" disabled>
-                `
-
-                transitaireContainer.appendChild(transitaireItem);
-            })
-        }
-
-        // Check if alarme is defined and is an array
-        if (Array.isArray(cargoData.alarme)) {
-            const alarmeContainer = document.getElementById('alarme-container');
-            cargoData.alarme.forEach((alarme, index) => {
-                const alarmeItem = document.createElement('div');
-                alarmeItem.classList.add('alarme-item');
-
-                alarmeItem.innerHTML = `
-                    <div class="formbold-input-flex">
-                        <div>
-                            <label for="alarme_niveau_${index}" class="formbold-form-label">Niveau</label>
-                            <input type="number" id="alarme_niveau_${index}" name="alarme[niveau]" value="${alarme.niveau || ''}" class="formbold-form-input" disabled />
-                        </div>
-                        <div>
-                            <label for="alarme_date_${index}" class="formbold-form-label">Date</label>
-                            <input type="date" id="alarme_date_${index}" name="alarme[date]" value="${formatDate(alarme.date) || ''}" class="formbold-form-input" disabled />
-                        </div>
-                    </div>
-
-                    <div class="formbold-input-flex">
-                        <div>
-                            <label for="alarme_heure_${index}" class="formbold-form-label">Heure</label>
-                            <input type="time" id="alarme_heure_${index}" name="alarme[heure]" value="${alarme.heure || ''}" class="formbold-form-input" disabled />
-                        </div>
-                        <div>
-                            <label for="alarme_lieu_${index}" class="formbold-form-label">Lieu</label>
-                            <input type="text" id="alarme_lieu_${index}" name="alarme[lieu]" value="${alarme.lieu || ''}" class="formbold-form-input" disabled />
-                        </div>
-                    </div>
-
+// Parsing alarme if needed
+if (cargoData.alarme) {
+    const alarmeArray = Array.isArray(cargoData.alarme) ? cargoData.alarme : parseJSON(cargoData.alarme);
+    if (alarmeArray.length > 0) {
+        const alarmeContainer = document.getElementById('alarme-container');
+        alarmeArray.forEach((alarme, index) => {
+            const alarmeItem = document.createElement('div');
+            alarmeItem.classList.add('alarme-item');
+            alarmeItem.innerHTML = `
+                <div class="formbold-input-flex">
                     <div>
-                        <label for="alarme_observation_${index}" class="formbold-form-label">Observation</label>
-                        <textarea rows="6" id="alarme_observation_${index}" name="alarme[observation]" class="formbold-form-input" disabled>${alarme.observation || ''}</textarea>
+                        <label for="alarme_niveau_${index}" class="formbold-form-label">Niveau</label>
+                        <input type="number" id="alarme_niveau_${index}" name="alarme[niveau]" value="${alarme.niveau || ''}" class="formbold-form-input" disabled />
                     </div>
-                `;
+                    <div>
+                        <label for="alarme_type_${index}" class="formbold-form-label">Type</label>
+                        <input type="text" id="alarme_type_${index}" name="alarme[type]" value="${alarme.type || ''}" class="formbold-form-input" disabled />
+                    </div>
+                    <div>
+                        <label for="alarme_date_${index}" class="formbold-form-label">Date</label>
+                        <input type="date" id="alarme_date_${index}" name="alarme[date]" value="${formatDate(alarme.date) || ''}" class="formbold-form-input" disabled />
+                    </div>
+                </div>
 
-                alarmeContainer.appendChild(alarmeItem);
-            });
-        } else {
-            console.warn('Alarme data is not available or not an array', cargoData[0].alarme);
-        }
+                <div class="formbold-input-flex">
+                    <div>
+                        <label for="alarme_heure_${index}" class="formbold-form-label">Heure</label>
+                        <input type="time" id="alarme_heure_${index}" name="alarme[heure]" value="${alarme.heure || ''}" class="formbold-form-input" disabled />
+                    </div>
+                    <div>
+                        <label for="alarme_lieu_${index}" class="formbold-form-label">Lieu</label>
+                        <input type="text" id="alarme_lieu_${index}" name="alarme[lieu]" value="${alarme.lieu || ''}" class="formbold-form-input" disabled />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="alarme_observation_${index}" class="formbold-form-label">Observation</label>
+                    <textarea rows="6" id="alarme_observation_${index}" name="alarme[observation]" class="formbold-form-input" disabled>${alarme.observation || ''}</textarea>
+                </div>
+            `;
+            alarmeContainer.appendChild(alarmeItem);
+        });
+    } else {
+        console.warn('Alarme data is not available or not an array', cargoData.alarme);
+    }
+}
+
 
         // Helper function to safely assign values
         const setInputValue = (id, value) => {

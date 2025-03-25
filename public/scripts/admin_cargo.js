@@ -27,9 +27,8 @@ $(document).ready(function () {
                 title: 'Code Hs',
                 render: function (data) {
                     // Check if data is an array and map to extract 'code_hs' values
-                    return Array.isArray(data)
-                        ? data.map(item => item.code_hs).join(', ') // Join the extracted 'code_hs' values
-                        : '';
+                    const codeData = JSON.parse(data)
+                            return Array.isArray(codeData) ? codeData.map(item => item.code_hs).join(', ') : '';
                 },
             },
             { data: 'corridor' },
@@ -42,9 +41,8 @@ $(document).ready(function () {
                 title: 'Transitaire',
                 render: function (data) {
                     // Check if data is an array and map to extract 'code_hs' values
-                    return Array.isArray(data)
-                        ? data.map(item => item.Transitaire).join(', ') // Join the extracted 'code_hs' values
-                        : '';
+                    const transitaireData = JSON.parse(data)
+                            return Array.isArray(transitaireData) ? transitaireData.map(item => item.Transitaire).join(', ') : '';
                 },
             },
             {data: 'userFullName'}

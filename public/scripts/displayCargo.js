@@ -74,8 +74,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Populate inputs from API data
-    if (Array.isArray(cargoData[0].codeHS)) {
+    /*if (Array.isArray(cargoData[0].codeHS)) {
         cargoData[0].codeHS.forEach((code) => {
+            addCodeHS(code.code_hs);
+        });
+    } else {
+        addCodeHS(); // Default one input if no data
+    }*/
+
+    let codeHSArray = [];
+    if(cargoData[0]?.codeHS){
+        try{
+            codeHSArray = JSON.parse(cargoData[0].codeHS);
+        } catch(error){
+            console.error('Error parsing codeHS: ', error)
+        }
+    }
+
+    if (Array.isArray(codeHSArray)) {
+        codeHSArray.forEach((code) => {
             addCodeHS(code.code_hs);
         });
     } else {
@@ -135,13 +152,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Populate inputs from API data
-    if (Array.isArray(cargoData[0].transitaire)) {
+    /*if (Array.isArray(cargoData[0].transitaire)) {
         cargoData[0].transitaire.forEach((transitaire) => {
             addTransitaire(transitaire.Transitaire);
         });
     } else {
         addTransitaire(); // Default one input if no data
+    }*/
+
+    let transitaireSArray = [];
+    if(cargoData[0]?.transitaire){
+        try{
+            transitaireArray = JSON.parse(cargoData[0].transitaire);
+        } catch(error){
+            console.error('Error parsing transitaire: ', error)
+        }
     }
+
+    if (Array.isArray(transitaireArray)) {
+        transitaireArray.forEach((transitaire) => {
+            addTransitaire(transitaire.Transitaire);
+        });
+    } else {
+        addTransitaire(); // Default one input if no data
+    }
+
 
     // Event listeners
     addTransitaireButton.addEventListener('click', () => addTransitaire());
@@ -348,13 +383,31 @@ function updateTypeOptions(niveauSelect, index) {
             }
         
             // Populate inputs from API data
-            if (Array.isArray(cargoData[0].alarme)) {
+            /*if (Array.isArray(cargoData[0].alarme)) {
                 cargoData[0].alarme.forEach((alarme) => {
                     addAlarme(alarme);
                 });
             } else {
                 addAlarme(); // Default one input if no data
-            }
+            }*/
+
+            let alarmeArray = [];
+    if(cargoData[0]?.alarme){
+        try{
+            alarmeArray = JSON.parse(cargoData[0].alarme);
+        } catch(error){
+            console.error('Error parsing alarme: ', error)
+        }
+    }
+
+    if (Array.isArray(alarmeArray)) {
+        alarmeArray.forEach((alarme) => {
+            addAlarme(alarme);
+        });
+    } else {
+        addAlarme(); // Default one input if no data
+    }
+
         
             // Event listeners
             addAlarmeButton.addEventListener('click', () => addAlarme());

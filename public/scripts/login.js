@@ -10,7 +10,7 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
     const loginData = { email, password };
   
     try {
-      const response = await fetch('/user/login', {
+      const response = await fetch('user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

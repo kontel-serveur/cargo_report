@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (response.ok) {
                     const data = await response.json();
                     cargoData = data.cargoData;
+                    console.log(cargoData)
                     initializeTable(data.cargoData);
                 } else {
                     const errorData = await response.json();
@@ -46,7 +47,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         data: 'codeHS',
                         title: 'Code Hs',
                         render: function (data) {
-                            return Array.isArray(data) ? data.map(item => item.code_hs).join(', ') : '';
+                            const codeData = JSON.parse(data)
+                            return Array.isArray(codeData) ? codeData.map(item => item.code_hs).join(', ') : '';
                         },
                     },
                     { data: 'corridor', title: 'Corridor' },
@@ -56,7 +58,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         data: 'transitaire',
                         title: 'Transitaire',
                         render: function (data) {
-                            return Array.isArray(data) ? data.map(item => item.Transitaire).join(', ') : '';
+                            const transitaireData = JSON.parse(data)
+                            return Array.isArray(transitaireData) ? transitaireData.map(item => item.Transitaire).join(', ') : '';
                         },
                     },
                     {

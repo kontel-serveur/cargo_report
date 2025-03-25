@@ -250,7 +250,7 @@ formSubmitBtn.addEventListener("click", function (event) {
         // Check if the phone number is exactly 8 digits
         const phoneRegex = /^\d{8}$/;
         if (!phoneRegex.test(telephone)) {
-          telephoneError.style.display = 'block'; // Show the error message if phone number is invalid
+       //   telephoneError.style.display = 'block'; // Show the error message if phone number is invalid
           return; // Prevent form submission if the phone number is not valid
         }
 
@@ -303,6 +303,8 @@ formSubmitBtn.addEventListener("click", function (event) {
           clotureMode,
           duree, // Include duree here
         };
+
+        console.log(cargoData)
 
         try {
           const response = await fetch('/cargo/ajout', {
