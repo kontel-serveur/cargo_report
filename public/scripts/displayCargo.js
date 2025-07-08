@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         addTransitaire(); // Default one input if no data
     }*/
 
-    let transitaireSArray = [];
+    let transitaireArray = [];
     if(cargoData[0]?.transitaire){
         try{
             transitaireArray = JSON.parse(cargoData[0].transitaire);
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div>
                             <label for="alarme_niveau_${index}" class="formbold-form-label">Niveau</label>
                             <select id="alarme_niveau_${index}" name="alarme[niveau]" class="formbold-form-input">
-                                
+                                <option value="" ${data.niveau === '' ? 'selected' : ''}>Choisissez le niveau</option>
                                 <option value="2" ${data.niveau === '2' ? 'selected' : ''}>2</option>
                                 <option value="3" ${data.niveau === '3' ? 'selected' : ''}>3</option>
                             </select>
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <label for="alarme_date_${index}" class="formbold-form-label">Date</label>
                             <input type="date" id="alarme_date_${index}" name="alarme[date]" value="${data.date || ''}" class="formbold-form-input" />
                         </div>
-
+            
                         <div>
                             <label for="alarme_heure_${index}" class="formbold-form-label">Heure</label>
                             <input type="time" id="alarme_heure_${index}" name="alarme[heure]" value="${data.heure || ''}" class="formbold-form-input" />
@@ -323,50 +323,66 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <textarea rows="6" id="alarme_observation_${index}" name="alarme[observation]" class="formbold-form-input">${data.observation || ''}</textarea>
                     </div>
                 `;
-        
+            
                 alarmeContainer.appendChild(alarmeItem);
                 
-        
+            
                 // Show remove button if there is more than one input
                 updateRemoveButtonAlarme();
-        
+            
                 // Attach event listeners to Niveau select
                 const niveauSelect = alarmeItem.querySelector(`#alarme_niveau_${index}`);
                 niveauSelect.addEventListener('change', function () {
-                    updateTypeOptions(niveauSelect, index);
+                    updateTypeOptions(niveauSelect, index, data.type);
                 });
-        
+            
                 // Initially update Type options based on the pre-selected Niveau value
-                updateTypeOptions(niveauSelect, index);
+                updateTypeOptions(niveauSelect, index, data.type);
                 const dateInput = alarmeItem.querySelector(`#alarme_date_${index}`);
                 const timeInput = alarmeItem.querySelector(`#alarme_heure_${index}`);
                 validateDateTimeInputs(dateInput, timeInput, index);
             }
-        
+            
             // Function to update the Type options based on the selected Niveau
-            // Function to update the Type options based on the selected Niveau
-function updateTypeOptions(niveauSelect, index) {
-    const typeSelect = document.getElementById(`alarme_type_${index}`);
-    const niveau = niveauSelect.value;
-
-    // Clear existing options completely
-    typeSelect.innerHTML = '';
-
-    // Append options based on Niveau value
-    if (niveau === "2") {
-        typeSelect.innerHTML = '<option value="Delai d\'expiration du transit">Delai d\'expiration du transit</option>';
-    } else if (niveau === "3") {
-        typeSelect.innerHTML = `
-            <option value="Deviation de la route autorisee">Deviation de la route autorisee</option>
-            <option value="Demi-tour">Demi-tour</option>
-            <option value="Arret en zone dangereuse">Arret en zone dangereuse</option>
-            <option value="Delai d\'expiration de la confirmation du retrait de l\'unite">Delai d\'expiration de la confirmation du retrait de l\'unite</option>
-            <option value="Cable de securite deverouilee">Cable de securite deverouilee</option>
-            <option value="Unite enlevee hors d\'une zone sure">Unite enlevee hors d\'une zone sure</option>
-        `;
-    }
-}
-        
+            function updateTypeOptions(niveauSelect, index, selectedType = '') {
+                const typeSelect = document.getElementById(`alarme_type_${index}`);
+                const niveau = niveauSelect.value;
+            
+                // Clear existing options completely
+                typeSelect.innerHTML = '';
+            
+                // Append options based on Niveau value
+                if (niveau === "2") {
+                    const option = document.createElement('option');
+                    option.value = "Delai d\'expiration du transit";
+                    option.textContent = "Delai d\'expiration du transit";
+                    option.selected = selectedType === "Delai d\'expiration du transit";
+                    typeSelect.appendChild(option);
+                } else if (niveau === "3") {
+                    const options = [
+                        "Deviation de la route autorisee",
+                        "Demi-tour",
+                        "Arret en zone dangereuse",
+                        "Delai d\'expiration de la confirmation du retrait de l\'unite",
+                        "Cable de securite deverouilee",
+                        "Unite enlevee hors d\'une zone sure"
+                    ];
+                    
+                    options.forEach(optionValue => {
+                        const option = document.createElement('option');
+                        option.value = optionValue;
+                        option.textContent = optionValue;
+                        option.selected = selectedType === optionValue;
+                        typeSelect.appendChild(option);
+                    });
+                } else {
+                    const option = document.createElement('option');
+                    option.value = "";
+                    option.textContent = "Choisissez le type d'alarme";
+                    typeSelect.appendChild(option);
+                }
+            }
+            
             // Function to remove the last Alarme input field
             function removeAlarme() {
                 const alarmeItems = document.querySelectorAll('.alarme-item');
@@ -375,38 +391,30 @@ function updateTypeOptions(niveauSelect, index) {
                 }
                 updateRemoveButtonAlarme();
             }
-        
+            
             // Show or hide remove button
             function updateRemoveButtonAlarme() {
                 const alarmeItems = document.querySelectorAll('.alarme-item');
                 removeAlarmeButton.style.display = alarmeItems.length > 1 ? 'inline-block' : 'none';
             }
-        
-            // Populate inputs from API data
-            /*if (Array.isArray(cargoData[0].alarme)) {
-                cargoData[0].alarme.forEach((alarme) => {
+            
+            // Parse and load alarme data
+            let alarmeArray = [];
+            if(cargoData[0]?.alarme){
+                try{
+                    alarmeArray = JSON.parse(cargoData[0].alarme);
+                } catch(error){
+                    console.error('Error parsing alarme: ', error)
+                }
+            }
+            
+            if (Array.isArray(alarmeArray) && alarmeArray.length > 0) {
+                alarmeArray.forEach((alarme) => {
                     addAlarme(alarme);
                 });
             } else {
                 addAlarme(); // Default one input if no data
-            }*/
-
-            let alarmeArray = [];
-    if(cargoData[0]?.alarme){
-        try{
-            alarmeArray = JSON.parse(cargoData[0].alarme);
-        } catch(error){
-            console.error('Error parsing alarme: ', error)
-        }
-    }
-
-    if (Array.isArray(alarmeArray)) {
-        alarmeArray.forEach((alarme) => {
-            addAlarme(alarme);
-        });
-    } else {
-        addAlarme(); // Default one input if no data
-    }
+            }
 
         
             // Event listeners
@@ -467,7 +475,7 @@ function updateTypeOptions(niveauSelect, index) {
             document.getElementById("addCommentButton"),
             document.getElementById("addAlarmeButton"),
             document.getElementById("addClotureButton"),
-            document.getElementById("submitDataForm"),
+           // document.getElementById("submitDataForm"),
             document.getElementById("deleteTransit")
         ];
         
@@ -1096,10 +1104,10 @@ $(document).ready(function () {
             const selectedDate = $alarmeDateInput.val();
             if (selectedDate === creationDate) {
               // Set min hour for current date to be just after the creation heure
-              $alarmeHeureInput.attr('min', creationTime);
+             // $alarmeHeureInput.attr('min', creationTime);
             } else {
               // Allow any time for other dates
-              $alarmeHeureInput.removeAttr('min');
+            //  $alarmeHeureInput.removeAttr('min');
             }
           }
     
@@ -1113,7 +1121,7 @@ $(document).ready(function () {
             const selectedHeure = $alarmeHeureInput.val();
             if (selectedHeure && selectedHeure < creationTime) {
               // If heure is less than creationHeure, reset it to the creation heure
-              $alarmeHeureInput.val(creationTime);
+           //   $alarmeHeureInput.val(creationTime);
             }
           });
     
@@ -1208,10 +1216,10 @@ $(document).ready(function () {
             const selectedDate = $clotureDateInput.val();
             if (selectedDate === creationDate) {
               // Set min hour for current date to be just after the creation heure
-              $clotureHeureInput.attr('min', creationTime);
+           //   $clotureHeureInput.attr('min', creationTime);
             } else {
               // Allow any time for other dates
-              $clotureHeureInput.removeAttr('min');
+           //   $clotureHeureInput.removeAttr('min');
             }
           }
     
@@ -1225,7 +1233,7 @@ $(document).ready(function () {
             const selectedHeure = $clotureHeureInput.val();
             if (selectedHeure && selectedHeure < creationTime) {
               // If heure is less than creationHeure, reset it to the creation heure
-              $clotureHeureInput.val(creationTime);
+            //  $clotureHeureInput.val(creationTime);
             }
           });
     
@@ -1292,6 +1300,7 @@ $(document).ready(function () {
                 lieu: $(this).find('input[name="alarme[lieu]"]').val(),
                 observation: $(this).find('textarea[name="alarme[observation]"]').val()
             };
+            
             alarmeArray.push(alarme);
         });
 
@@ -1314,6 +1323,8 @@ $(document).ready(function () {
             alarme: alarmeArray
            
         };
+
+        console.log(alarmeArray)
 
         $.ajax({
             url: `/cargo/donnee/${cargoId}/update`,

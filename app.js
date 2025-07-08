@@ -118,8 +118,24 @@ async function fetchCargoWithoutClotureDate() {
   }
 }
 
+
+async function fetchCargoAllData() {
+  try {
+      // Fetch Cargo where clotureDate is NULL
+      const cargoData = await Cargo.findAll({
+          raw: true
+      });
+
+      return cargoData;
+  } catch (error) {
+      console.error('Error fetching Cargo without ClotureDate:', error);
+      throw error;
+  }
+}
+
 const data = await fetchCargoWithDepassementDelai()
 const data_not_clotured = await fetchCargoWithoutClotureDate()
+const all_data = await fetchCargoAllData()
 
 console.log('Clotured', data)
 console.log('Not clotured', data_not_clotured)
@@ -166,6 +182,14 @@ console.log('Not clotured', data_not_clotured)
     acc[creationDate].push(cargo);
     return acc;
   }, {});
+
+
+  const allGroupedData = all_data.reduce((acc, cargo) => {
+    const creationDate = formatDate(cargo.creationDate);
+    if (!acc[creationDate]) acc[creationDate] = [];
+    acc[creationDate].push(cargo);
+    return acc;
+  }, {});
   
   const currentMonth = getCurrentMonth();
   const currentsYear = new Date().getFullYear();
@@ -180,9 +204,9 @@ console.log('Not clotured', data_not_clotured)
   }
   
   // Count the data entries for each day
-  Object.keys(groupedData).forEach((creationDate) => {
+  Object.keys(allGroupedData).forEach((creationDate) => {
     if (dailyDataCount.hasOwnProperty(creationDate)) {
-      dailyDataCount[creationDate] = groupedData[creationDate].length;
+      dailyDataCount[creationDate] = allGroupedData[creationDate].length;
     }
   });
 
@@ -320,9 +344,9 @@ console.log('Not clotured', data_not_clotured)
   const currentYear = new Date().getFullYear();
 
 
-  data.forEach(cargo => {
-    if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
-      const creationDate = new Date(cargo.creationDate);
+ // data.forEach(cargo => {
+  //  if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
+    //  const creationDate = new Date(cargo.creationDate);
       
       // Ensure the cargo's creation date is within the current month and year
     /*  if (creationDate.getMonth() === currentMonth && creationDate.getFullYear() === currentYear) {
@@ -341,7 +365,7 @@ console.log('Not clotured', data_not_clotured)
         });
       }*/
 
-        const parseJSON = (data) => {
+        const parseJSONS = (data) => {
     try {
         return JSON.parse(data);
     } catch (error) {
@@ -351,8 +375,9 @@ console.log('Not clotured', data_not_clotured)
 };
 
 data.forEach(cargo => {
+  const creationDate = new Date(cargo.creationDate);
     // Ensure cargo.alarme is parsed correctly
-    const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+    const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSONS(cargo.alarme);
 
     if (alarmeArray.length > 0) {
         // Filter alarms by type and current month/year
@@ -386,8 +411,8 @@ data.forEach(cargo => {
 
         
 
-    }
-  });
+  //  }
+//  });
 
 depassementDelaiWorksheet.columns.forEach((column) => {
   column.width = 20; 
@@ -800,7 +825,8 @@ for (let day = 1; day <= daysInMonth; day++) {
               alarmeArray.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
               alarmeArray.map(alarme => alarme.heure).join('\n\n') || '',
               alarmeArray.map(alarme => alarme.lieu).join('\n\n') || '',
-              alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+              //alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+              alarmeArray.map(alarme => alarme.type).join('\n\n') || '',
               formatDate(cargo.clotureDate) || '',
               cargo.clotureHeure || '',
               cargo.clotureLieu || '',
@@ -1097,7 +1123,8 @@ const finRow = worksheet.addRow(['FIN']);
               alarmeArray.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
               alarmeArray.map(alarme => alarme.heure).join('\n\n') || '',
               alarmeArray.map(alarme => alarme.lieu).join('\n\n') || '',
-              alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+              //alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+              alarmeArray.map(alarme => alarme.type).join('\n\n') || '',
               formatDate(cargo.clotureDate) || '',
               cargo.clotureHeure || '',
               cargo.clotureLieu || '',
@@ -1334,8 +1361,34 @@ app.get('/exportExcelDateRange', async (req, res) => {
 }
 
 
+async function fetchAllCargo(start, end) {
+  try {
+      // Fetch Cargo where clotureDate is NULL
+      const cargoData = await Cargo.findAll({ 
+          raw: true
+      });
+
+      // Apply date filtering for cargos based on creationDate
+      const filteredCargo = cargoData.filter(cargo => {
+          const creationDate = new Date(cargo.creationDate);
+
+          return (
+              (!start || creationDate >= start) &&
+              (!end || creationDate <= end)
+          );
+      });
+
+      return filteredCargo;
+  } catch (error) {
+      console.error('Error fetching Cargo without ClotureDate:', error);
+      throw error;
+  }
+}
+
+
   const data = await fetchCargoWithDepassementDelai();
   const data_not_clotured = await fetchCargoWithoutClotureDate(start, end);
+  const all_data = await fetchAllCargo(start, end)
 
   
 
@@ -1389,6 +1442,14 @@ const groupedDataNonCloture = data_not_clotured.reduce((acc, cargo) => {
 }, {});
 
 
+const allGroupedData = all_data.reduce((acc, cargo) => {
+  const creationDate = formatDate(cargo.creationDate); // Format the date to match expected format
+  if (!acc[creationDate]) acc[creationDate] = [];
+  acc[creationDate].push(cargo);
+  return acc;
+}, {});
+
+
 
 // Create an object to store counts for the selected period
 const dailyDataCount = {};
@@ -1402,9 +1463,9 @@ while (currentDates <= end) {
 }
 
 // Count the data entries for each day
-Object.keys(groupedData).forEach((creationDate) => {
+Object.keys(allGroupedData).forEach((creationDate) => {
     if (dailyDataCount.hasOwnProperty(creationDate)) {
-        dailyDataCount[creationDate] = groupedData[creationDate].length;
+        dailyDataCount[creationDate] = allGroupedData[creationDate].length;
     }
 });
 
@@ -1537,7 +1598,7 @@ arretWorksheet.addRow(['N° du Trst',
     rowIndex++;
   });
 
-  data.forEach(cargo => {
+  
  /* if (cargo.depassementDelais && cargo.depassementDelais.length > 0) {
     cargo.depassementDelais.forEach(delai => {
       depassementDelaiWorksheet.addRow([
@@ -1554,7 +1615,7 @@ arretWorksheet.addRow(['N° du Trst',
     });
   }*/
 
-         const parseJSON = (data) => {
+         const parseJSONS = (data) => {
             try {
                 return JSON.parse(data);
             } catch (error) {
@@ -1565,7 +1626,7 @@ arretWorksheet.addRow(['N° du Trst',
 
         data.forEach(cargo => {
             // Ensure cargo.alarme is parsed correctly
-            const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSON(cargo.alarme);
+            const alarmeArray = Array.isArray(cargo.alarme) ? cargo.alarme : parseJSONS(cargo.alarme);
 
             if (alarmeArray.length > 0) {
                 // Filter alarms by type
@@ -1576,7 +1637,7 @@ arretWorksheet.addRow(['N° du Trst',
 
                 if (alarmsForCurrentCargo.length > 0) {
                     // Combine 'niveau' and 'observation' from all alarms
-                    const niveaux = alarmsForCurrentCargo.map(alarm => alarm.niveau).join('\n\n');
+                    const niveaux = alarmsForCurrentCargo.map(alarm => alarm.niveau).join(', ');
                     const observations = alarmsForCurrentCargo.map(alarm => alarm.observation).join('\n\n');
 
                     // Add one row with combined alarm details
@@ -1595,7 +1656,7 @@ arretWorksheet.addRow(['N° du Trst',
             }
         });
 
-});
+
 
 depassementDelaiWorksheet.columns.forEach((column) => {
   column.width = 20; 
@@ -1982,7 +2043,8 @@ cableDeverouileWorksheet.columns.forEach((column) => {
                 alarmeArray.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
                 alarmeArray.map(alarme => alarme.heure).join('\n\n') || '',
                 alarmeArray.map(alarme => alarme.lieu).join('\n\n') || '',
-                alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+                //alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+                alarmeArray.map(alarme => alarme.type).join('\n\n') || '',
                 formatDate(cargo.clotureDate) || '',
                 cargo.clotureHeure || '',
                 cargo.clotureLieu || '',
@@ -2278,7 +2340,8 @@ const finRow = worksheet.addRow(['FIN']);
                     alarmeArray.map(alarme => formatDate(alarme.date)).join('\n\n') || '',
                     alarmeArray.map(alarme => alarme.heure).join('\n\n') || '',
                     alarmeArray.map(alarme => alarme.lieu).join('\n\n') || '',
-                    alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+                    //alarmeArray.map(alarme => alarme.observation).join('\n\n') || '',
+                    alarmeArray.map(alarme => alarme.type).join('\n\n') || '',
                     formatDate(cargo.clotureDate) || '',
                     cargo.clotureHeure || '',
                     cargo.clotureLieu || '',

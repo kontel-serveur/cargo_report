@@ -113,6 +113,8 @@ const getMySingleCargoData = async(req, res)=>{
       const depassementDelai = await DepassementDelai.findAll({where: {cargo: id}})
       const cableDeverouille = await CableDeverouille.findAll({where: {cargo: id}})
 
+      console.log(cargoData)
+
         return res.status(StatusCodes.OK).json({cargoData, depassementDelai, cableDeverouille})
   } catch (error) {
     console.log(error)
@@ -125,6 +127,7 @@ const updateCargoData = async(req, res)=>{
     const cargoData = await Cargo.findOne({where: {id: id}})
 
     if (cargoData){
+      console.log(req.body.alarme)
       await Cargo.update({numeroDeTransit: req.body.numeroDeTransit,
         numeroDeBalise: req.body.numeroDeBalise,
         codeHS: req.body.codeHS,

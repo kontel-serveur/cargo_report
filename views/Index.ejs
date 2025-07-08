@@ -60,155 +60,70 @@
               </div>
             </div>
 
-            <div id="code-container">
-              <!-- Template for a single alarme -->
-              <div class="code-item">
-                <div class="formbold-input-flex">
-                  <div>
-                    <label for="code_hs" class="formbold-form-label">Code HS</label>
-                    <input
-                      
-                      name="code[code_hs]"
-                      placeholder=""
-                      class="formbold-form-input"
-                    />
-                  </div>
-                  
-                </div>
-            
-               
-            
-                <button type="button" class="remove-code-btn styled-btn danger-btn">Enlever</button>
-              </div>
-            </div>
-            
-            <div>
-              <button type="button" id="add-code-btn" class="styled-btn primary-btn">Ajouter Code HS</button>
-            </div>
 
             <div class="formbold-input-flex" style="margin-top: 16px;">
 
               
                 
-                <div>
-                    <label for="lastname" class="formbold-form-label"> Corridor </label>
-                    <select name="lastname"
-                    id="corridor"
-                    class="formbold-form-input">
-                      <option value="BJM-GTB">BJM-GTB</option>
-                      <option value="KYZ-GTB Via BJM">KYZ-GTB Via BJM</option>
-                      <option value="KBR-BJM Via KYZ">KBR-BJM Via KYZ</option>
-                      <option value="KBR-BJM Via GTG">KBR-BJM Via GTG</option>
-                      <option value="KBR-KYZ">KBR-KYZ</option>
-                      <option value="KYZ-BJM">KYZ-BJM</option>
-                      <option value="KBR-GTG">KBR-GTG</option>
-                    </select>
-                   
-                </div>
-              </div>
-
-                <h3 style="margin-bottom: 16px;">Information du vehicule</h3>
-
-              <div class="formbold-input-flex">
-                <div>
-                    <label for="firstname" class="formbold-form-label"> Type de vehicule </label>
-                    <select class="formbold-form-input" id="type_de_vehicule">
-                        <option>Choisir le type de vehicle</option>
-                        <option value="Vehicule a moteur">Vehicule a moteur</option>
-                        <option value="Camion">Camion</option>
-                    </select>
-                    
-                </div>
-                <div>
-                    <label for="lastname" class="formbold-form-label"> Immatriculation </label>
-                    <input
-                    type="text"
-                    name="lastname"
-                    placeholder=""
-                    id="immatriculation"
-                    class="formbold-form-input"
-                    />
-                </div>
-              </div>
-
-              <h3 style="margin-bottom: 16px;">Personne de contact</h3>
-
               <div>
-                <div id="transitaire-container">
-                  <!-- Template for a single alarme -->
-                  <div class="transitaire-item">
-                    <div class="formbold-input-flex">
-                      <div>
-                        <label for="code_hs" class="formbold-form-label">Transitaire</label>
-                        <input
-                          
-                          name="transitaire[transitaire]"
-                          placeholder=""
-                          class="formbold-form-input"
-                        />
-                      </div>
-                      
-                    </div>
-                
-                   
-                
-                    <button type="button" class="remove-transitaire-btn styled-btn danger-btn">Enlever</button>
-                  </div>
-                </div>
-                
-                <div>
-                  <button type="button" id="add-transitaire-btn" class="styled-btn primary-btn">Ajouter Transitaire</button>
-                </div>
-              </div>
+                  <label for="lastname" class="formbold-form-label"> Corridor </label>
+                  <select name="lastname"
+                  id="corridor"
+                  class="formbold-form-input">
+                    <option value="">Choisir le corridor</option>
+                    <option value="BJM">BJM</option>
+                    <option value="BJM-GTB">BJM-GTB</option>
+                    <option value="BJM-MGN">BJM-MGN</option>
+                    <option value="BJM-BUGARAMA-KANYARU">BJM-BUGARAMA-KANYARU</option>
+                    <option value="BJM-KBR">BJM-KBR</option>
+                    <option value="BJM-RUHWA">BJM-RUHWA</option>
+                    <option value="BJM-VGZ">BJM-VGZ</option>
+                    <option value="GASENYI-BJM VIA KYZ">GASENYI-BJM VIA KYZ</option>
+                    <option value="GASENYI-GTB">GASENYI-GTB</option>
 
-              <div class="formbold-input-flex" style="margin-top: 16px;">
-             <!--   <div>
-                    <label for="firstname" class="formbold-form-label"> Transitaire </label>
-                    <input
-                    type="text"
-                    name="firstname"
-                    placeholder=""
-                    id="transitaire"
-                    class="formbold-form-input"
-                    />
-                </div> -->
+                    <option value="GTG">GTG</option>
+                    <option value="KANYARU-BUGARAMA-BJM New">KANYARU-BUGARAMA-BJM New</option>
+                    <option value="KANYARU-GTB">KANYARU-GTB</option>
+                    <option value="KANYARU-GTG VIA BUGARAMA">KANYARU-GTG VIA BUGARAMA</option>
+                    <option value="KANYARU-GTG VIA NGOZI">KANYARU-GTG VIA NGOZI</option>
+                    <option value="KANYARU-KYZ">KANYARU-KYZ</option>
+                    <option value="KANYARU-BJM">KANYARU-BJM</option>
+                    <option value="KANYARU-GTB VIA BJM">KANYARU-GTB VIA BJM</option>
 
-               
-                <div>
-                    <label for="lastname" class="formbold-form-label"> Chauffeur </label>
-                    <input
-                    type="text"
-                    name="lastname"
-                    placeholder=""
-                    id="chauffeur"
-                    class="formbold-form-input"
-                    />
-                </div>
+                    <option value="KBR-BJM VIA MWARO">KBR-BJM VIA MWARO</option>
+                    <option value="KBR-GTB VIA BJM">KBR-GTB VIA BJM</option>
+                    <option value="KBR-GTG VIA NGOZI">KBR-GTG VIA NGOZI</option>
+                    <option value="KBR-MGN VIA BJM">KBR-MGN VIA BJM</option>
 
-                <div>
-                  <label for="firstname" class="formbold-form-label"> Telephone </label>
-                  <input
-                  type="tel"
-                  name="firstname"
-                  placeholder=""
-                  id="telephone"
-                  class="formbold-form-input"
-                  />
-                  <!--<span id="telephone-error" style="color: red; display: none;">Numero de telephone doit avoir 8 chiffres</span>-->
+                    <option value="KYZ-GTB Via BJM">KYZ-GTB Via BJM</option>
+                    <option value="KBR-BJM Via KYZ">KBR-BJM Via KYZ</option>
+                    <option value="KBR-BJM Via GTG">KBR-BJM Via GTG</option>
+                    <option value="KBR-KYZ">KBR-KYZ</option>
+                    <option value="KYZ-BJM">KYZ-BJM</option>
+                    <option value="KBR-GTG">KBR-GTG</option>
+                  </select>
+                 
               </div>
-              </div>
+            </div>
 
-              <div class="formbold-input-flex">
-                
-               
+
+            <h3 style="margin-bottom: 16px;">Information du vehicule</h3>
+
+            <div class="formbold-input-flex">
+              <div>
+                  <label for="firstname" class="formbold-form-label"> Type de vehicule </label>
+                  <select class="formbold-form-input" id="type_de_vehicule">
+                      <option>Choisir le type de vehicle</option>
+                      <option value="Vehicule a moteur">Vehicule a moteur</option>
+                      <option value="Camion">Camion</option>
+                      <option value="Camion citerne">Camion citerne</option>
+                      <option value="Train">Train</option>
+                  </select>
+                  
               </div>
-    
-            
-    
-            
-          </div>
-  
-          <div class="formbold-form-step-2">
+             
+            </div>
+
 
             <h3 style="margin-bottom: 16px">Creation</h3>
 
@@ -234,6 +149,7 @@
                 </div>
               </div>
 
+
               <div class="formbold-input-flex">
                 <div>
                   <label for="firstname" class="formbold-form-label"> Date de la fin de creation </label>
@@ -256,6 +172,142 @@
                 </div>
                
               </div>
+
+              <div style="margin-bottom: 16px;">
+                <label for="lastname" class="formbold-form-label"> Immatriculation </label>
+                <input
+                type="text"
+                name="lastname"
+                placeholder=""
+                id="immatriculation"
+                class="formbold-form-input"
+                style="width: 50%"
+                />
+            </div>
+
+
+              <h3 style="margin-bottom: 16px;">Personne de contact</h3>
+              <div class="formbold-input-flex" style="margin-top: 16px;">
+                <!--   <div>
+                       <label for="firstname" class="formbold-form-label"> Transitaire </label>
+                       <input
+                       type="text"
+                       name="firstname"
+                       placeholder=""
+                       id="transitaire"
+                       class="formbold-form-input"
+                       />
+                   </div> -->
+   
+                  
+                   <div>
+                       <label for="lastname" class="formbold-form-label"> Chauffeur </label>
+                       <input
+                       type="text"
+                       name="lastname"
+                       placeholder=""
+                       id="chauffeur"
+                       class="formbold-form-input"
+                       />
+                   </div>
+   
+                   <div>
+                     <label for="firstname" class="formbold-form-label"> Telephone </label>
+                     <input
+                     type="tel"
+                     name="firstname"
+                     placeholder=""
+                     id="telephone"
+                     class="formbold-form-input"
+                     />
+                     <!--<span id="telephone-error" style="color: red; display: none;">Numero de telephone doit avoir 8 chiffres</span>-->
+                 </div>
+                 </div>
+
+
+
+
+           
+
+           
+
+               
+
+             <!-- <h3 style="margin-bottom: 16px;">Personne de contact</h3>-->
+
+              
+
+             
+
+              <div class="formbold-input-flex">
+                
+               
+              </div>
+    
+            
+    
+            
+          </div>
+  
+          <div class="formbold-form-step-2">
+
+            <div>
+              <div id="transitaire-container">
+                <!-- Template for a single alarme -->
+                <div class="transitaire-item">
+                  <div class="formbold-input-flex">
+                    <div>
+                      <label for="code_hs" class="formbold-form-label">Transitaire</label>
+                      <input
+                        
+                        name="transitaire[transitaire]"
+                        placeholder=""
+                        class="formbold-form-input"
+                      />
+                    </div>
+                    
+                  </div>
+              
+                 
+              
+                  <button type="button" class="remove-transitaire-btn styled-btn danger-btn">Enlever</button>
+                </div>
+              </div>
+              
+              <div>
+                <button type="button" id="add-transitaire-btn" class="styled-btn primary-btn">Ajouter Transitaire</button>
+              </div>
+            </div>
+
+
+
+            <div id="code-container" style="margin-top: 10px;">
+              <!-- Template for a single alarme -->
+              <div class="code-item">
+                <div class="formbold-input-flex">
+                  <div>
+                    <label for="code_hs" class="formbold-form-label">Code HS</label>
+                    <input
+                      
+                      name="code[code_hs]"
+                      placeholder=""
+                      class="formbold-form-input"
+                    />
+                  </div>
+                  
+                </div>
+            
+               
+            
+                <button type="button" class="remove-code-btn styled-btn danger-btn">Enlever</button>
+              </div>
+            </div>
+            
+            <div>
+              <button type="button" id="add-code-btn" class="styled-btn primary-btn">Ajouter Code HS</button>
+            </div>
+
+             
 
               <!--
               <h3 style="margin-bottom: 16px">Alarmes</h3>

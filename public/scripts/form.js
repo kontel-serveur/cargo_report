@@ -155,7 +155,7 @@ function validateHeureFin() {
 
   if (creationHeureDebut && creationHeureFin < creationHeureDebut) {
     // If 'Heure fin' is before 'Heure debut', set it equal to 'Heure debut'
-    creationHeureFinInput.value = creationHeureDebut;
+  //  creationHeureFinInput.value = creationHeureDebut;
   }
 }
 
@@ -165,7 +165,7 @@ function validateDateFin() {
 
   if (creationDateFinInput.value < creationDate) {
     // If 'Date fin' is before 'Date debut', set it equal to 'Date debut'
-    creationDateFinInput.value = creationDate;
+ //   creationDateFinInput.value = creationDate;
   }
 }
 
@@ -208,7 +208,7 @@ formSubmitBtn.addEventListener("click", function (event) {
     stepTwo.classList.add('active');
 
     formBackBtn.classList.add('active');
-    formSubmitBtn.textContent = 'Submit'; // Change button text to "Submit"
+    formSubmitBtn.textContent = 'Soumettre'; // Change button text to "Submit"
   } else if (stepMenuTwo.classList.contains('active')) {
     // Ensure the form is selected correctly and then submit
     const form = document.querySelector('#cargoForm');
@@ -216,7 +216,7 @@ formSubmitBtn.addEventListener("click", function (event) {
     if (form) {
       console.log('Form submitting...');
 
-      async function submit() {
+      const submit = async()=> {
         const token = localStorage.getItem('token');
 
         const numeroDeTransit = document.getElementById('numero_de_transit').value;
@@ -353,5 +353,6 @@ formBackBtn.addEventListener("click", function(event) {
     stepOne.classList.add('active');
     
     formBackBtn.classList.remove('active'); // Hide back button on step 1
+    formSubmitBtn.textContent = 'Suivant';
   }
 });
